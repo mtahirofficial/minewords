@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .email-content {
+            color: #333333;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        .email-content h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .email-content p {
+            margin-bottom: 15px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        .email-footer p {
+            color: #6c757d;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Ziora</h1>
+        </div>
+        <div class="email-body">
+            <div class="email-content">
+                {{#if name}}
+                    <h2>Hello {{name}}!</h2>
+                {{else}}
+                    <h2>Hello!</h2>
+                {{/if}}
+                
+                {{#if message}}
+                    <p>{{message}}</p>
+                {{else}}
+                    <p>We wanted to reach out and share some important information with you.</p>
+                {{/if}}
+                
+                {{#if buttonText}}
+                    {{#if buttonUrl}}
+                        <div style="text-align: center;">
+                            <a href="{{buttonUrl}}" class="button">{{buttonText}}</a>
+                        </div>
+                    {{/if}}
+                {{/if}}
+                
+                <p style="margin-top: 30px; color: #6c757d; font-size: 14px;">
+                    If you have any questions, feel free to contact us.
+                </p>
+            </div>
+        </div>
+        <div class="email-footer">
+            <p><strong>Ziora</strong></p>
+            <p>Thank you for being part of our community!</p>
+            <p style="font-size: 12px; color: #adb5bd; margin-top: 15px;">
+                This is an automated email. Please do not reply to this message.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,4230 @@
+[
+    {
+        "label": "Alabama",
+        "value": "US.AL"
+    },
+    {
+        "label": "Alaska",
+        "value": "US.AK"
+    },
+    {
+        "label": "American Samoa",
+        "value": "US.AS"
+    },
+    {
+        "label": "Arizona",
+        "value": "US.AZ"
+    },
+    {
+        "label": "Arkansas",
+        "value": "US.AR"
+    },
+    {
+        "label": "Armed Forces Americas",
+        "value": "US.AA"
+    },
+    {
+        "label": "Armed Forces Europe",
+        "value": "US.AE"
+    },
+    {
+        "label": "Armed Forces Pacific",
+        "value": "US.AP"
+    },
+    {
+        "label": "California",
+        "value": "US.CA"
+    },
+    {
+        "label": "Colorado",
+        "value": "US.CO"
+    },
+    {
+        "label": "Connecticut",
+        "value": "US.CT"
+    },
+    {
+        "label": "Delaware",
+        "value": "US.DE"
+    },
+    {
+        "label": "District of Columbia",
+        "value": "US.DC"
+    },
+    {
+        "label": "Federated States of Micronesia",
+        "value": "US.FM"
+    },
+    {
+        "label": "Florida",
+        "value": "US.FL"
+    },
+    {
+        "label": "Georgia",
+        "value": "US.GA"
+    },
+    {
+        "label": "Guam",
+        "value": "US.GU"
+    },
+    {
+        "label": "Hawaii",
+        "value": "US.HI"
+    },
+    {
+        "label": "Idaho",
+        "value": "US.ID"
+    },
+    {
+        "label": "Illinois",
+        "value": "US.IL"
+    },
+    {
+        "label": "Indiana",
+        "value": "US.IN"
+    },
+    {
+        "label": "Iowa",
+        "value": "US.IA"
+    },
+    {
+        "label": "Kansas",
+        "value": "US.KS"
+    },
+    {
+        "label": "Kentucky",
+        "value": "US.KY"
+    },
+    {
+        "label": "Louisiana",
+        "value": "US.LA"
+    },
+    {
+        "label": "Maine",
+        "value": "US.ME"
+    },
+    {
+        "label": "Marshall Islands",
+        "value": "US.MH"
+    },
+    {
+        "label": "Maryland",
+        "value": "US.MD"
+    },
+    {
+        "label": "Massachusetts",
+        "value": "US.MA"
+    },
+    {
+        "label": "Michigan",
+        "value": "US.MI"
+    },
+    {
+        "label": "Minnesota",
+        "value": "US.MN"
+    },
+    {
+        "label": "Mississippi",
+        "value": "US.MS"
+    },
+    {
+        "label": "Missouri",
+        "value": "US.MO"
+    },
+    {
+        "label": "Montana",
+        "value": "US.MT"
+    },
+    {
+        "label": "Nebraska",
+        "value": "US.NE"
+    },
+    {
+        "label": "Nevada",
+        "value": "US.NV"
+    },
+    {
+        "label": "New Hampshire",
+        "value": "US.NH"
+    },
+    {
+        "label": "New Jersey",
+        "value": "US.NJ"
+    },
+    {
+        "label": "New Mexico",
+        "value": "US.NM"
+    },
+    {
+        "label": "New York",
+        "value": "US.NY"
+    },
+    {
+        "label": "North Carolina",
+        "value": "US.NC"
+    },
+    {
+        "label": "North Dakota",
+        "value": "US.ND"
+    },
+    {
+        "label": "Northern Mariana Islands",
+        "value": "US.MP"
+    },
+    {
+        "label": "Ohio",
+        "value": "US.OH"
+    },
+    {
+        "label": "Oklahoma",
+        "value": "US.OK"
+    },
+    {
+        "label": "Oregon",
+        "value": "US.OR"
+    },
+    {
+        "label": "Palau",
+        "value": "US.PW"
+    },
+    {
+        "label": "Pennsylvania",
+        "value": "US.PA"
+    },
+    {
+        "label": "Puerto Rico",
+        "value": "US.PR"
+    },
+    {
+        "label": "Rhode Island",
+        "value": "US.RI"
+    },
+    {
+        "label": "South Carolina",
+        "value": "US.SC"
+    },
+    {
+        "label": "South Dakota",
+        "value": "US.SD"
+    },
+    {
+        "label": "Tennessee",
+        "value": "US.TN"
+    },
+    {
+        "label": "Texas",
+        "value": "US.TX"
+    },
+    {
+        "label": "Utah",
+        "value": "US.UT"
+    },
+    {
+        "label": "Vermont",
+        "value": "US.VT"
+    },
+    {
+        "label": "Virgin Islands",
+        "value": "US.VI"
+    },
+    {
+        "label": "Virginia",
+        "value": "US.VA"
+    },
+    {
+        "label": "Washington",
+        "value": "US.WA"
+    },
+    {
+        "label": "West Virginia",
+        "value": "US.WV"
+    },
+    {
+        "label": "Wisconsin",
+        "value": "US.WI"
+    },
+    {
+        "label": "Wyoming",
+        "value": "US.WY"
+    },
+    {
+        "label": "Buenos Aires",
+        "value": "AR.B"
+    },
+    {
+        "label": "Catamarca",
+        "value": "AR.K"
+    },
+    {
+        "label": "Chaco",
+        "value": "AR.H"
+    },
+    {
+        "label": "Chubut",
+        "value": "AR.U"
+    },
+    {
+        "label": "Ciudad Autónoma de Buenos Aires",
+        "value": "AR.C"
+    },
+    {
+        "label": "Córdoba",
+        "value": "AR.X"
+    },
+    {
+        "label": "Corrientes",
+        "value": "AR.W"
+    },
+    {
+        "label": "Entre Ríos",
+        "value": "AR.E"
+    },
+    {
+        "label": "Formosa",
+        "value": "AR.P"
+    },
+    {
+        "label": "Jujuy",
+        "value": "AR.Y"
+    },
+    {
+        "label": "La Pampa",
+        "value": "AR.L"
+    },
+    {
+        "label": "La Rioja",
+        "value": "AR.F"
+    },
+    {
+        "label": "Mendoza",
+        "value": "AR.M"
+    },
+    {
+        "label": "Misiones",
+        "value": "AR.N"
+    },
+    {
+        "label": "Neuquén",
+        "value": "AR.Q"
+    },
+    {
+        "label": "Río Negro",
+        "value": "AR.R"
+    },
+    {
+        "label": "Salta",
+        "value": "AR.A"
+    },
+    {
+        "label": "San Juan",
+        "value": "AR.J"
+    },
+    {
+        "label": "San Luis",
+        "value": "AR.D"
+    },
+    {
+        "label": "Santa Cruz",
+        "value": "AR.Z"
+    },
+    {
+        "label": "Santa Fe",
+        "value": "AR.S"
+    },
+    {
+        "label": "Santiago Del Estero",
+        "value": "AR.G"
+    },
+    {
+        "label": "Tierra Del Fuego",
+        "value": "AR.V"
+    },
+    {
+        "label": "Tucumán",
+        "value": "AR.T"
+    },
+    {
+        "label": "Australian Capital Territory",
+        "value": "AU.ACT"
+    },
+    {
+        "label": "New South Wales",
+        "value": "AU.NSW"
+    },
+    {
+        "label": "Northern Territory",
+        "value": "AU.NT"
+    },
+    {
+        "label": "Queensland",
+        "value": "AU.QLD"
+    },
+    {
+        "label": "South Australia",
+        "value": "AU.SA"
+    },
+    {
+        "label": "Tasmania",
+        "value": "AU.TAS"
+    },
+    {
+        "label": "Victoria",
+        "value": "AU.VIC"
+    },
+    {
+        "label": "Western Australia",
+        "value": "AU.WA"
+    },
+    {
+        "label": "Acre",
+        "value": "BR.AC"
+    },
+    {
+        "label": "Alagoas",
+        "value": "BR.AL"
+    },
+    {
+        "label": "Amapá",
+        "value": "BR.AP"
+    },
+    {
+        "label": "Amazonas",
+        "value": "BR.AM"
+    },
+    {
+        "label": "Bahia",
+        "value": "BR.BA"
+    },
+    {
+        "label": "Ceará",
+        "value": "BR.CE"
+    },
+    {
+        "label": "Distrito Federal",
+        "value": "BR.DF"
+    },
+    {
+        "label": "Espírito Santo",
+        "value": "BR.ES"
+    },
+    {
+        "label": "Goiás",
+        "value": "BR.GO"
+    },
+    {
+        "label": "Maranhão",
+        "value": "BR.MA"
+    },
+    {
+        "label": "Mato Grosso",
+        "value": "BR.MT"
+    },
+    {
+        "label": "Mato Grosso do Sul",
+        "value": "BR.MS"
+    },
+    {
+        "label": "Minas Gerais",
+        "value": "BR.MG"
+    },
+    {
+        "label": "Pará",
+        "value": "BR.PA"
+    },
+    {
+        "label": "Paraíba",
+        "value": "BR.PB"
+    },
+    {
+        "label": "Paraná",
+        "value": "BR.PR"
+    },
+    {
+        "label": "Pernambuco",
+        "value": "BR.PE"
+    },
+    {
+        "label": "Piauí",
+        "value": "BR.PI"
+    },
+    {
+        "label": "Rio de Janeiro",
+        "value": "BR.RJ"
+    },
+    {
+        "label": "Rio Grande do Norte",
+        "value": "BR.RN"
+    },
+    {
+        "label": "Rio Grande do Sul",
+        "value": "BR.RS"
+    },
+    {
+        "label": "Rondônia",
+        "value": "BR.RO"
+    },
+    {
+        "label": "Roraima",
+        "value": "BR.RR"
+    },
+    {
+        "label": "Santa Catarina",
+        "value": "BR.SC"
+    },
+    {
+        "label": "São Paulo",
+        "value": "BR.SP"
+    },
+    {
+        "label": "Sergipe",
+        "value": "BR.SE"
+    },
+    {
+        "label": "Tocantins",
+        "value": "BR.TO"
+    },
+    {
+        "label": "Alberta",
+        "value": "CA.AB"
+    },
+    {
+        "label": "British Columbia",
+        "value": "CA.BC"
+    },
+    {
+        "label": "Manitoba",
+        "value": "CA.MB"
+    },
+    {
+        "label": "New Brunswick",
+        "value": "CA.NB"
+    },
+    {
+        "label": "Newfoundland and Labrador",
+        "value": "CA.NL"
+    },
+    {
+        "label": "Northwest Territories",
+        "value": "CA.NT"
+    },
+    {
+        "label": "Nova Scotia",
+        "value": "CA.NS"
+    },
+    {
+        "label": "Nunavut",
+        "value": "CA.NU"
+    },
+    {
+        "label": "Ontario",
+        "value": "CA.ON"
+    },
+    {
+        "label": "Prince Edward Island",
+        "value": "CA.PE"
+    },
+    {
+        "label": "Quebec",
+        "value": "CA.QC"
+    },
+    {
+        "label": "Saskatchewan",
+        "value": "CA.SK"
+    },
+    {
+        "label": "Yukon",
+        "value": "CA.YT"
+    },
+    {
+        "label": "Antofagasta",
+        "value": "CL.AN"
+    },
+    {
+        "label": "Araucanía",
+        "value": "CL.AR"
+    },
+    {
+        "label": "Arica and Parinacota",
+        "value": "CL.AP"
+    },
+    {
+        "label": "Atacama",
+        "value": "CL.AT"
+    },
+    {
+        "label": "Aysén",
+        "value": "CL.AI"
+    },
+    {
+        "label": "Biobío",
+        "value": "CL.BI"
+    },
+    {
+        "label": "Coquimbo",
+        "value": "CL.CO"
+    },
+    {
+        "label": "Los Lagos",
+        "value": "CL.LL"
+    },
+    {
+        "label": "Los Ríos",
+        "value": "CL.LR"
+    },
+    {
+        "label": "Magallanes",
+        "value": "CL.MA"
+    },
+    {
+        "label": "Maule",
+        "value": "CL.ML"
+    },
+    {
+        "label": "Ñuble",
+        "value": "CL.NB"
+    },
+    {
+        "label": "O'Higgins",
+        "value": "CL.LI"
+    },
+    {
+        "label": "Santiago",
+        "value": "CL.RM"
+    },
+    {
+        "label": "Tarapacá",
+        "value": "CL.TA"
+    },
+    {
+        "label": "Valparaíso",
+        "value": "CL.VS"
+    },
+    {
+        "label": "Anhui",
+        "value": "CN.AH"
+    },
+    {
+        "label": "Beijing",
+        "value": "CN.BJ"
+    },
+    {
+        "label": "Chongqing",
+        "value": "CN.CQ"
+    },
+    {
+        "label": "Fujian",
+        "value": "CN.FJ"
+    },
+    {
+        "label": "Gansu",
+        "value": "CN.GS"
+    },
+    {
+        "label": "Guangdong",
+        "value": "CN.GD"
+    },
+    {
+        "label": "Guangxi",
+        "value": "CN.GX"
+    },
+    {
+        "label": "Guizhou",
+        "value": "CN.GZ"
+    },
+    {
+        "label": "Hainan",
+        "value": "CN.HI"
+    },
+    {
+        "label": "Hebei",
+        "value": "CN.HE"
+    },
+    {
+        "label": "Heilongjiang",
+        "value": "CN.HL"
+    },
+    {
+        "label": "Henan",
+        "value": "CN.HA"
+    },
+    {
+        "label": "Hubei",
+        "value": "CN.HB"
+    },
+    {
+        "label": "Hunan",
+        "value": "CN.HN"
+    },
+    {
+        "label": "Inner Mongolia",
+        "value": "CN.NM"
+    },
+    {
+        "label": "Jiangsu",
+        "value": "CN.JS"
+    },
+    {
+        "label": "Jiangxi",
+        "value": "CN.JX"
+    },
+    {
+        "label": "Jilin",
+        "value": "CN.JL"
+    },
+    {
+        "label": "Liaoning",
+        "value": "CN.LN"
+    },
+    {
+        "label": "Ningxia",
+        "value": "CN.NX"
+    },
+    {
+        "label": "Qinghai",
+        "value": "CN.QH"
+    },
+    {
+        "label": "Shaanxi",
+        "value": "CN.SN"
+    },
+    {
+        "label": "Shandong",
+        "value": "CN.SD"
+    },
+    {
+        "label": "Shanghai",
+        "value": "CN.SH"
+    },
+    {
+        "label": "Shanxi",
+        "value": "CN.SX"
+    },
+    {
+        "label": "Sichuan",
+        "value": "CN.SC"
+    },
+    {
+        "label": "Tianjin",
+        "value": "CN.TJ"
+    },
+    {
+        "label": "Xinjiang",
+        "value": "CN.XJ"
+    },
+    {
+        "label": "Xizang",
+        "value": "CN.YZ"
+    },
+    {
+        "label": "Yunnan",
+        "value": "CN.YN"
+    },
+    {
+        "label": "Zhejiang",
+        "value": "CN.ZJ"
+    },
+    {
+        "label": "Amazonas",
+        "value": "CO.AMA"
+    },
+    {
+        "label": "Antioquia",
+        "value": "CO.ANT"
+    },
+    {
+        "label": "Arauca",
+        "value": "CO.ARA"
+    },
+    {
+        "label": "Atlántico",
+        "value": "CO.ATL"
+    },
+    {
+        "label": "Bogotá, D.C.",
+        "value": "CO.DC"
+    },
+    {
+        "label": "Bolívar",
+        "value": "CO.BOL"
+    },
+    {
+        "label": "Boyacá",
+        "value": "CO.BOY"
+    },
+    {
+        "label": "Caldas",
+        "value": "CO.CAL"
+    },
+    {
+        "label": "Caquetá",
+        "value": "CO.CAQ"
+    },
+    {
+        "label": "Casanare",
+        "value": "CO.CAS"
+    },
+    {
+        "label": "Cauca",
+        "value": "CO.CAU"
+    },
+    {
+        "label": "Cesar",
+        "value": "CO.CES"
+    },
+    {
+        "label": "Chocó",
+        "value": "CO.CHO"
+    },
+    {
+        "label": "Córdoba",
+        "value": "CO.COR"
+    },
+    {
+        "label": "Cundinamarca",
+        "value": "CO.CUN"
+    },
+    {
+        "label": "Guainía",
+        "value": "CO.GUA"
+    },
+    {
+        "label": "Guaviare",
+        "value": "CO.GUV"
+    },
+    {
+        "label": "Huila",
+        "value": "CO.HUI"
+    },
+    {
+        "label": "La Guajira",
+        "value": "CO.LAG"
+    },
+    {
+        "label": "Magdalena",
+        "value": "CO.MAG"
+    },
+    {
+        "label": "Meta",
+        "value": "CO.MET"
+    },
+    {
+        "label": "Nariño",
+        "value": "CO.NAR"
+    },
+    {
+        "label": "Norte de Santander",
+        "value": "CO.NSA"
+    },
+    {
+        "label": "Putumayo",
+        "value": "CO.PUT"
+    },
+    {
+        "label": "Quindío",
+        "value": "CO.QUI"
+    },
+    {
+        "label": "Risaralda",
+        "value": "CO.RIS"
+    },
+    {
+        "label": "San Andrés, Providencia y Santa Catalina",
+        "value": "CO.SAP"
+    },
+    {
+        "label": "Santander",
+        "value": "CO.SAN"
+    },
+    {
+        "label": "Sucre",
+        "value": "CO.SUC"
+    },
+    {
+        "label": "Tolima",
+        "value": "CO.TOL"
+    },
+    {
+        "label": "Valle del Cauca",
+        "value": "CO.VAC"
+    },
+    {
+        "label": "Vaupés",
+        "value": "CO.VAU"
+    },
+    {
+        "label": "Vichada",
+        "value": "CO.VID"
+    },
+    {
+        "label": "6th of October",
+        "value": "EG.SU"
+    },
+    {
+        "label": "Al Sharqia",
+        "value": "EG.SHR"
+    },
+    {
+        "label": "Alexandria",
+        "value": "EG.ALX"
+    },
+    {
+        "label": "Aswan",
+        "value": "EG.ASN"
+    },
+    {
+        "label": "Asyut",
+        "value": "EG.AST"
+    },
+    {
+        "label": "Beheira",
+        "value": "EG.BH"
+    },
+    {
+        "label": "Beni Suef",
+        "value": "EG.BNS"
+    },
+    {
+        "label": "Cairo",
+        "value": "EG.C"
+    },
+    {
+        "label": "Dakahlia",
+        "value": "EG.DK"
+    },
+    {
+        "label": "Damietta",
+        "value": "EG.DT"
+    },
+    {
+        "label": "Faiyum",
+        "value": "EG.FYM"
+    },
+    {
+        "label": "Gharbia",
+        "value": "EG.GH"
+    },
+    {
+        "label": "Giza",
+        "value": "EG.GZ"
+    },
+    {
+        "label": "Helwan",
+        "value": "EG.HU"
+    },
+    {
+        "label": "Ismailia",
+        "value": "EG.IS"
+    },
+    {
+        "label": "Kafr el-Sheikh",
+        "value": "EG.KFS"
+    },
+    {
+        "label": "Luxor",
+        "value": "EG.LX"
+    },
+    {
+        "label": "Matrouh",
+        "value": "EG.MT"
+    },
+    {
+        "label": "Minya",
+        "value": "EG.MN"
+    },
+    {
+        "label": "Monufia",
+        "value": "EG.MNF"
+    },
+    {
+        "label": "New Valley",
+        "value": "EG.WAD"
+    },
+    {
+        "label": "North Sinai",
+        "value": "EG.SIN"
+    },
+    {
+        "label": "Port Said",
+        "value": "EG.PTS"
+    },
+    {
+        "label": "Qalyubia",
+        "value": "EG.KB"
+    },
+    {
+        "label": "Qena",
+        "value": "EG.KN"
+    },
+    {
+        "label": "Red Sea",
+        "value": "EG.BA"
+    },
+    {
+        "label": "Sohag",
+        "value": "EG.SHG"
+    },
+    {
+        "label": "South Sinai",
+        "value": "EG.JS"
+    },
+    {
+        "label": "Suez",
+        "value": "EG.SUZ"
+    },
+    {
+        "label": "Alta Verapaz",
+        "value": "GT.AVE"
+    },
+    {
+        "label": "Baja Verapaz",
+        "value": "GT.BVE"
+    },
+    {
+        "label": "Chimaltenango",
+        "value": "GT.CMT"
+    },
+    {
+        "label": "Chiquimula",
+        "value": "GT.CQM"
+    },
+    {
+        "label": "El Progreso",
+        "value": "GT.EPR"
+    },
+    {
+        "label": "Escuintla",
+        "value": "GT.ESC"
+    },
+    {
+        "label": "Guatemala",
+        "value": "GT.GUA"
+    },
+    {
+        "label": "Huehuetenango",
+        "value": "GT.HUE"
+    },
+    {
+        "label": "Izabal",
+        "value": "GT.IZA"
+    },
+    {
+        "label": "Jalapa",
+        "value": "GT.JAL"
+    },
+    {
+        "label": "Jutiapa",
+        "value": "GT.JUT"
+    },
+    {
+        "label": "Petén",
+        "value": "GT.PET"
+    },
+    {
+        "label": "Quetzaltenango",
+        "value": "GT.QUE"
+    },
+    {
+        "label": "Quiché",
+        "value": "GT.QUI"
+    },
+    {
+        "label": "Retalhuleu",
+        "value": "GT.RET"
+    },
+    {
+        "label": "Sacatepéquez",
+        "value": "GT.SAC"
+    },
+    {
+        "label": "San Marcos",
+        "value": "GT.SMA"
+    },
+    {
+        "label": "Santa Rosa",
+        "value": "GT.SRO"
+    },
+    {
+        "label": "Sololá",
+        "value": "GT.SOL"
+    },
+    {
+        "label": "Suchitepéquez",
+        "value": "GT.SUC"
+    },
+    {
+        "label": "Totonicapán",
+        "value": "GT.TOT"
+    },
+    {
+        "label": "Zacapa",
+        "value": "GT.ZAC"
+    },
+    {
+        "label": "Hong Kong Island",
+        "value": "HK.HK"
+    },
+    {
+        "label": "Kowloon",
+        "value": "HK.KL"
+    },
+    {
+        "label": "New Territories",
+        "value": "HK.NT"
+    },
+    {
+        "label": "Andaman and Nicobar Islands",
+        "value": "IN.AN"
+    },
+    {
+        "label": "Andhra Pradesh",
+        "value": "IN.AP"
+    },
+    {
+        "label": "Arunachal Pradesh",
+        "value": "IN.AR"
+    },
+    {
+        "label": "Assam",
+        "value": "IN.AS"
+    },
+    {
+        "label": "Bihar",
+        "value": "IN.BR"
+    },
+    {
+        "label": "Chandigarh",
+        "value": "IN.CH"
+    },
+    {
+        "label": "Chhattisgarh",
+        "value": "IN.CG"
+    },
+    {
+        "label": "Dadra and Nagar Haveli",
+        "value": "IN.DN"
+    },
+    {
+        "label": "Daman and Diu",
+        "value": "IN.DD"
+    },
+    {
+        "label": "Delhi",
+        "value": "IN.DL"
+    },
+    {
+        "label": "Goa",
+        "value": "IN.GA"
+    },
+    {
+        "label": "Gujarat",
+        "value": "IN.GJ"
+    },
+    {
+        "label": "Haryana",
+        "value": "IN.HR"
+    },
+    {
+        "label": "Himachal Pradesh",
+        "value": "IN.HP"
+    },
+    {
+        "label": "Jammu and Kashmir",
+        "value": "IN.JK"
+    },
+    {
+        "label": "Jharkhand",
+        "value": "IN.JH"
+    },
+    {
+        "label": "Karnataka",
+        "value": "IN.KA"
+    },
+    {
+        "label": "Kerala",
+        "value": "IN.KL"
+    },
+    {
+        "label": "Ladakh",
+        "value": "IN.LA"
+    },
+    {
+        "label": "Lakshadweep",
+        "value": "IN.LD"
+    },
+    {
+        "label": "Madhya Pradesh",
+        "value": "IN.MP"
+    },
+    {
+        "label": "Maharashtra",
+        "value": "IN.MH"
+    },
+    {
+        "label": "Manipur",
+        "value": "IN.MN"
+    },
+    {
+        "label": "Meghalaya",
+        "value": "IN.ML"
+    },
+    {
+        "label": "Mizoram",
+        "value": "IN.MZ"
+    },
+    {
+        "label": "Nagaland",
+        "value": "IN.NL"
+    },
+    {
+        "label": "Odisha",
+        "value": "IN.OR"
+    },
+    {
+        "label": "Puducherry",
+        "value": "IN.PY"
+    },
+    {
+        "label": "Punjab",
+        "value": "IN.PB"
+    },
+    {
+        "label": "Rajasthan",
+        "value": "IN.RJ"
+    },
+    {
+        "label": "Sikkim",
+        "value": "IN.SK"
+    },
+    {
+        "label": "Tamil Nadu",
+        "value": "IN.TN"
+    },
+    {
+        "label": "Telangana",
+        "value": "IN.TS"
+    },
+    {
+        "label": "Tripura",
+        "value": "IN.TR"
+    },
+    {
+        "label": "Uttar Pradesh",
+        "value": "IN.UP"
+    },
+    {
+        "label": "Uttarakhand",
+        "value": "IN.UK"
+    },
+    {
+        "label": "West Bengal",
+        "value": "IN.WB"
+    },
+    {
+        "label": "Aceh",
+        "value": "ID.AC"
+    },
+    {
+        "label": "Bali",
+        "value": "ID.BA"
+    },
+    {
+        "label": "Bangka Belitung",
+        "value": "ID.BB"
+    },
+    {
+        "label": "Banten",
+        "value": "ID.BT"
+    },
+    {
+        "label": "Bengkulu",
+        "value": "ID.BE"
+    },
+    {
+        "label": "Gorontalo",
+        "value": "ID.GO"
+    },
+    {
+        "label": "Jakarta",
+        "value": "ID.JK"
+    },
+    {
+        "label": "Jambi",
+        "value": "ID.JA"
+    },
+    {
+        "label": "Jawa Barat",
+        "value": "ID.JB"
+    },
+    {
+        "label": "Jawa Tengah",
+        "value": "ID.JT"
+    },
+    {
+        "label": "Jawa Timur",
+        "value": "ID.JI"
+    },
+    {
+        "label": "Kalimantan Barat",
+        "value": "ID.KB"
+    },
+    {
+        "label": "Kalimantan Selatan",
+        "value": "ID.KS"
+    },
+    {
+        "label": "Kalimantan Tengah",
+        "value": "ID.KT"
+    },
+    {
+        "label": "Kalimantan Timur",
+        "value": "ID.KI"
+    },
+    {
+        "label": "Kalimantan Utara",
+        "value": "ID.KU"
+    },
+    {
+        "label": "Kepulauan Riau",
+        "value": "ID.KR"
+    },
+    {
+        "label": "Lampung",
+        "value": "ID.LA"
+    },
+    {
+        "label": "Maluku",
+        "value": "ID.MA"
+    },
+    {
+        "label": "Maluku Utara",
+        "value": "ID.MU"
+    },
+    {
+        "label": "North Sumatra",
+        "value": "ID.SU"
+    },
+    {
+        "label": "Nusa Tenggara Barat",
+        "value": "ID.NB"
+    },
+    {
+        "label": "Nusa Tenggara Timur",
+        "value": "ID.NT"
+    },
+    {
+        "label": "Papua",
+        "value": "ID.PA"
+    },
+    {
+        "label": "Papua Barat",
+        "value": "ID.PB"
+    },
+    {
+        "label": "Riau",
+        "value": "ID.RI"
+    },
+    {
+        "label": "South Sumatra",
+        "value": "ID.SS"
+    },
+    {
+        "label": "Sulawesi Barat",
+        "value": "ID.SR"
+    },
+    {
+        "label": "Sulawesi Selatan",
+        "value": "ID.SN"
+    },
+    {
+        "label": "Sulawesi Tengah",
+        "value": "ID.ST"
+    },
+    {
+        "label": "Sulawesi Tenggara",
+        "value": "ID.SG"
+    },
+    {
+        "label": "Sulawesi Utara",
+        "value": "ID.SA"
+    },
+    {
+        "label": "West Sumatra",
+        "value": "ID.SB"
+    },
+    {
+        "label": "Yogyakarta",
+        "value": "ID.YO"
+    },
+    {
+        "label": "Carlow",
+        "value": "IE.CW"
+    },
+    {
+        "label": "Cavan",
+        "value": "IE.CN"
+    },
+    {
+        "label": "Clare",
+        "value": "IE.CE"
+    },
+    {
+        "label": "Cork",
+        "value": "IE.CO"
+    },
+    {
+        "label": "Donegal",
+        "value": "IE.DL"
+    },
+    {
+        "label": "Dublin",
+        "value": "IE.D"
+    },
+    {
+        "label": "Galway",
+        "value": "IE.G"
+    },
+    {
+        "label": "Kerry",
+        "value": "IE.KY"
+    },
+    {
+        "label": "Kildare",
+        "value": "IE.KE"
+    },
+    {
+        "label": "Kilkenny",
+        "value": "IE.KK"
+    },
+    {
+        "label": "Laois",
+        "value": "IE.LS"
+    },
+    {
+        "label": "Leitrim",
+        "value": "IE.LM"
+    },
+    {
+        "label": "Limerick",
+        "value": "IE.LK"
+    },
+    {
+        "label": "Longford",
+        "value": "IE.LD"
+    },
+    {
+        "label": "Louth",
+        "value": "IE.LH"
+    },
+    {
+        "label": "Mayo",
+        "value": "IE.MO"
+    },
+    {
+        "label": "Meath",
+        "value": "IE.MH"
+    },
+    {
+        "label": "Monaghan",
+        "value": "IE.MN"
+    },
+    {
+        "label": "Offaly",
+        "value": "IE.OY"
+    },
+    {
+        "label": "Roscommon",
+        "value": "IE.RN"
+    },
+    {
+        "label": "Sligo",
+        "value": "IE.SO"
+    },
+    {
+        "label": "Tipperary",
+        "value": "IE.TA"
+    },
+    {
+        "label": "Waterford",
+        "value": "IE.WD"
+    },
+    {
+        "label": "Westmeath",
+        "value": "IE.WH"
+    },
+    {
+        "label": "Wexford",
+        "value": "IE.WX"
+    },
+    {
+        "label": "Wicklow",
+        "value": "IE.WW"
+    },
+    {
+        "label": "Agrigento",
+        "value": "IT.AG"
+    },
+    {
+        "label": "Alessandria",
+        "value": "IT.AL"
+    },
+    {
+        "label": "Ancona",
+        "value": "IT.AN"
+    },
+    {
+        "label": "Aosta",
+        "value": "IT.AO"
+    },
+    {
+        "label": "Arezzo",
+        "value": "IT.AR"
+    },
+    {
+        "label": "Ascoli Piceno",
+        "value": "IT.AP"
+    },
+    {
+        "label": "Asti",
+        "value": "IT.AT"
+    },
+    {
+        "label": "Avellino",
+        "value": "IT.AV"
+    },
+    {
+        "label": "Bari",
+        "value": "IT.BA"
+    },
+    {
+        "label": "Barletta-Andria-Trani",
+        "value": "IT.BT"
+    },
+    {
+        "label": "Belluno",
+        "value": "IT.BL"
+    },
+    {
+        "label": "Benevento",
+        "value": "IT.BN"
+    },
+    {
+        "label": "Bergamo",
+        "value": "IT.BG"
+    },
+    {
+        "label": "Biella",
+        "value": "IT.BI"
+    },
+    {
+        "label": "Bologna",
+        "value": "IT.BO"
+    },
+    {
+        "label": "Bolzano",
+        "value": "IT.BZ"
+    },
+    {
+        "label": "Brescia",
+        "value": "IT.BS"
+    },
+    {
+        "label": "Brindisi",
+        "value": "IT.BR"
+    },
+    {
+        "label": "Cagliari",
+        "value": "IT.CA"
+    },
+    {
+        "label": "Caltanissetta",
+        "value": "IT.CL"
+    },
+    {
+        "label": "Campobasso",
+        "value": "IT.CB"
+    },
+    {
+        "label": "Carbonia-Iglesias",
+        "value": "IT.CI"
+    },
+    {
+        "label": "Caserta",
+        "value": "IT.CE"
+    },
+    {
+        "label": "Catania",
+        "value": "IT.CT"
+    },
+    {
+        "label": "Catanzaro",
+        "value": "IT.CZ"
+    },
+    {
+        "label": "Chieti",
+        "value": "IT.CH"
+    },
+    {
+        "label": "Como",
+        "value": "IT.CO"
+    },
+    {
+        "label": "Cosenza",
+        "value": "IT.CS"
+    },
+    {
+        "label": "Cremona",
+        "value": "IT.CR"
+    },
+    {
+        "label": "Crotone",
+        "value": "IT.KR"
+    },
+    {
+        "label": "Cuneo",
+        "value": "IT.CN"
+    },
+    {
+        "label": "Enna",
+        "value": "IT.EN"
+    },
+    {
+        "label": "Fermo",
+        "value": "IT.FM"
+    },
+    {
+        "label": "Ferrara",
+        "value": "IT.FE"
+    },
+    {
+        "label": "Firenze",
+        "value": "IT.FI"
+    },
+    {
+        "label": "Foggia",
+        "value": "IT.FG"
+    },
+    {
+        "label": "Forlì-Cesena",
+        "value": "IT.FC"
+    },
+    {
+        "label": "Frosinone",
+        "value": "IT.FR"
+    },
+    {
+        "label": "Genova",
+        "value": "IT.GE"
+    },
+    {
+        "label": "Gorizia",
+        "value": "IT.GO"
+    },
+    {
+        "label": "Grosseto",
+        "value": "IT.GR"
+    },
+    {
+        "label": "Imperia",
+        "value": "IT.IM"
+    },
+    {
+        "label": "Isernia",
+        "value": "IT.IS"
+    },
+    {
+        "label": "L'Aquila",
+        "value": "IT.AQ"
+    },
+    {
+        "label": "La Spezia",
+        "value": "IT.SP"
+    },
+    {
+        "label": "Latina",
+        "value": "IT.LT"
+    },
+    {
+        "label": "Lecce",
+        "value": "IT.LE"
+    },
+    {
+        "label": "Lecco",
+        "value": "IT.LC"
+    },
+    {
+        "label": "Livorno",
+        "value": "IT.LI"
+    },
+    {
+        "label": "Lodi",
+        "value": "IT.LO"
+    },
+    {
+        "label": "Lucca",
+        "value": "IT.LU"
+    },
+    {
+        "label": "Macerata",
+        "value": "IT.MC"
+    },
+    {
+        "label": "Mantova",
+        "value": "IT.MN"
+    },
+    {
+        "label": "Massa-Carrara",
+        "value": "IT.MS"
+    },
+    {
+        "label": "Matera",
+        "value": "IT.MT"
+    },
+    {
+        "label": "Medio Campidano",
+        "value": "IT.VS"
+    },
+    {
+        "label": "Messina",
+        "value": "IT.ME"
+    },
+    {
+        "label": "Milano",
+        "value": "IT.MI"
+    },
+    {
+        "label": "Modena",
+        "value": "IT.MO"
+    },
+    {
+        "label": "Monza e Brianza",
+        "value": "IT.MB"
+    },
+    {
+        "label": "Napoli",
+        "value": "IT.NA"
+    },
+    {
+        "label": "Novara",
+        "value": "IT.NO"
+    },
+    {
+        "label": "Nuoro",
+        "value": "IT.NU"
+    },
+    {
+        "label": "Ogliastra",
+        "value": "IT.OG"
+    },
+    {
+        "label": "Olbia-Tempio",
+        "value": "IT.OT"
+    },
+    {
+        "label": "Oristano",
+        "value": "IT.OR"
+    },
+    {
+        "label": "Padova",
+        "value": "IT.PD"
+    },
+    {
+        "label": "Palermo",
+        "value": "IT.PA"
+    },
+    {
+        "label": "Parma",
+        "value": "IT.PR"
+    },
+    {
+        "label": "Pavia",
+        "value": "IT.PV"
+    },
+    {
+        "label": "Perugia",
+        "value": "IT.PG"
+    },
+    {
+        "label": "Pesaro e Urbino",
+        "value": "IT.PU"
+    },
+    {
+        "label": "Pescara",
+        "value": "IT.PE"
+    },
+    {
+        "label": "Piacenza",
+        "value": "IT.PC"
+    },
+    {
+        "label": "Pisa",
+        "value": "IT.PI"
+    },
+    {
+        "label": "Pistoia",
+        "value": "IT.PT"
+    },
+    {
+        "label": "Pordenone",
+        "value": "IT.PN"
+    },
+    {
+        "label": "Potenza",
+        "value": "IT.PZ"
+    },
+    {
+        "label": "Prato",
+        "value": "IT.PO"
+    },
+    {
+        "label": "Ragusa",
+        "value": "IT.RG"
+    },
+    {
+        "label": "Ravenna",
+        "value": "IT.RA"
+    },
+    {
+        "label": "Reggio Calabria",
+        "value": "IT.RC"
+    },
+    {
+        "label": "Reggio Emilia",
+        "value": "IT.RE"
+    },
+    {
+        "label": "Rieti",
+        "value": "IT.RI"
+    },
+    {
+        "label": "Rimini",
+        "value": "IT.RN"
+    },
+    {
+        "label": "Roma",
+        "value": "IT.RM"
+    },
+    {
+        "label": "Rovigo",
+        "value": "IT.RO"
+    },
+    {
+        "label": "Salerno",
+        "value": "IT.SA"
+    },
+    {
+        "label": "Sassari",
+        "value": "IT.SS"
+    },
+    {
+        "label": "Savona",
+        "value": "IT.SV"
+    },
+    {
+        "label": "Siena",
+        "value": "IT.SI"
+    },
+    {
+        "label": "Siracusa",
+        "value": "IT.SR"
+    },
+    {
+        "label": "Sondrio",
+        "value": "IT.SO"
+    },
+    {
+        "label": "Taranto",
+        "value": "IT.TA"
+    },
+    {
+        "label": "Teramo",
+        "value": "IT.TE"
+    },
+    {
+        "label": "Terni",
+        "value": "IT.TR"
+    },
+    {
+        "label": "Torino",
+        "value": "IT.TO"
+    },
+    {
+        "label": "Trapani",
+        "value": "IT.TP"
+    },
+    {
+        "label": "Trento",
+        "value": "IT.TN"
+    },
+    {
+        "label": "Treviso",
+        "value": "IT.TV"
+    },
+    {
+        "label": "Trieste",
+        "value": "IT.TS"
+    },
+    {
+        "label": "Udine",
+        "value": "IT.UD"
+    },
+    {
+        "label": "Varese",
+        "value": "IT.VA"
+    },
+    {
+        "label": "Venezia",
+        "value": "IT.VE"
+    },
+    {
+        "label": "Verbano-Cusio-Ossola",
+        "value": "IT.VB"
+    },
+    {
+        "label": "Vercelli",
+        "value": "IT.VC"
+    },
+    {
+        "label": "Verona",
+        "value": "IT.VR"
+    },
+    {
+        "label": "Vibo Valentia",
+        "value": "IT.VV"
+    },
+    {
+        "label": "Vicenza",
+        "value": "IT.VI"
+    },
+    {
+        "label": "Viterbo",
+        "value": "IT.VT"
+    },
+    {
+        "label": "Aichi",
+        "value": "JP.JP-23"
+    },
+    {
+        "label": "Akita",
+        "value": "JP.JP-05"
+    },
+    {
+        "label": "Aomori",
+        "value": "JP.JP-02"
+    },
+    {
+        "label": "Chiba",
+        "value": "JP.JP-12"
+    },
+    {
+        "label": "Ehime",
+        "value": "JP.JP-38"
+    },
+    {
+        "label": "Fukui",
+        "value": "JP.JP-18"
+    },
+    {
+        "label": "Fukuoka",
+        "value": "JP.JP-40"
+    },
+    {
+        "label": "Fukushima",
+        "value": "JP.JP-07"
+    },
+    {
+        "label": "Gifu",
+        "value": "JP.JP-21"
+    },
+    {
+        "label": "Gunma",
+        "value": "JP.JP-10"
+    },
+    {
+        "label": "Hiroshima",
+        "value": "JP.JP-34"
+    },
+    {
+        "label": "Hokkaidō",
+        "value": "JP.JP-01"
+    },
+    {
+        "label": "Hyōgo",
+        "value": "JP.JP-28"
+    },
+    {
+        "label": "Ibaraki",
+        "value": "JP.JP-08"
+    },
+    {
+        "label": "Ishikawa",
+        "value": "JP.JP-17"
+    },
+    {
+        "label": "Iwate",
+        "value": "JP.JP-03"
+    },
+    {
+        "label": "Kagawa",
+        "value": "JP.JP-37"
+    },
+    {
+        "label": "Kagoshima",
+        "value": "JP.JP-46"
+    },
+    {
+        "label": "Kanagawa",
+        "value": "JP.JP-14"
+    },
+    {
+        "label": "Kōchi",
+        "value": "JP.JP-39"
+    },
+    {
+        "label": "Kumamoto",
+        "value": "JP.JP-43"
+    },
+    {
+        "label": "Kyōto",
+        "value": "JP.JP-26"
+    },
+    {
+        "label": "Mie",
+        "value": "JP.JP-24"
+    },
+    {
+        "label": "Miyagi",
+        "value": "JP.JP-04"
+    },
+    {
+        "label": "Miyazaki",
+        "value": "JP.JP-45"
+    },
+    {
+        "label": "Nagano",
+        "value": "JP.JP-20"
+    },
+    {
+        "label": "Nagasaki",
+        "value": "JP.JP-42"
+    },
+    {
+        "label": "Nara",
+        "value": "JP.JP-29"
+    },
+    {
+        "label": "Niigata",
+        "value": "JP.JP-15"
+    },
+    {
+        "label": "Ōita",
+        "value": "JP.JP-44"
+    },
+    {
+        "label": "Okayama",
+        "value": "JP.JP-33"
+    },
+    {
+        "label": "Okinawa",
+        "value": "JP.JP-47"
+    },
+    {
+        "label": "Ōsaka",
+        "value": "JP.JP-27"
+    },
+    {
+        "label": "Saga",
+        "value": "JP.JP-41"
+    },
+    {
+        "label": "Saitama",
+        "value": "JP.JP-11"
+    },
+    {
+        "label": "Shiga",
+        "value": "JP.JP-25"
+    },
+    {
+        "label": "Shimane",
+        "value": "JP.JP-32"
+    },
+    {
+        "label": "Shizuoka",
+        "value": "JP.JP-22"
+    },
+    {
+        "label": "Tochigi",
+        "value": "JP.JP-09"
+    },
+    {
+        "label": "Tokushima",
+        "value": "JP.JP-36"
+    },
+    {
+        "label": "Tōkyō",
+        "value": "JP.JP-13"
+    },
+    {
+        "label": "Tottori",
+        "value": "JP.JP-31"
+    },
+    {
+        "label": "Toyama",
+        "value": "JP.JP-16"
+    },
+    {
+        "label": "Wakayama",
+        "value": "JP.JP-30"
+    },
+    {
+        "label": "Yamagata",
+        "value": "JP.JP-06"
+    },
+    {
+        "label": "Yamaguchi",
+        "value": "JP.JP-35"
+    },
+    {
+        "label": "Yamanashi",
+        "value": "JP.JP-19"
+    },
+    {
+        "label": "Johor",
+        "value": "MY.JHR"
+    },
+    {
+        "label": "Kedah",
+        "value": "MY.KDH"
+    },
+    {
+        "label": "Kelantan",
+        "value": "MY.KTN"
+    },
+    {
+        "label": "Kuala Lumpur",
+        "value": "MY.KUL"
+    },
+    {
+        "label": "Labuan",
+        "value": "MY.LBN"
+    },
+    {
+        "label": "Melaka",
+        "value": "MY.MLK"
+    },
+    {
+        "label": "Negeri Sembilan",
+        "value": "MY.NSN"
+    },
+    {
+        "label": "Pahang",
+        "value": "MY.PHG"
+    },
+    {
+        "label": "Penang",
+        "value": "MY.PNG"
+    },
+    {
+        "label": "Perak",
+        "value": "MY.PRK"
+    },
+    {
+        "label": "Perlis",
+        "value": "MY.PLS"
+    },
+    {
+        "label": "Putrajaya",
+        "value": "MY.PJY"
+    },
+    {
+        "label": "Sabah",
+        "value": "MY.SBH"
+    },
+    {
+        "label": "Sarawak",
+        "value": "MY.SWK"
+    },
+    {
+        "label": "Selangor",
+        "value": "MY.SGR"
+    },
+    {
+        "label": "Terengganu",
+        "value": "MY.TRG"
+    },
+    {
+        "label": "Aguascalientes",
+        "value": "MX.AGS"
+    },
+    {
+        "label": "Baja California",
+        "value": "MX.BC"
+    },
+    {
+        "label": "Baja California Sur",
+        "value": "MX.BCS"
+    },
+    {
+        "label": "Campeche",
+        "value": "MX.CAMP"
+    },
+    {
+        "label": "Chiapas",
+        "value": "MX.CHIS"
+    },
+    {
+        "label": "Chihuahua",
+        "value": "MX.CHIH"
+    },
+    {
+        "label": "Ciudad de México",
+        "value": "MX.DF"
+    },
+    {
+        "label": "Coahuila",
+        "value": "MX.COAH"
+    },
+    {
+        "label": "Colima",
+        "value": "MX.COL"
+    },
+    {
+        "label": "Durango",
+        "value": "MX.DGO"
+    },
+    {
+        "label": "Guanajuato",
+        "value": "MX.GTO"
+    },
+    {
+        "label": "Guerrero",
+        "value": "MX.GRO"
+    },
+    {
+        "label": "Hidalgo",
+        "value": "MX.HGO"
+    },
+    {
+        "label": "Jalisco",
+        "value": "MX.JAL"
+    },
+    {
+        "label": "México",
+        "value": "MX.MEX"
+    },
+    {
+        "label": "Michoacán",
+        "value": "MX.MICH"
+    },
+    {
+        "label": "Morelos",
+        "value": "MX.MOR"
+    },
+    {
+        "label": "Nayarit",
+        "value": "MX.NAY"
+    },
+    {
+        "label": "Nuevo León",
+        "value": "MX.NL"
+    },
+    {
+        "label": "Oaxaca",
+        "value": "MX.OAX"
+    },
+    {
+        "label": "Puebla",
+        "value": "MX.PUE"
+    },
+    {
+        "label": "Querétaro",
+        "value": "MX.QRO"
+    },
+    {
+        "label": "Quintana Roo",
+        "value": "MX.Q ROO"
+    },
+    {
+        "label": "San Luis Potosí",
+        "value": "MX.SLP"
+    },
+    {
+        "label": "Sinaloa",
+        "value": "MX.SIN"
+    },
+    {
+        "label": "Sonora",
+        "value": "MX.SON"
+    },
+    {
+        "label": "Tabasco",
+        "value": "MX.TAB"
+    },
+    {
+        "label": "Tamaulipas",
+        "value": "MX.TAMPS"
+    },
+    {
+        "label": "Tlaxcala",
+        "value": "MX.TLAX"
+    },
+    {
+        "label": "Veracruz",
+        "value": "MX.VER"
+    },
+    {
+        "label": "Yucatán",
+        "value": "MX.YUC"
+    },
+    {
+        "label": "Zacatecas",
+        "value": "MX.ZAC"
+    },
+    {
+        "label": "Auckland",
+        "value": "NZ.AUK"
+    },
+    {
+        "label": "Bay of Plenty",
+        "value": "NZ.BOP"
+    },
+    {
+        "label": "Canterbury",
+        "value": "NZ.CAN"
+    },
+    {
+        "label": "Chatham Islands",
+        "value": "NZ.CIT"
+    },
+    {
+        "label": "Gisborne",
+        "value": "NZ.GIS"
+    },
+    {
+        "label": "Hawke's Bay",
+        "value": "NZ.HKB"
+    },
+    {
+        "label": "Manawatu-Wanganui",
+        "value": "NZ.MWT"
+    },
+    {
+        "label": "Marlborough",
+        "value": "NZ.MBH"
+    },
+    {
+        "label": "Nelson",
+        "value": "NZ.NSN"
+    },
+    {
+        "label": "Northland",
+        "value": "NZ.NTL"
+    },
+    {
+        "label": "Otago",
+        "value": "NZ.OTA"
+    },
+    {
+        "label": "Southland",
+        "value": "NZ.STL"
+    },
+    {
+        "label": "Taranaki",
+        "value": "NZ.TKI"
+    },
+    {
+        "label": "Tasman",
+        "value": "NZ.TAS"
+    },
+    {
+        "label": "Waikato",
+        "value": "NZ.WKO"
+    },
+    {
+        "label": "Wellington",
+        "value": "NZ.WGN"
+    },
+    {
+        "label": "West Coast",
+        "value": "NZ.WTC"
+    },
+    {
+        "label": "Abia",
+        "value": "NG.AB"
+    },
+    {
+        "label": "Abuja Federal Capital Territory",
+        "value": "NG.FC"
+    },
+    {
+        "label": "Adamawa",
+        "value": "NG.AD"
+    },
+    {
+        "label": "Akwa Ibom",
+        "value": "NG.AK"
+    },
+    {
+        "label": "Anambra",
+        "value": "NG.AN"
+    },
+    {
+        "label": "Bauchi",
+        "value": "NG.BA"
+    },
+    {
+        "label": "Bayelsa",
+        "value": "NG.BY"
+    },
+    {
+        "label": "Benue",
+        "value": "NG.BE"
+    },
+    {
+        "label": "Borno",
+        "value": "NG.BO"
+    },
+    {
+        "label": "Cross River",
+        "value": "NG.CR"
+    },
+    {
+        "label": "Delta",
+        "value": "NG.DE"
+    },
+    {
+        "label": "Ebonyi",
+        "value": "NG.EB"
+    },
+    {
+        "label": "Edo",
+        "value": "NG.ED"
+    },
+    {
+        "label": "Ekiti",
+        "value": "NG.EK"
+    },
+    {
+        "label": "Enugu",
+        "value": "NG.EN"
+    },
+    {
+        "label": "Gombe",
+        "value": "NG.GO"
+    },
+    {
+        "label": "Imo",
+        "value": "NG.IM"
+    },
+    {
+        "label": "Jigawa",
+        "value": "NG.JI"
+    },
+    {
+        "label": "Kaduna",
+        "value": "NG.KD"
+    },
+    {
+        "label": "Kano",
+        "value": "NG.KN"
+    },
+    {
+        "label": "Katsina",
+        "value": "NG.KT"
+    },
+    {
+        "label": "Kebbi",
+        "value": "NG.KE"
+    },
+    {
+        "label": "Kogi",
+        "value": "NG.KO"
+    },
+    {
+        "label": "Kwara",
+        "value": "NG.KW"
+    },
+    {
+        "label": "Lagos",
+        "value": "NG.LA"
+    },
+    {
+        "label": "Nasarawa",
+        "value": "NG.NA"
+    },
+    {
+        "label": "Niger",
+        "value": "NG.NI"
+    },
+    {
+        "label": "Ogun",
+        "value": "NG.OG"
+    },
+    {
+        "label": "Ondo",
+        "value": "NG.ON"
+    },
+    {
+        "label": "Osun",
+        "value": "NG.OS"
+    },
+    {
+        "label": "Oyo",
+        "value": "NG.OY"
+    },
+    {
+        "label": "Plateau",
+        "value": "NG.PL"
+    },
+    {
+        "label": "Rivers",
+        "value": "NG.RI"
+    },
+    {
+        "label": "Sokoto",
+        "value": "NG.SO"
+    },
+    {
+        "label": "Taraba",
+        "value": "NG.TA"
+    },
+    {
+        "label": "Yobe",
+        "value": "NG.YO"
+    },
+    {
+        "label": "Zamfara",
+        "value": "NG.ZA"
+    },
+    {
+        "label": "Bocas del Toro",
+        "value": "PA.PA-1"
+    },
+    {
+        "label": "Chiriquí",
+        "value": "PA.PA-4"
+    },
+    {
+        "label": "Coclé",
+        "value": "PA.PA-2"
+    },
+    {
+        "label": "Colón",
+        "value": "PA.PA-3"
+    },
+    {
+        "label": "Darién",
+        "value": "PA.PA-5"
+    },
+    {
+        "label": "Emberá",
+        "value": "PA.PA-EM"
+    },
+    {
+        "label": "Herrera",
+        "value": "PA.PA-6"
+    },
+    {
+        "label": "Kuna Yala",
+        "value": "PA.PA-KY"
+    },
+    {
+        "label": "Los Santos",
+        "value": "PA.PA-7"
+    },
+    {
+        "label": "Ngöbe-Buglé",
+        "value": "PA.PA-NB"
+    },
+    {
+        "label": "Panamá",
+        "value": "PA.PA-8"
+    },
+    {
+        "label": "Panamá Oeste",
+        "value": "PA.PA-10"
+    },
+    {
+        "label": "Veraguas",
+        "value": "PA.PA-9"
+    },
+    {
+        "label": "Amazonas",
+        "value": "PE.PE-AMA"
+    },
+    {
+        "label": "Áncash",
+        "value": "PE.PE-ANC"
+    },
+    {
+        "label": "Apurímac",
+        "value": "PE.PE-APU"
+    },
+    {
+        "label": "Arequipa",
+        "value": "PE.PE-ARE"
+    },
+    {
+        "label": "Ayacucho",
+        "value": "PE.PE-AYA"
+    },
+    {
+        "label": "Cajamarca",
+        "value": "PE.PE-CAJ"
+    },
+    {
+        "label": "Callao",
+        "value": "PE.PE-CAL"
+    },
+    {
+        "label": "Cuzco",
+        "value": "PE.PE-CUS"
+    },
+    {
+        "label": "Huancavelica",
+        "value": "PE.PE-HUV"
+    },
+    {
+        "label": "Huánuco",
+        "value": "PE.PE-HUC"
+    },
+    {
+        "label": "Ica",
+        "value": "PE.PE-ICA"
+    },
+    {
+        "label": "Junín",
+        "value": "PE.PE-JUN"
+    },
+    {
+        "label": "La Libertad",
+        "value": "PE.PE-LAL"
+    },
+    {
+        "label": "Lambayeque",
+        "value": "PE.PE-LAM"
+    },
+    {
+        "label": "Lima (departamento)",
+        "value": "PE.PE-LIM"
+    },
+    {
+        "label": "Lima (provincia)",
+        "value": "PE.PE-LMA"
+    },
+    {
+        "label": "Loreto",
+        "value": "PE.PE-LOR"
+    },
+    {
+        "label": "Madre de Dios",
+        "value": "PE.PE-MDD"
+    },
+    {
+        "label": "Moquegua",
+        "value": "PE.PE-MOQ"
+    },
+    {
+        "label": "Pasco",
+        "value": "PE.PE-PAS"
+    },
+    {
+        "label": "Piura",
+        "value": "PE.PE-PIU"
+    },
+    {
+        "label": "Puno",
+        "value": "PE.PE-PUN"
+    },
+    {
+        "label": "San Martín",
+        "value": "PE.PE-SAM"
+    },
+    {
+        "label": "Tacna",
+        "value": "PE.PE-TAC"
+    },
+    {
+        "label": "Tumbes",
+        "value": "PE.PE-TUM"
+    },
+    {
+        "label": "Ucayali",
+        "value": "PE.PE-UCA"
+    },
+    {
+        "label": "Abra",
+        "value": "PH.PH-ABR"
+    },
+    {
+        "label": "Agusan del Norte",
+        "value": "PH.PH-AGN"
+    },
+    {
+        "label": "Agusan del Sur",
+        "value": "PH.PH-AGS"
+    },
+    {
+        "label": "Aklan",
+        "value": "PH.PH-AKL"
+    },
+    {
+        "label": "Albay",
+        "value": "PH.PH-ALB"
+    },
+    {
+        "label": "Antique",
+        "value": "PH.PH-ANT"
+    },
+    {
+        "label": "Apayao",
+        "value": "PH.PH-APA"
+    },
+    {
+        "label": "Aurora",
+        "value": "PH.PH-AUR"
+    },
+    {
+        "label": "Basilan",
+        "value": "PH.PH-BAS"
+    },
+    {
+        "label": "Bataan",
+        "value": "PH.PH-BAN"
+    },
+    {
+        "label": "Batanes",
+        "value": "PH.PH-BTN"
+    },
+    {
+        "label": "Batangas",
+        "value": "PH.PH-BTG"
+    },
+    {
+        "label": "Benguet",
+        "value": "PH.PH-BEN"
+    },
+    {
+        "label": "Biliran",
+        "value": "PH.PH-BIL"
+    },
+    {
+        "label": "Bohol",
+        "value": "PH.PH-BOH"
+    },
+    {
+        "label": "Bukidnon",
+        "value": "PH.PH-BUK"
+    },
+    {
+        "label": "Bulacan",
+        "value": "PH.PH-BUL"
+    },
+    {
+        "label": "Cagayan",
+        "value": "PH.PH-CAG"
+    },
+    {
+        "label": "Camarines Norte",
+        "value": "PH.PH-CAN"
+    },
+    {
+        "label": "Camarines Sur",
+        "value": "PH.PH-CAS"
+    },
+    {
+        "label": "Camiguin",
+        "value": "PH.PH-CAM"
+    },
+    {
+        "label": "Capiz",
+        "value": "PH.PH-CAP"
+    },
+    {
+        "label": "Catanduanes",
+        "value": "PH.PH-CAT"
+    },
+    {
+        "label": "Cavite",
+        "value": "PH.PH-CAV"
+    },
+    {
+        "label": "Cebu",
+        "value": "PH.PH-CEB"
+    },
+    {
+        "label": "Cotabato",
+        "value": "PH.PH-NCO"
+    },
+    {
+        "label": "Davao de Oro",
+        "value": "PH.PH-COM"
+    },
+    {
+        "label": "Davao del Norte",
+        "value": "PH.PH-DAV"
+    },
+    {
+        "label": "Davao del Sur",
+        "value": "PH.PH-DAS"
+    },
+    {
+        "label": "Davao Occidental",
+        "value": "PH.PH-DVO"
+    },
+    {
+        "label": "Davao Oriental",
+        "value": "PH.PH-DAO"
+    },
+    {
+        "label": "Dinagat Islands",
+        "value": "PH.PH-DIN"
+    },
+    {
+        "label": "Eastern Samar",
+        "value": "PH.PH-EAS"
+    },
+    {
+        "label": "Guimaras",
+        "value": "PH.PH-GUI"
+    },
+    {
+        "label": "Ifugao",
+        "value": "PH.PH-IFU"
+    },
+    {
+        "label": "Ilocos Norte",
+        "value": "PH.PH-ILN"
+    },
+    {
+        "label": "Ilocos Sur",
+        "value": "PH.PH-ILS"
+    },
+    {
+        "label": "Iloilo",
+        "value": "PH.PH-ILI"
+    },
+    {
+        "label": "Isabela",
+        "value": "PH.PH-ISA"
+    },
+    {
+        "label": "Kalinga",
+        "value": "PH.PH-KAL"
+    },
+    {
+        "label": "La Union",
+        "value": "PH.PH-LUN"
+    },
+    {
+        "label": "Laguna",
+        "value": "PH.PH-LAG"
+    },
+    {
+        "label": "Lanao del Norte",
+        "value": "PH.PH-LAN"
+    },
+    {
+        "label": "Lanao del Sur",
+        "value": "PH.PH-LAS"
+    },
+    {
+        "label": "Leyte",
+        "value": "PH.PH-LEY"
+    },
+    {
+        "label": "Maguindanao",
+        "value": "PH.PH-MAG"
+    },
+    {
+        "label": "Marinduque",
+        "value": "PH.PH-MAD"
+    },
+    {
+        "label": "Masbate",
+        "value": "PH.PH-MAS"
+    },
+    {
+        "label": "Metro Manila",
+        "value": "PH.PH-00"
+    },
+    {
+        "label": "Misamis Occidental",
+        "value": "PH.PH-MSC"
+    },
+    {
+        "label": "Misamis Oriental",
+        "value": "PH.PH-MSR"
+    },
+    {
+        "label": "Mountain Province",
+        "value": "PH.PH-MOU"
+    },
+    {
+        "label": "Negros Occidental",
+        "value": "PH.PH-NEC"
+    },
+    {
+        "label": "Negros Oriental",
+        "value": "PH.PH-NER"
+    },
+    {
+        "label": "Northern Samar",
+        "value": "PH.PH-NSA"
+    },
+    {
+        "label": "Nueva Ecija",
+        "value": "PH.PH-NUE"
+    },
+    {
+        "label": "Nueva Vizcaya",
+        "value": "PH.PH-NUV"
+    },
+    {
+        "label": "Occidental Mindoro",
+        "value": "PH.PH-MDC"
+    },
+    {
+        "label": "Oriental Mindoro",
+        "value": "PH.PH-MDR"
+    },
+    {
+        "label": "Palawan",
+        "value": "PH.PH-PLW"
+    },
+    {
+        "label": "Pampanga",
+        "value": "PH.PH-PAM"
+    },
+    {
+        "label": "Pangasinan",
+        "value": "PH.PH-PAN"
+    },
+    {
+        "label": "Quezon",
+        "value": "PH.PH-QUE"
+    },
+    {
+        "label": "Quirino",
+        "value": "PH.PH-QUI"
+    },
+    {
+        "label": "Rizal",
+        "value": "PH.PH-RIZ"
+    },
+    {
+        "label": "Romblon",
+        "value": "PH.PH-ROM"
+    },
+    {
+        "label": "Samar",
+        "value": "PH.PH-WSA"
+    },
+    {
+        "label": "Sarangani",
+        "value": "PH.PH-SAR"
+    },
+    {
+        "label": "Siquijor",
+        "value": "PH.PH-SIG"
+    },
+    {
+        "label": "Sorsogon",
+        "value": "PH.PH-SOR"
+    },
+    {
+        "label": "South Cotabato",
+        "value": "PH.PH-SCO"
+    },
+    {
+        "label": "Southern Leyte",
+        "value": "PH.PH-SLE"
+    },
+    {
+        "label": "Sultan Kudarat",
+        "value": "PH.PH-SUK"
+    },
+    {
+        "label": "Sulu",
+        "value": "PH.PH-SLU"
+    },
+    {
+        "label": "Surigao del Norte",
+        "value": "PH.PH-SUN"
+    },
+    {
+        "label": "Surigao del Sur",
+        "value": "PH.PH-SUR"
+    },
+    {
+        "label": "Tarlac",
+        "value": "PH.PH-TAR"
+    },
+    {
+        "label": "Tawi-Tawi",
+        "value": "PH.PH-TAW"
+    },
+    {
+        "label": "Zambales",
+        "value": "PH.PH-ZMB"
+    },
+    {
+        "label": "Zamboanga del Norte",
+        "value": "PH.PH-ZAN"
+    },
+    {
+        "label": "Zamboanga del Sur",
+        "value": "PH.PH-ZAS"
+    },
+    {
+        "label": "Zamboanga Sibugay",
+        "value": "PH.PH-ZSI"
+    },
+    {
+        "label": "Açores",
+        "value": "PT.PT-20"
+    },
+    {
+        "label": "Aveiro",
+        "value": "PT.PT-01"
+    },
+    {
+        "label": "Beja",
+        "value": "PT.PT-02"
+    },
+    {
+        "label": "Braga",
+        "value": "PT.PT-03"
+    },
+    {
+        "label": "Bragança",
+        "value": "PT.PT-04"
+    },
+    {
+        "label": "Castelo Branco",
+        "value": "PT.PT-05"
+    },
+    {
+        "label": "Coimbra",
+        "value": "PT.PT-06"
+    },
+    {
+        "label": "Évora",
+        "value": "PT.PT-07"
+    },
+    {
+        "label": "Faro",
+        "value": "PT.PT-08"
+    },
+    {
+        "label": "Guarda",
+        "value": "PT.PT-09"
+    },
+    {
+        "label": "Leiria",
+        "value": "PT.PT-10"
+    },
+    {
+        "label": "Lisboa",
+        "value": "PT.PT-11"
+    },
+    {
+        "label": "Madeira",
+        "value": "PT.PT-30"
+    },
+    {
+        "label": "Portalegre",
+        "value": "PT.PT-12"
+    },
+    {
+        "label": "Porto",
+        "value": "PT.PT-13"
+    },
+    {
+        "label": "Santarém",
+        "value": "PT.PT-14"
+    },
+    {
+        "label": "Setúbal",
+        "value": "PT.PT-15"
+    },
+    {
+        "label": "Viana do Castelo",
+        "value": "PT.PT-16"
+    },
+    {
+        "label": "Vila Real",
+        "value": "PT.PT-17"
+    },
+    {
+        "label": "Viseu",
+        "value": "PT.PT-18"
+    },
+    {
+        "label": "Alba",
+        "value": "RO.AB"
+    },
+    {
+        "label": "Arad",
+        "value": "RO.AR"
+    },
+    {
+        "label": "Argeș",
+        "value": "RO.AG"
+    },
+    {
+        "label": "Bacău",
+        "value": "RO.BC"
+    },
+    {
+        "label": "Bihor",
+        "value": "RO.BH"
+    },
+    {
+        "label": "Bistrița-Năsăud",
+        "value": "RO.BN"
+    },
+    {
+        "label": "Botoșani",
+        "value": "RO.BT"
+    },
+    {
+        "label": "Brăila",
+        "value": "RO.BR"
+    },
+    {
+        "label": "Brașov",
+        "value": "RO.BV"
+    },
+    {
+        "label": "București",
+        "value": "RO.B"
+    },
+    {
+        "label": "Buzău",
+        "value": "RO.BZ"
+    },
+    {
+        "label": "Călărași",
+        "value": "RO.CL"
+    },
+    {
+        "label": "Caraș-Severin",
+        "value": "RO.CS"
+    },
+    {
+        "label": "Cluj",
+        "value": "RO.CJ"
+    },
+    {
+        "label": "Constanța",
+        "value": "RO.CT"
+    },
+    {
+        "label": "Covasna",
+        "value": "RO.CV"
+    },
+    {
+        "label": "Dâmbovița",
+        "value": "RO.DB"
+    },
+    {
+        "label": "Dolj",
+        "value": "RO.DJ"
+    },
+    {
+        "label": "Galați",
+        "value": "RO.GL"
+    },
+    {
+        "label": "Giurgiu",
+        "value": "RO.GR"
+    },
+    {
+        "label": "Gorj",
+        "value": "RO.GJ"
+    },
+    {
+        "label": "Harghita",
+        "value": "RO.HR"
+    },
+    {
+        "label": "Hunedoara",
+        "value": "RO.HD"
+    },
+    {
+        "label": "Ialomița",
+        "value": "RO.IL"
+    },
+    {
+        "label": "Iași",
+        "value": "RO.IS"
+    },
+    {
+        "label": "Ilfov",
+        "value": "RO.IF"
+    },
+    {
+        "label": "Maramureș",
+        "value": "RO.MM"
+    },
+    {
+        "label": "Mehedinți",
+        "value": "RO.MH"
+    },
+    {
+        "label": "Mureș",
+        "value": "RO.MS"
+    },
+    {
+        "label": "Neamț",
+        "value": "RO.NT"
+    },
+    {
+        "label": "Olt",
+        "value": "RO.OT"
+    },
+    {
+        "label": "Prahova",
+        "value": "RO.PH"
+    },
+    {
+        "label": "Sălaj",
+        "value": "RO.SJ"
+    },
+    {
+        "label": "Satu Mare",
+        "value": "RO.SM"
+    },
+    {
+        "label": "Sibiu",
+        "value": "RO.SB"
+    },
+    {
+        "label": "Suceava",
+        "value": "RO.SV"
+    },
+    {
+        "label": "Teleorman",
+        "value": "RO.TR"
+    },
+    {
+        "label": "Timiș",
+        "value": "RO.TM"
+    },
+    {
+        "label": "Tulcea",
+        "value": "RO.TL"
+    },
+    {
+        "label": "Vâlcea",
+        "value": "RO.VL"
+    },
+    {
+        "label": "Vaslui",
+        "value": "RO.VS"
+    },
+    {
+        "label": "Vrancea",
+        "value": "RO.VN"
+    },
+    {
+        "label": "Altai Krai",
+        "value": "RU.ALT"
+    },
+    {
+        "label": "Altai Republic",
+        "value": "RU.AL"
+    },
+    {
+        "label": "Amur Oblast",
+        "value": "RU.AMU"
+    },
+    {
+        "label": "Arkhangelsk Oblast",
+        "value": "RU.ARK"
+    },
+    {
+        "label": "Astrakhan Oblast",
+        "value": "RU.AST"
+    },
+    {
+        "label": "Belgorod Oblast",
+        "value": "RU.BEL"
+    },
+    {
+        "label": "Bryansk Oblast",
+        "value": "RU.BRY"
+    },
+    {
+        "label": "Chechen Republic",
+        "value": "RU.CE"
+    },
+    {
+        "label": "Chelyabinsk Oblast",
+        "value": "RU.CHE"
+    },
+    {
+        "label": "Chukotka Autonomous Okrug",
+        "value": "RU.CHU"
+    },
+    {
+        "label": "Chuvash Republic",
+        "value": "RU.CU"
+    },
+    {
+        "label": "Irkutsk Oblast",
+        "value": "RU.IRK"
+    },
+    {
+        "label": "Ivanovo Oblast",
+        "value": "RU.IVA"
+    },
+    {
+        "label": "Jewish Autonomous Oblast",
+        "value": "RU.YEV"
+    },
+    {
+        "label": "Kabardino-Balkarian Republic",
+        "value": "RU.KB"
+    },
+    {
+        "label": "Kaliningrad Oblast",
+        "value": "RU.KGD"
+    },
+    {
+        "label": "Kaluga Oblast",
+        "value": "RU.KLU"
+    },
+    {
+        "label": "Kamchatka Krai",
+        "value": "RU.KAM"
+    },
+    {
+        "label": "Karachay–Cherkess Republic",
+        "value": "RU.KC"
+    },
+    {
+        "label": "Kemerovo Oblast",
+        "value": "RU.KEM"
+    },
+    {
+        "label": "Khabarovsk Krai",
+        "value": "RU.KHA"
+    },
+    {
+        "label": "Khanty-Mansi Autonomous Okrug",
+        "value": "RU.KHM"
+    },
+    {
+        "label": "Kirov Oblast",
+        "value": "RU.KIR"
+    },
+    {
+        "label": "Komi Republic",
+        "value": "RU.KO"
+    },
+    {
+        "label": "Kostroma Oblast",
+        "value": "RU.KOS"
+    },
+    {
+        "label": "Krasnodar Krai",
+        "value": "RU.KDA"
+    },
+    {
+        "label": "Krasnoyarsk Krai",
+        "value": "RU.KYA"
+    },
+    {
+        "label": "Kurgan Oblast",
+        "value": "RU.KGN"
+    },
+    {
+        "label": "Kursk Oblast",
+        "value": "RU.KRS"
+    },
+    {
+        "label": "Leningrad Oblast",
+        "value": "RU.LEN"
+    },
+    {
+        "label": "Lipetsk Oblast",
+        "value": "RU.LIP"
+    },
+    {
+        "label": "Magadan Oblast",
+        "value": "RU.MAG"
+    },
+    {
+        "label": "Mari El Republic",
+        "value": "RU.ME"
+    },
+    {
+        "label": "Moscow",
+        "value": "RU.MOW"
+    },
+    {
+        "label": "Moscow Oblast",
+        "value": "RU.MOS"
+    },
+    {
+        "label": "Murmansk Oblast",
+        "value": "RU.MUR"
+    },
+    {
+        "label": "Nizhny Novgorod Oblast",
+        "value": "RU.NIZ"
+    },
+    {
+        "label": "Novgorod Oblast",
+        "value": "RU.NGR"
+    },
+    {
+        "label": "Novosibirsk Oblast",
+        "value": "RU.NVS"
+    },
+    {
+        "label": "Omsk Oblast",
+        "value": "RU.OMS"
+    },
+    {
+        "label": "Orenburg Oblast",
+        "value": "RU.ORE"
+    },
+    {
+        "label": "Oryol Oblast",
+        "value": "RU.ORL"
+    },
+    {
+        "label": "Penza Oblast",
+        "value": "RU.PNZ"
+    },
+    {
+        "label": "Perm Krai",
+        "value": "RU.PER"
+    },
+    {
+        "label": "Primorsky Krai",
+        "value": "RU.PRI"
+    },
+    {
+        "label": "Pskov Oblast",
+        "value": "RU.PSK"
+    },
+    {
+        "label": "Republic of Adygeya",
+        "value": "RU.AD"
+    },
+    {
+        "label": "Republic of Bashkortostan",
+        "value": "RU.BA"
+    },
+    {
+        "label": "Republic of Buryatia",
+        "value": "RU.BU"
+    },
+    {
+        "label": "Republic of Dagestan",
+        "value": "RU.DA"
+    },
+    {
+        "label": "Republic of Ingushetia",
+        "value": "RU.IN"
+    },
+    {
+        "label": "Republic of Kalmykia",
+        "value": "RU.KL"
+    },
+    {
+        "label": "Republic of Karelia",
+        "value": "RU.KR"
+    },
+    {
+        "label": "Republic of Khakassia",
+        "value": "RU.KK"
+    },
+    {
+        "label": "Republic of Mordovia",
+        "value": "RU.MO"
+    },
+    {
+        "label": "Republic of North Ossetia–Alania",
+        "value": "RU.SE"
+    },
+    {
+        "label": "Republic of Tatarstan",
+        "value": "RU.TA"
+    },
+    {
+        "label": "Rostov Oblast",
+        "value": "RU.ROS"
+    },
+    {
+        "label": "Ryazan Oblast",
+        "value": "RU.RYA"
+    },
+    {
+        "label": "Saint Petersburg",
+        "value": "RU.SPE"
+    },
+    {
+        "label": "Sakha Republic (Yakutia)",
+        "value": "RU.SA"
+    },
+    {
+        "label": "Sakhalin Oblast",
+        "value": "RU.SAK"
+    },
+    {
+        "label": "Samara Oblast",
+        "value": "RU.SAM"
+    },
+    {
+        "label": "Saratov Oblast",
+        "value": "RU.SAR"
+    },
+    {
+        "label": "Smolensk Oblast",
+        "value": "RU.SMO"
+    },
+    {
+        "label": "Stavropol Krai",
+        "value": "RU.STA"
+    },
+    {
+        "label": "Sverdlovsk Oblast",
+        "value": "RU.SVE"
+    },
+    {
+        "label": "Tambov Oblast",
+        "value": "RU.TAM"
+    },
+    {
+        "label": "Tomsk Oblast",
+        "value": "RU.TOM"
+    },
+    {
+        "label": "Tula Oblast",
+        "value": "RU.TUL"
+    },
+    {
+        "label": "Tver Oblast",
+        "value": "RU.TVE"
+    },
+    {
+        "label": "Tyumen Oblast",
+        "value": "RU.TYU"
+    },
+    {
+        "label": "Tyva Republic",
+        "value": "RU.TY"
+    },
+    {
+        "label": "Udmurtia",
+        "value": "RU.UD"
+    },
+    {
+        "label": "Ulyanovsk Oblast",
+        "value": "RU.ULY"
+    },
+    {
+        "label": "Vladimir Oblast",
+        "value": "RU.VLA"
+    },
+    {
+        "label": "Volgograd Oblast",
+        "value": "RU.VGG"
+    },
+    {
+        "label": "Vologda Oblast",
+        "value": "RU.VLG"
+    },
+    {
+        "label": "Voronezh Oblast",
+        "value": "RU.VOR"
+    },
+    {
+        "label": "Yamalo-Nenets Autonomous Okrug",
+        "value": "RU.YAN"
+    },
+    {
+        "label": "Yaroslavl Oblast",
+        "value": "RU.YAR"
+    },
+    {
+        "label": "Zabaykalsky Krai",
+        "value": "RU.ZAB"
+    },
+    {
+        "label": "Eastern Cape",
+        "value": "ZA.EC"
+    },
+    {
+        "label": "Free State",
+        "value": "ZA.FS"
+    },
+    {
+        "label": "Gauteng",
+        "value": "ZA.GP"
+    },
+    {
+        "label": "KwaZulu-Natal",
+        "value": "ZA.NL"
+    },
+    {
+        "label": "Limpopo",
+        "value": "ZA.LP"
+    },
+    {
+        "label": "Mpumalanga",
+        "value": "ZA.MP"
+    },
+    {
+        "label": "North West",
+        "value": "ZA.NW"
+    },
+    {
+        "label": "Northern Cape",
+        "value": "ZA.NC"
+    },
+    {
+        "label": "Western Cape",
+        "value": "ZA.WC"
+    },
+    {
+        "label": "Busan",
+        "value": "KR.KR-26"
+    },
+    {
+        "label": "Chungbuk",
+        "value": "KR.KR-43"
+    },
+    {
+        "label": "Chungnam",
+        "value": "KR.KR-44"
+    },
+    {
+        "label": "Daegu",
+        "value": "KR.KR-27"
+    },
+    {
+        "label": "Daejeon",
+        "value": "KR.KR-30"
+    },
+    {
+        "label": "Gangwon",
+        "value": "KR.KR-42"
+    },
+    {
+        "label": "Gwangju",
+        "value": "KR.KR-29"
+    },
+    {
+        "label": "Gyeongbuk",
+        "value": "KR.KR-47"
+    },
+    {
+        "label": "Gyeonggi",
+        "value": "KR.KR-41"
+    },
+    {
+        "label": "Gyeongnam",
+        "value": "KR.KR-48"
+    },
+    {
+        "label": "Incheon",
+        "value": "KR.KR-28"
+    },
+    {
+        "label": "Jeju",
+        "value": "KR.KR-49"
+    },
+    {
+        "label": "Jeonbuk",
+        "value": "KR.KR-45"
+    },
+    {
+        "label": "Jeonnam",
+        "value": "KR.KR-46"
+    },
+    {
+        "label": "Sejong",
+        "value": "KR.KR-50"
+    },
+    {
+        "label": "Seoul",
+        "value": "KR.KR-11"
+    },
+    {
+        "label": "Ulsan",
+        "value": "KR.KR-31"
+    },
+    {
+        "label": "A Coruña",
+        "value": "ES.C"
+    },
+    {
+        "label": "Álava",
+        "value": "ES.VI"
+    },
+    {
+        "label": "Albacete",
+        "value": "ES.AB"
+    },
+    {
+        "label": "Alicante",
+        "value": "ES.A"
+    },
+    {
+        "label": "Almería",
+        "value": "ES.AL"
+    },
+    {
+        "label": "Asturias",
+        "value": "ES.O"
+    },
+    {
+        "label": "Ávila",
+        "value": "ES.AV"
+    },
+    {
+        "label": "Badajoz",
+        "value": "ES.BA"
+    },
+    {
+        "label": "Balears",
+        "value": "ES.PM"
+    },
+    {
+        "label": "Barcelona",
+        "value": "ES.B"
+    },
+    {
+        "label": "Burgos",
+        "value": "ES.BU"
+    },
+    {
+        "label": "Cáceres",
+        "value": "ES.CC"
+    },
+    {
+        "label": "Cádiz",
+        "value": "ES.CA"
+    },
+    {
+        "label": "Cantabria",
+        "value": "ES.S"
+    },
+    {
+        "label": "Castellón",
+        "value": "ES.CS"
+    },
+    {
+        "label": "Ceuta",
+        "value": "ES.CE"
+    },
+    {
+        "label": "Ciudad Real",
+        "value": "ES.CR"
+    },
+    {
+        "label": "Córdoba",
+        "value": "ES.CO"
+    },
+    {
+        "label": "Cuenca",
+        "value": "ES.CU"
+    },
+    {
+        "label": "Girona",
+        "value": "ES.GI"
+    },
+    {
+        "label": "Granada",
+        "value": "ES.GR"
+    },
+    {
+        "label": "Guadalajara",
+        "value": "ES.GU"
+    },
+    {
+        "label": "Guipúzcoa",
+        "value": "ES.SS"
+    },
+    {
+        "label": "Huelva",
+        "value": "ES.H"
+    },
+    {
+        "label": "Huesca",
+        "value": "ES.HU"
+    },
+    {
+        "label": "Jaén",
+        "value": "ES.J"
+    },
+    {
+        "label": "La Rioja",
+        "value": "ES.LO"
+    },
+    {
+        "label": "Las Palmas",
+        "value": "ES.GC"
+    },
+    {
+        "label": "León",
+        "value": "ES.LE"
+    },
+    {
+        "label": "Lleida",
+        "value": "ES.L"
+    },
+    {
+        "label": "Lugo",
+        "value": "ES.LU"
+    },
+    {
+        "label": "Madrid",
+        "value": "ES.M"
+    },
+    {
+        "label": "Málaga",
+        "value": "ES.MA"
+    },
+    {
+        "label": "Melilla",
+        "value": "ES.ML"
+    },
+    {
+        "label": "Murcia",
+        "value": "ES.MU"
+    },
+    {
+        "label": "Navarra",
+        "value": "ES.NA"
+    },
+    {
+        "label": "Ourense",
+        "value": "ES.OR"
+    },
+    {
+        "label": "Palencia",
+        "value": "ES.P"
+    },
+    {
+        "label": "Pontevedra",
+        "value": "ES.PO"
+    },
+    {
+        "label": "Salamanca",
+        "value": "ES.SA"
+    },
+    {
+        "label": "Santa Cruz de Tenerife",
+        "value": "ES.TF"
+    },
+    {
+        "label": "Segovia",
+        "value": "ES.SG"
+    },
+    {
+        "label": "Sevilla",
+        "value": "ES.SE"
+    },
+    {
+        "label": "Soria",
+        "value": "ES.SO"
+    },
+    {
+        "label": "Tarragona",
+        "value": "ES.T"
+    },
+    {
+        "label": "Teruel",
+        "value": "ES.TE"
+    },
+    {
+        "label": "Toledo",
+        "value": "ES.TO"
+    },
+    {
+        "label": "Valencia",
+        "value": "ES.V"
+    },
+    {
+        "label": "Valladolid",
+        "value": "ES.VA"
+    },
+    {
+        "label": "Vizcaya",
+        "value": "ES.BI"
+    },
+    {
+        "label": "Zamora",
+        "value": "ES.ZA"
+    },
+    {
+        "label": "Zaragoza",
+        "value": "ES.Z"
+    },
+    {
+        "label": "Amnat Charoen",
+        "value": "TH.TH-37"
+    },
+    {
+        "label": "Ang Thong",
+        "value": "TH.TH-15"
+    },
+    {
+        "label": "Bangkok",
+        "value": "TH.TH-10"
+    },
+    {
+        "label": "Bueng Kan",
+        "value": "TH.TH-38"
+    },
+    {
+        "label": "Buriram",
+        "value": "TH.TH-31"
+    },
+    {
+        "label": "Chachoengsao",
+        "value": "TH.TH-24"
+    },
+    {
+        "label": "Chai Nat",
+        "value": "TH.TH-18"
+    },
+    {
+        "label": "Chaiyaphum",
+        "value": "TH.TH-36"
+    },
+    {
+        "label": "Chanthaburi",
+        "value": "TH.TH-22"
+    },
+    {
+        "label": "Chiang Mai",
+        "value": "TH.TH-50"
+    },
+    {
+        "label": "Chiang Rai",
+        "value": "TH.TH-57"
+    },
+    {
+        "label": "Chon Buri",
+        "value": "TH.TH-20"
+    },
+    {
+        "label": "Chumphon",
+        "value": "TH.TH-86"
+    },
+    {
+        "label": "Kalasin",
+        "value": "TH.TH-46"
+    },
+    {
+        "label": "Kamphaeng Phet",
+        "value": "TH.TH-62"
+    },
+    {
+        "label": "Kanchanaburi",
+        "value": "TH.TH-71"
+    },
+    {
+        "label": "Khon Kaen",
+        "value": "TH.TH-40"
+    },
+    {
+        "label": "Krabi",
+        "value": "TH.TH-81"
+    },
+    {
+        "label": "Lampang",
+        "value": "TH.TH-52"
+    },
+    {
+        "label": "Lamphun",
+        "value": "TH.TH-51"
+    },
+    {
+        "label": "Loei",
+        "value": "TH.TH-42"
+    },
+    {
+        "label": "Lopburi",
+        "value": "TH.TH-16"
+    },
+    {
+        "label": "Mae Hong Son",
+        "value": "TH.TH-58"
+    },
+    {
+        "label": "Maha Sarakham",
+        "value": "TH.TH-44"
+    },
+    {
+        "label": "Mukdahan",
+        "value": "TH.TH-49"
+    },
+    {
+        "label": "Nakhon Nayok",
+        "value": "TH.TH-26"
+    },
+    {
+        "label": "Nakhon Pathom",
+        "value": "TH.TH-73"
+    },
+    {
+        "label": "Nakhon Phanom",
+        "value": "TH.TH-48"
+    },
+    {
+        "label": "Nakhon Ratchasima",
+        "value": "TH.TH-30"
+    },
+    {
+        "label": "Nakhon Sawan",
+        "value": "TH.TH-60"
+    },
+    {
+        "label": "Nakhon Si Thammarat",
+        "value": "TH.TH-80"
+    },
+    {
+        "label": "Nan",
+        "value": "TH.TH-55"
+    },
+    {
+        "label": "Narathiwat",
+        "value": "TH.TH-96"
+    },
+    {
+        "label": "Nong Bua Lam Phu",
+        "value": "TH.TH-39"
+    },
+    {
+        "label": "Nong Khai",
+        "value": "TH.TH-43"
+    },
+    {
+        "label": "Nonthaburi",
+        "value": "TH.TH-12"
+    },
+    {
+        "label": "Pathum Thani",
+        "value": "TH.TH-13"
+    },
+    {
+        "label": "Pattani",
+        "value": "TH.TH-94"
+    },
+    {
+        "label": "Pattaya",
+        "value": "TH.TH-S"
+    },
+    {
+        "label": "Phangnga",
+        "value": "TH.TH-82"
+    },
+    {
+        "label": "Phatthalung",
+        "value": "TH.TH-93"
+    },
+    {
+        "label": "Phayao",
+        "value": "TH.TH-56"
+    },
+    {
+        "label": "Phetchabun",
+        "value": "TH.TH-67"
+    },
+    {
+        "label": "Phetchaburi",
+        "value": "TH.TH-76"
+    },
+    {
+        "label": "Phichit",
+        "value": "TH.TH-66"
+    },
+    {
+        "label": "Phitsanulok",
+        "value": "TH.TH-65"
+    },
+    {
+        "label": "Phra Nakhon Si Ayutthaya",
+        "value": "TH.TH-14"
+    },
+    {
+        "label": "Phrae",
+        "value": "TH.TH-54"
+    },
+    {
+        "label": "Phuket",
+        "value": "TH.TH-83"
+    },
+    {
+        "label": "Prachin Buri",
+        "value": "TH.TH-25"
+    },
+    {
+        "label": "Prachuap Khiri Khan",
+        "value": "TH.TH-77"
+    },
+    {
+        "label": "Ranong",
+        "value": "TH.TH-85"
+    },
+    {
+        "label": "Ratchaburi",
+        "value": "TH.TH-70"
+    },
+    {
+        "label": "Rayong",
+        "value": "TH.TH-21"
+    },
+    {
+        "label": "Roi Et",
+        "value": "TH.TH-45"
+    },
+    {
+        "label": "Sa Kaeo",
+        "value": "TH.TH-27"
+    },
+    {
+        "label": "Sakon Nakhon",
+        "value": "TH.TH-47"
+    },
+    {
+        "label": "Samut Prakan",
+        "value": "TH.TH-11"
+    },
+    {
+        "label": "Samut Sakhon",
+        "value": "TH.TH-74"
+    },
+    {
+        "label": "Samut Songkhram",
+        "value": "TH.TH-75"
+    },
+    {
+        "label": "Saraburi",
+        "value": "TH.TH-19"
+    },
+    {
+        "label": "Satun",
+        "value": "TH.TH-91"
+    },
+    {
+        "label": "Sing Buri",
+        "value": "TH.TH-17"
+    },
+    {
+        "label": "Sisaket",
+        "value": "TH.TH-33"
+    },
+    {
+        "label": "Songkhla",
+        "value": "TH.TH-90"
+    },
+    {
+        "label": "Sukhothai",
+        "value": "TH.TH-64"
+    },
+    {
+        "label": "Suphan Buri",
+        "value": "TH.TH-72"
+    },
+    {
+        "label": "Surat Thani",
+        "value": "TH.TH-84"
+    },
+    {
+        "label": "Surin",
+        "value": "TH.TH-32"
+    },
+    {
+        "label": "Tak",
+        "value": "TH.TH-63"
+    },
+    {
+        "label": "Trang",
+        "value": "TH.TH-92"
+    },
+    {
+        "label": "Trat",
+        "value": "TH.TH-23"
+    },
+    {
+        "label": "Ubon Ratchathani",
+        "value": "TH.TH-34"
+    },
+    {
+        "label": "Udon Thani",
+        "value": "TH.TH-41"
+    },
+    {
+        "label": "Uthai Thani",
+        "value": "TH.TH-61"
+    },
+    {
+        "label": "Uttaradit",
+        "value": "TH.TH-53"
+    },
+    {
+        "label": "Yala",
+        "value": "TH.TH-95"
+    },
+    {
+        "label": "Yasothon",
+        "value": "TH.TH-35"
+    },
+    {
+        "label": "Abu Dhabi",
+        "value": "AE.AZ"
+    },
+    {
+        "label": "Ajman",
+        "value": "AE.AJ"
+    },
+    {
+        "label": "Dubai",
+        "value": "AE.DU"
+    },
+    {
+        "label": "Fujairah",
+        "value": "AE.FU"
+    },
+    {
+        "label": "Ras al-Khaimah",
+        "value": "AE.RK"
+    },
+    {
+        "label": "Sharjah",
+        "value": "AE.SH"
+    },
+    {
+        "label": "Umm al-Quwain",
+        "value": "AE.UQ"
+    },
+    {
+        "label": "British Forces",
+        "value": "GB.BFP"
+    },
+    {
+        "label": "England",
+        "value": "GB.ENG"
+    },
+    {
+        "label": "Northern Ireland",
+        "value": "GB.NIR"
+    },
+    {
+        "label": "Scotland",
+        "value": "GB.SCT"
+    },
+    {
+        "label": "Wales",
+        "value": "GB.WLS"
+    }
+]

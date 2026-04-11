@@ -1,0 +1,14 @@
+Header always unset X-Frame-Options
+
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/logiceve/nodejs/shiprates-testing"
+PassengerBaseURI "/nodejs/shiprates-testing"
+PassengerNodejs "/home/logiceve/nodevenv/nodejs/shiprates-testing/10/bin/node"
+PassengerAppType node
+PassengerStartupFile server.js
+PassengerAppLogFile "/home/logiceve/public_html/nodejs/shiprates-testing/logs"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END

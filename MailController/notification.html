@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: 'Roboto';
+        }
+
+        .header {
+            height: 100px;
+            color: rgba(246, 246, 247, 1);
+            background-color: rgb(0, 130, 99);
+        }
+
+        .heading {
+            line-height: 100px;
+        }
+
+        .heading h1 {
+            margin: 0;
+            text-align: center;
+        }
+
+        .content,
+        .footer {
+            text-align: center;
+        }
+
+        .welcome {
+            margin-top: 25px;
+        }
+
+        .features,
+        .message {
+            text-align: left !important;
+        }
+
+        .message {
+            margin-top: 50px;
+        }
+
+        dl.list {
+            padding-left: 25px;
+        }
+
+        p {
+            padding-left: 15px;
+        }
+
+        .footer {
+            background-color: rgb(0, 130, 99) !important;
+            height: 70px;
+        }
+
+        .powerd-by {
+            background-color: rgba(246, 246, 247, 1);
+            padding: 5px 20px;
+        }
+
+        .powerd-by p {
+            margin: 0;
+            padding: 0 !important;
+        }
+
+        .powerd-by p a {
+            text-decoration: none;
+            font-weight: 700;
+            color: rgb(0, 130, 99);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="heading">
+            <h1>{{APP_NAME}}</h1>
+        </div>
+    </div>
+    <div class="content">
+        <div class="welcome">
+            <span>Hi, dear <b>{{CUSTOMER_NAME}}</b></span>
+        </div>
+        <div class="greeting">
+            <h1>Introduced new features</h1>
+        </div>
+        <div class="features">
+            <p>
+                We have introduced new pro features in our app {{APP_NAME}}:
+            </p>
+            {{FEATURES}}
+        </div>
+        <div class="message">
+            <p>
+                <b>Note:</b> Your current plans will work fine on checkout but you can't edit them or add new if they
+                are using any pro feature.
+            </p>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="powerd-by">
+            <p>
+                Powered By: <a onmouseover="this.style.color='#007055'; this.style.textDecoration='underline'"
+                    onmouseout="this.style.color='#008263'; this.style.textDecoration='none'"
+                    href="https://logiceverest.com/" target="_black">LogicEverest</a></p>
+        </div>
+    </div>
+</body>
+
+</html>

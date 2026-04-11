@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div
+        style="margin: 0;padding: 0;text-align: center;font-family: 'Roboto';background: linear-gradient(180deg, rgba(0,130,99,1) 250px, rgba(246,246,247,1) 20%) !important;">
+        <img src="{{SERVER_LINK}}/mail/opened/{{SHOP_ID}}/{{TOKEN}}" style="display:none">
+        <div style="padding: 35px 0 30px;">
+            <h1 style="color: rgba(246,246,247,1); margin: 0;">{{APP_NAME}}</h1>
+            <!-- <h1 style="color: rgba(246,246,247,1); margin: 0;">Advanced Shipping Rates</h1> testing -->
+        </div>
+        <div
+            style="width: 70%;background-color: white;border-radius: 5px;box-shadow: 1px 1px 8px darkgrey;margin: 0 auto 15px;padding: 20px 20px 40px;">
+            <h2 style="padding: 15px 0; margin: 0">Hi {{CUSTOMER_NAME}}</h2>
+            <!-- <h2 style="padding: 15px 0; margin: 0">Hi Muhammad Tahir</h2> -->
+
+
+            <img src="{{IMG_SRC}}" width="150px" height="150px" alt="{{APP_NAME}}">
+            <!-- <img src="https://i.imgur.com/FW4ZLlb.jpeg" width="150px" height="150px" alt="Advanced Shipping Rates"> -->
+            <!-- testing -->
+
+            <div style="text-align: left;">
+                <h4>We have added some new features</h4>
+                {{FEATURES}}
+            </div>
+
+            <a style="display: block; width: 150px; height: 45px; margin: 15px auto 0px; border-radius: 5px; background-color: rgb(0, 130, 99); color: white; text-decoration: none; line-height: 45px; cursor: pointer;"
+                onmouseover="this.style.backgroundColor='#007055'" onmouseout="this.style.backgroundColor='#008263'"
+                href="{{BTN_LINK}}" target="_blank">{{BTN_TEXT}}</a>
+            <!-- href="{{SERVER_LINK}}/mail/clicked/{{SHOP_ID}}/{{TOKEN}}" -->
+            <!-- href="{{DOMAIN}}/admin/apps/{{APP_PATH}}" -->
+        </div>
+
+        <div style="padding: 5px 0 20px;">
+            <p style="margin: 0;">
+                Powered By: <a style="text-decoration: none; font-weight: 700; color: rgb(0, 130, 99);"
+                    onmouseover="this.style.color='#007055'; this.style.textDecoration='underline'"
+                    onmouseout="this.style.color='#008263'; this.style.textDecoration='none'"
+                    href="https://logiceverest.com/" target="_black">LogicEverest</a></p>
+        </div>
+    </div>
+</body>
+
+</html>

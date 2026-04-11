@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Blog Placeholder</title>
+  <desc id="desc">Minimal grayscale fallback image placeholder</desc>
+
+  <rect width="1200" height="630" fill="#d1d5db" />
+
+  <g transform="translate(600 315)">
+    <rect
+      x="-190"
+      y="-125"
+      width="380"
+      height="250"
+      rx="4"
+      fill="none"
+      stroke="#9aa0a6"
+      stroke-width="14"
+    />
+
+    <circle cx="-132" cy="-46" r="28" fill="#9aa0a6" />
+
+    <path
+      d="M-160 96 L-92 8 L-45 58 L46 -66 L165 96 Z"
+      fill="#9aa0a6"
+    />
+  </g>
+</svg>

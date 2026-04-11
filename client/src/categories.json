@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "React",
+        "icon": "Code",
+        "description": "Everything about React, hooks, components, and modern React patterns",
+        "postCount": 24,
+        "color": "blue"
+    },
+    {
+        "id": 2,
+        "name": "JavaScript",
+        "icon": "Zap",
+        "description": "Vanilla JavaScript, ES6+, and advanced JavaScript concepts",
+        "postCount": 31,
+        "color": "yellow"
+    },
+    {
+        "id": 3,
+        "name": "CSS & Styling",
+        "icon": "Palette",
+        "description": "CSS Grid, Flexbox, animations, and modern styling techniques",
+        "postCount": 18,
+        "color": "purple"
+    },
+    {
+        "id": 4,
+        "name": "Web Design",
+        "icon": "Smartphone",
+        "description": "UI/UX design principles, responsive design, and accessibility",
+        "postCount": 15,
+        "color": "pink"
+    },
+    {
+        "id": 5,
+        "name": "Backend & APIs",
+        "icon": "Database",
+        "description": "Node.js, Express, REST APIs, and server-side development",
+        "postCount": 22,
+        "color": "green"
+    },
+    {
+        "id": 6,
+        "name": "Web Performance",
+        "icon": "Globe",
+        "description": "Optimization techniques, loading strategies, and performance monitoring",
+        "postCount": 12,
+        "color": "orange"
+    }
+]
