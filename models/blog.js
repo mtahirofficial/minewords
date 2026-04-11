@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Blog extends Model {
     /**
@@ -15,21 +13,26 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(Like, { foreignKey: "blogId", onDelete: "CASCADE" });
     }
   }
-  Blog.init({
-    title: DataTypes.STRING,
-    slug: DataTypes.STRING,
-    excerpt: DataTypes.TEXT,
-    content: DataTypes.TEXT,
-    category: DataTypes.STRING,
-    categorySlug: DataTypes.STRING,
-    coverImage: DataTypes.STRING,
-    author: DataTypes.STRING,
-    readTime: DataTypes.STRING,
-    date: DataTypes.DATE,
-    userId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Blog',
-  });
+  Blog.init(
+    {
+      title: DataTypes.STRING,
+      slug: DataTypes.STRING,
+      excerpt: DataTypes.TEXT,
+      content: DataTypes.TEXT,
+      category: DataTypes.STRING,
+      categorySlug: DataTypes.STRING,
+      coverImage: DataTypes.STRING,
+      author: DataTypes.STRING,
+      readTime: DataTypes.STRING,
+      date: DataTypes.DATE,
+      userId: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Blog",
+      tableName: "blogs",
+      freezeTableName: true,
+    },
+  );
   return Blog;
 };

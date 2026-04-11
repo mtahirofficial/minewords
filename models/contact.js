@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Contact extends Model {
     /**
@@ -13,50 +11,53 @@ module.exports = (sequelize, DataTypes) => {
       // Define associations here if needed in the future
     }
   }
-  Contact.init({
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
+  Contact.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isEmail: true,
+          notEmpty: true,
+        },
+      },
+      subject: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      message: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      status: {
+        type: DataTypes.ENUM("new", "read", "replied", "archived"),
+        defaultValue: "new",
+      },
+      repliedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isEmail: true,
-        notEmpty: true
-      }
+    {
+      sequelize,
+      modelName: "Contact",
+      tableName: "contacts",
+      freezeTableName: true,
+      timestamps: true,
     },
-    subject: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    message: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      validate: {
-        notEmpty: true
-      }
-    },
-    status: {
-      type: DataTypes.ENUM('new', 'read', 'replied', 'archived'),
-      defaultValue: 'new'
-    },
-    repliedAt: {
-      type: DataTypes.DATE,
-      allowNull: true
-    }
-  }, {
-    sequelize,
-    modelName: 'Contact',
-    tableName: 'Contacts',
-    timestamps: true
-  });
+  );
   return Contact;
 };
-

@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Newsletter extends Model {
     /**
@@ -13,24 +11,27 @@ module.exports = (sequelize, DataTypes) => {
       // associations can be defined here
     }
   }
-  Newsletter.init({
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
+  Newsletter.init(
+    {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      subscribed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
     },
-    subscribed: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    }
-  }, {
-    sequelize,
-    modelName: 'Newsletter',
-    tableName: 'Newsletters'
-  });
+    {
+      sequelize,
+      modelName: "Newsletter",
+      tableName: "newsletters",
+      freezeTableName: true,
+    },
+  );
   return Newsletter;
 };
-

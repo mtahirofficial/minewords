@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Like extends Model {
     /**
@@ -14,12 +12,17 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(Blog, { foreignKey: "blogId" });
     }
   }
-  Like.init({
-    userId: DataTypes.INTEGER,
-    blogId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Like',
-  });
+  Like.init(
+    {
+      userId: DataTypes.INTEGER,
+      blogId: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Like",
+      tableName: "likes",
+      freezeTableName: true,
+    },
+  );
   return Like;
 };

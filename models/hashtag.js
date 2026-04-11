@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class Hashtag extends Model {
@@ -10,21 +8,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
 
-  Hashtag.init({
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+  Hashtag.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      count: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
     },
-    count: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    }
-  }, {
-    sequelize,
-    modelName: 'Hashtag',
-  });
+    {
+      sequelize,
+      modelName: "Hashtag",
+      tableName: "hashtags",
+      freezeTableName: true,
+    },
+  );
 
   return Hashtag;
 };

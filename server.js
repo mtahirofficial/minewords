@@ -6,6 +6,8 @@ const {
     ContactController,
     NewsletterController
 } = require('./controllers')
+const { sequelize } = require("./models");
+const { ConsoleLogger } = require("./core");
 
 const AppServer = require('./appServer.js');
 
@@ -17,4 +19,17 @@ const app = new AppServer([
     new ContactController,
     new NewsletterController
 ]);
-app.startListening()
+
+const bootstrap = async () => {
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync();
+        ConsoleLogger.info("Database connected and synchronized.");
+        app.startListening();
+    } catch (error) {
+        ConsoleLogger.error(`Database bootstrap failed: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+bootstrap();

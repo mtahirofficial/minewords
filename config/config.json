@@ -1,24 +1,17 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "blogsite",
-    "host": "127.0.0.1",
+    "use_env_variable": "DEV_DATABASE_URL",
     "dialect": "mysql",
     "logging": false
   },
   "test": {
-    "username": "logicsar_scc",
-    "password": "!kH)s]c@U.8j",
-    "database": "logicsar_devrates",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "use_env_variable": "TEST_DATABASE_URL",
+    "dialect": "mysql",
+    "logging": false
   },
   "production": {
-    "username": "u282996469_minewords",
-    "password": "9hpv+Y2:vL",
-    "database": "u282996469_minewords",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "mysql",
+    "logging": false
   }
 }
