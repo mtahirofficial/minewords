@@ -7,10 +7,12 @@ import mineWordsLogo from "../assets/minewords-logo.png";
 const Footer = () => {
   const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "MineWords";
   const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        setIsLoadingCategories(true);
         const res = await api.get("/categories?limit=4");
         const items = res.data?.categories || [];
         setCategories(
@@ -20,6 +22,9 @@ const Footer = () => {
         );
       } catch (err) {
         console.error("Error fetching categories for footer:", err);
+        setCategories([]);
+      } finally {
+        setIsLoadingCategories(false);
       }
     };
 
@@ -64,7 +69,25 @@ const Footer = () => {
           <div>
             <h4>Categories</h4>
             <ul>
-              {categories.length > 0 ? (
+              {isLoadingCategories ? (
+                <>
+                  {[1, 2, 3, 4].map((item) => (
+                    <li key={`footer-category-skeleton-${item}`}>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          width: "140px",
+                          height: "14px",
+                          borderRadius: "6px",
+                          background:
+                            "linear-gradient(90deg, #eceff3 25%, #f6f8fb 50%, #eceff3 75%)",
+                          backgroundSize: "200% 100%",
+                        }}
+                      />
+                    </li>
+                  ))}
+                </>
+              ) : categories.length > 0 ? (
                 categories.map((category, index) => (
                   <li key={index}>
                     <Link to={`/categories/${category.slug || "general"}`}>
@@ -73,7 +96,7 @@ const Footer = () => {
                   </li>
                 ))
               ) : (
-                <li>Loading categories...</li>
+                <li>No categories found.</li>
               )}
             </ul>
           </div>
