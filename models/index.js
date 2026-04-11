@@ -11,7 +11,10 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  const rawUrl = String(process.env[config.use_env_variable] || "").trim();
+  // Some hosting panels store `%` as `\%`, which breaks URL parsing in newer Node.js.
+  const normalizedUrl = rawUrl.replace(/\\%/g, "%");
+  sequelize = new Sequelize(normalizedUrl, config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
