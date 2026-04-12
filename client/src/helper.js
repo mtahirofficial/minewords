@@ -12,19 +12,22 @@ export const slugifyText = (value = "", fallback = "item") =>
         .replace(/^-+|-+$/g, "") || fallback;
 
 // Hook that returns a helper function which checks whether the current
-// user (from AuthContext) is signed in. If not, it shows a toast and
-// optionally opens the login prompt (loginPrompt callback). If the user
-// is signed in this helper will redirect to /create (preserving previous
-// behavior).
+// user is signed in and (optionally) email-verified before sensitive actions.
 export const useHandleCheckLogin = () => {
     const { user } = useAuth();
-    const { setLoginModal } = useMain()
+    const { setLoginModal, setVerificationModal } = useMain()
 
-    return () => {
+    return ({ requireVerified = false } = {}) => {
         if (!user) {
             showToast("Please login first", "error");
             setLoginModal(true);
             return false
+        }
+
+        if (requireVerified && !user?.isVerified) {
+            showToast("Please verify your email to continue", "error");
+            setVerificationModal(true);
+            return false;
         }
         return true
     };

@@ -1,6 +1,6 @@
 const express = require("express");
 const { Comment, User, Blog, Hashtag, sequelize } = require("../models");
-const { AuthMiddleware } = require("../middleware");
+const { AuthMiddleware, VerifiedMiddleware } = require("../middleware");
 const { ServerException, NotFoundException, ForbiddenException } = require("../exceptions");
 
 const extractHashtags = (value = "") => {
@@ -98,7 +98,7 @@ class CommentController {
     }
 
     initializeRoutes() {
-        this._router.post(`${this._path}/:blogId`, AuthMiddleware, this.create.bind(this));
+        this._router.post(`${this._path}/:blogId`, AuthMiddleware, VerifiedMiddleware, this.create.bind(this));
         this._router.delete(`${this._path}/:id`, AuthMiddleware, this.delete.bind(this));
     }
 }

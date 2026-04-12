@@ -5,20 +5,62 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
-        // Initialize from localStorage if token exists
         const token = localStorage.getItem("accessToken");
-        const user = localStorage.getItem("user");
-        return token ? { token, ...JSON.parse(user) } : null;
+        const userRaw = localStorage.getItem("user");
+
+        if (!token || !userRaw) return null;
+
+        try {
+            return { token, ...JSON.parse(userRaw) };
+        } catch (error) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("accessToken");
+            return null;
+        }
     });
 
-    const login = (userData) => setUser(userData);
+    const persistUser = (nextUser) => {
+        if (!nextUser) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("accessToken");
+            setUser(null);
+            return;
+        }
+
+        if (nextUser.token) {
+            localStorage.setItem("accessToken", nextUser.token);
+        }
+
+        const { token, ...userData } = nextUser;
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(nextUser);
+    };
+
+    const login = (userData) => persistUser(userData);
+    const updateUser = (partial = {}) => {
+        setUser((prev) => {
+            if (!prev) return prev;
+            const keys = Object.keys(partial || {});
+            const hasChanges = keys.some((key) => prev[key] !== partial[key]);
+            if (!hasChanges) {
+                return prev;
+            }
+            const next = { ...prev, ...partial };
+            const { token, ...userData } = next;
+            if (token) {
+                localStorage.setItem("accessToken", token);
+            }
+            localStorage.setItem("user", JSON.stringify(userData));
+            return next;
+        });
+    };
+
     const logout = () => {
-        localStorage.removeItem("accessToken");
-        setUser(null);
+        persistUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

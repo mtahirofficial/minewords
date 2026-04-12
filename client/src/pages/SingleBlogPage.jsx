@@ -168,7 +168,7 @@ const SingleBlogPage = () => {
   }, [blog, loading]);
 
   const handleLike = async () => {
-    const isLogged = handleCheckLogin();
+    const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
     if (!blog?.id) return;
 
@@ -188,7 +188,7 @@ const SingleBlogPage = () => {
     if (!comment.trim()) return;
     if (!blog?.id) return;
 
-    const isLogged = handleCheckLogin();
+    const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
 
     try {
@@ -204,6 +204,8 @@ const SingleBlogPage = () => {
   };
 
   const handleComment = () => {
+    const isLogged = handleCheckLogin({ requireVerified: true });
+    if (!isLogged) return;
     textareaRef.current?.focus();
   };
 

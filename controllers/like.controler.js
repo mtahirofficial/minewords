@@ -1,6 +1,6 @@
 const express = require("express");
 const { Like, Blog } = require("../models");
-const { AuthMiddleware } = require("../middleware");
+const { AuthMiddleware, VerifiedMiddleware } = require("../middleware");
 const { ServerException, NotFoundException } = require("../exceptions");
 
 class LikeController {
@@ -58,7 +58,7 @@ class LikeController {
 
 
     initializeRoutes() {
-        this._router.post(`${this._path}/:blogId/toggle`, AuthMiddleware, this.toggle.bind(this));
+        this._router.post(`${this._path}/:blogId/toggle`, AuthMiddleware, VerifiedMiddleware, this.toggle.bind(this));
     }
 }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from "./components/Header";
@@ -18,10 +18,12 @@ import ForgotPasswordPage from './pages/ForgotPage';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoginPopup from './components/LoginPopup';
+import VerificationPopup from './components/VerificationPopup';
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/ScrollToTop';
 import Profile from './pages/Profile';
 import HashtagPage from './pages/HashtagPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,11 +52,13 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot" element={<ForgotPasswordPage />} />
-            {/* 🚨 404 Page Catch-All */}
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            {/* 404 Page Catch-All */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </AnimatePresence>
         <LoginPopup />
+        <VerificationPopup />
       </div>
       <Footer />
     </Router>

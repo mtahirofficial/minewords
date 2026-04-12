@@ -4,14 +4,12 @@ import api from "../api";
 import CategoriesSidebar from "../components/CategoriesSidebar";
 import PostsList from "../components/PostsList";
 import Hero from "../components/Hero";
-import { slugifyText } from "../helper";
 
 const CategoriesPage = () => {
     const navigate = useNavigate();
     const { slug } = useParams();
     const CATEGORY_PAGE_SIZE = 6;
     const [blogs, setBlogs] = useState([]);
-    const [allBlogs, setAllBlogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -51,23 +49,19 @@ const CategoriesPage = () => {
         }
     };
 
-    // Fetch all blogs to extract unique categories
+    // Fetch categories from dedicated endpoint
     useEffect(() => {
-        const fetchAllBlogs = async () => {
+        const fetchCategories = async () => {
             try {
                 setLoading(true);
-                const res = await api.get("/blogs?page=1&limit=1000");
-                const fetchedBlogs = res.data?.blogs || [];
-                setAllBlogs(fetchedBlogs);
-
-                // Extract unique categories from blogs
-                const uniqueCategories = [...new Set(fetchedBlogs.map(b => b.category).filter(Boolean))];
-                const categoryList = uniqueCategories.map((cat, idx) => ({
+                const res = await api.get("/categories");
+                const fetchedCategories = res.data?.categories || [];
+                const categoryList = fetchedCategories.map((cat, idx) => ({
                     id: idx + 1,
-                    name: cat,
-                    slug: slugifyText(cat, `category-${idx + 1}`),
-                    description: `Articles about ${cat}`,
-                    postCount: fetchedBlogs.filter(b => b.category === cat).length,
+                    name: cat.name,
+                    slug: cat.slug || `category-${idx + 1}`,
+                    description: `Articles about ${cat.name}`,
+                    postCount: Number(cat.count || 0),
                     color: ['blue', 'green', 'purple', 'orange', 'red', 'yellow'][idx % 6],
                     icon: null // We'll handle icons differently
                 }));
@@ -90,12 +84,12 @@ const CategoriesPage = () => {
                     navigate(`/categories/${categoryList[0].slug}`, { replace: true });
                 }
             } catch (err) {
-                console.error("Error fetching blogs:", err);
+                console.error("Error fetching categories:", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchAllBlogs();
+        fetchCategories();
     }, [navigate, slug]);
 
     // Sync selected category with URL slug changes (for browser back/forward)

@@ -33,7 +33,7 @@ const BlogCard = ({ post, onUpdate }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const isLogged = handleCheckLogin();
+    const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
 
     try {
@@ -56,7 +56,7 @@ const BlogCard = ({ post, onUpdate }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const isLogged = handleCheckLogin();
+    const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
 
     navigate(`${blogPath}#comment`);

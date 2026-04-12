@@ -28,10 +28,10 @@ const SignupPage = () => {
       console.log(res);
 
       if (res.data.status === 200) {
-        setSubmitSuccess("Account created successfully! You can now login.");
+        setSubmitSuccess("Account created. Please check your email to verify your account.");
         setFormData({ name: "", email: "", username: "", password: "" });
         navigate("/login");
-        showToast("Account created successfully! You can now login.", "success");
+        showToast("Account created. Verification link sent to your email.", "success");
       } else {
         setSubmitError("Failed to create account.");
       }

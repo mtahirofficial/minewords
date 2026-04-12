@@ -4,11 +4,13 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api";
 import { showToast } from "../toast";
 import BlogEditorForm from "../components/BlogEditorForm";
+import { useHandleCheckLogin } from "../helper";
 
 const BlogForm = () => {
     const navigate = useNavigate();
     const { slug } = useParams();
     const { user } = useAuth();
+    const handleCheckLogin = useHandleCheckLogin();
     const isEdit = Boolean(slug);
 
     const [loading, setLoading] = useState(isEdit);
@@ -21,6 +23,14 @@ const BlogForm = () => {
     });
 
     useEffect(() => {
+        if (!isEdit && user && !user.isVerified) {
+            const canProceed = handleCheckLogin({ requireVerified: true });
+            if (!canProceed) {
+                navigate("/dashboard");
+                return;
+            }
+        }
+
         if (!isEdit) {
             setInitialValues((prev) => ({ ...prev, author: user?.name || prev.author || "" }));
             setLoading(false);
@@ -49,7 +59,7 @@ const BlogForm = () => {
         };
 
         loadBlog();
-    }, [slug, isEdit, navigate, user?.name]);
+    }, [slug, isEdit, navigate, user, user?.name]);
 
     const handleSubmit = async (payload) => {
         const formData = new FormData();
@@ -74,6 +84,11 @@ const BlogForm = () => {
                 throw err;
             }
             return;
+        }
+
+        const canProceed = handleCheckLogin({ requireVerified: true });
+        if (!canProceed) {
+            throw new Error("Email verification required");
         }
 
         try {

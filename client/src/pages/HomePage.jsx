@@ -141,7 +141,7 @@ const HomePage = () => {
                 to="/create"
                 className="btn btn-primary"
                 onClick={(e) => {
-                  const isLogged = handleCheckLogin();
+                  const isLogged = handleCheckLogin({ requireVerified: true });
                   if (!isLogged) {
                     e.preventDefault();
                   }

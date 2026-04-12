@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       role: DataTypes.STRING,
       refreshToken: DataTypes.TEXT,
       isVerified: DataTypes.BOOLEAN,
+      emailVerificationToken: DataTypes.STRING,
+      emailVerificationExpiresAt: DataTypes.DATE,
+      emailVerificationSentAt: DataTypes.DATE,
     },
     {
       sequelize,
