@@ -52,16 +52,7 @@ class AuthController {
   }
 
   buildEmailVerificationUrl(token = "") {
-    const fallbackOrigin = process.env.HOST;
-    const origin =
-      this.normalizeOrigin(
-        process.env.FRONTEND_URL ||
-          process.env.CLIENT_URL ||
-          process.env.CORS_ALLOW_ORIGINS ||
-          fallbackOrigin,
-      ) || fallbackOrigin;
-
-    return `${origin.replace(/\/+$/, "")}/verify-email?token=${encodeURIComponent(token)}`;
+    return `${process.env.HOST.replace(/\/+$/, "")}/verify-email?token=${encodeURIComponent(token)}`;
   }
 
   createEmailVerificationToken() {
