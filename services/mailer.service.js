@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+﻿const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const { Service } = require("../core");
 const { resolve } = require("path");
@@ -36,7 +36,7 @@ class MailerService extends Service {
     
     // Validate that credentials exist
     if (!mailerUser || !mailerPass) {
-      console.error("⚠️  MAILER_USER or MAILER_PASS environment variables are not set!");
+      console.error("âš ï¸  MAILER_USER or MAILER_PASS environment variables are not set!");
       console.error("Current values:", { 
         MAILER_USER: mailerUser ? "***set***" : "undefined",
         MAILER_PASS: mailerPass ? "***set***" : "undefined"
@@ -70,9 +70,9 @@ class MailerService extends Service {
     // Verify connection configuration
     this._transporter.verify(function (error, success) {
       if (error) {
-        console.error("❌ SMTP connection error:", error);
+        console.error("âŒ SMTP connection error:", error);
       } else {
-        console.log("✅ SMTP server is ready to send emails");
+        console.log("âœ… SMTP server is ready to send emails");
       }
     });
   }
@@ -109,7 +109,7 @@ class MailerService extends Service {
     try {
       // Use current env vars (in case they changed)
       const currentMailerUser = process.env.MAILER_USER || MAILER_USER;
-      const currentAppName = process.env.APP_NAME || APP_NAME || 'Ziora';
+      const currentAppName = process.env.APP_NAME || APP_NAME || 'MineWords';
       
       return await this._transporter.sendMail({
         from: `"${currentAppName}" <${currentMailerUser}>`, // sender address
@@ -120,7 +120,7 @@ class MailerService extends Service {
         attachments,
       });
     } catch (error) {
-      console.error("❌ Error sending email:", error);
+      console.error("âŒ Error sending email:", error);
       throw error;
     }
   }
@@ -129,3 +129,4 @@ class MailerService extends Service {
 }
 
 module.exports = new MailerService();
+

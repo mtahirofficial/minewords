@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+﻿import { useEffect, useState, useRef } from "react";
 import BlogCard from "../components/BlogCard";
 import Hero from "../components/Hero";
 import DynamicAboutBox from "../components/SideBar/DynamicAboutBox";
@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import AdBanner from "../components/AdBanner";
 
 const HomePage = () => {
-  const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "Ziora";
+  const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "MineWords";
   const handleCheckLogin = useHandleCheckLogin();
   const { globalSearch, setGlobalSearch } = useMain();
   const [blogs, setBlogs] = useState([]);
@@ -221,3 +221,4 @@ const HomePage = () => {
   );
 };
 export default HomePage;
+
