@@ -4,23 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "postbuild": "node ../scripts/move-client-dist.js",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "next start"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.1",
     "axios": "^1.13.2",
     "babel-plugin-react-compiler": "^1.0.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.554.0",
+    "next": "^16.0.0",
     "quill": "^2.0.3",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.6",
-    "vite": "^7.2.4"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

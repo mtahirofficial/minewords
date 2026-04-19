@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import ContactInfo from "../components/ContactInfo";
-import SocialMedia from "../components/SocialMedia";
-import ContactForm from "../components/ContactForm";
-import FAQ from "../components/FAQ";
-import Hero from "../components/Hero";
-import api from "../api";
-import { showToast } from "../toast";
+import ContactInfo from "../src/components/ContactInfo";
+import SocialMedia from "../src/components/SocialMedia";
+import ContactForm from "../src/components/ContactForm";
+import FAQ from "../src/components/FAQ";
+import Hero from "../src/components/Hero";
+import api from "../src/api";
+import { showToast } from "../src/toast";
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });

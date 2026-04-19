@@ -1,11 +1,12 @@
 // SignupPage.jsx
 import React, { useState } from "react";
-import api from "../api";
-import { showToast } from "../toast";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import api from "../src/api";
+import { showToast } from "../src/toast";
 
 const SignupPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -34,7 +35,7 @@ const SignupPage = () => {
           "Account created. Please check your email to verify your account.",
         );
         setFormData({ name: "", email: "", username: "", password: "" });
-        navigate("/login");
+        router.push("/login");
         showToast(
           "Account created. Verification link sent to your email.",
           "success",
@@ -111,7 +112,7 @@ const SignupPage = () => {
         </form>
 
         <p className="login-link">
-          Already have an account? <Link to="/login">Login</Link>
+          Already have an account? <Link href="/login">Login</Link>
         </p>
       </div>
     </main>

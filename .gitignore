@@ -9,7 +9,7 @@ node_modules
 /prisma/dev.sqlite
 /prisma/dev.sqlite-journal
 database.sqlite
-
+.next/
 .env
 package-lock.json
 yarn.lock

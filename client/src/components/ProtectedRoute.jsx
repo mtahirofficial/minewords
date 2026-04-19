@@ -1,11 +1,19 @@
 // src/components/ProtectedRoute.jsx
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
-import { Navigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
     const { user } = useAuth();
+    const router = useRouter();
 
-    if (!user) return <Navigate to="/login" />;
+    useEffect(() => {
+        if (!user) {
+            router.replace("/login");
+        }
+    }, [router, user]);
+
+    if (!user) return null;
 
     return children;
 }

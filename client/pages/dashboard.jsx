@@ -1,13 +1,14 @@
-﻿import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import api from "../api";
-import { showToast } from "../toast";
-import Modal from "../components/Modal";
-import { useHandleCheckLogin } from "../helper";
+import ProtectedRoute from "../src/components/ProtectedRoute";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAuth } from "../src/context/AuthContext";
+import api from "../src/api";
+import { showToast } from "../src/toast";
+import Modal from "../src/components/Modal";
+import { useHandleCheckLogin } from "../src/helper";
 
 const DashboardPage = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, updateUser } = useAuth();
   const handleCheckLogin = useHandleCheckLogin();
 
@@ -223,7 +224,7 @@ const DashboardPage = () => {
             onClick={() => {
               const canProceed = handleCheckLogin({ requireVerified: true });
               if (!canProceed) return;
-              navigate("/create");
+              router.push("/create");
             }}
           >
             Create New Post
@@ -231,7 +232,7 @@ const DashboardPage = () => {
           <button
             className="btn btn-secondary"
             onClick={() => {
-              navigate("/categories");
+              router.push("/categories");
             }}
           >
             Browse Categories
@@ -272,7 +273,7 @@ const DashboardPage = () => {
                   <td className="post-actions">
                     <button
                       className="btn btn-secondary"
-                      onClick={() => navigate(`/blog/${post.slug}/edit`)}
+                      onClick={() => router.push(`/blog/${post.slug}/edit`)}
                     >
                       Edit
                     </button>
@@ -359,4 +360,11 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default function DashboardRoute() {
+  return (
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
+  );
+}
+

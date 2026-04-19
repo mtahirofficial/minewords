@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState("");
@@ -50,7 +50,7 @@ const ForgotPasswordPage = () => {
                 </form>
 
                 <p className="back-link">
-                    Remembered your password? <Link to="/login">Login</Link>
+                    Remembered your password? <Link href="/login">Login</Link>
                 </p>
             </div>
         </main>

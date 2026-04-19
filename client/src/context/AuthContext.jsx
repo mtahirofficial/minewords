@@ -1,25 +1,38 @@
 // src/context/AuthContext.jsx
-import { createContext, useState, useContext } from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 
 const AuthContext = createContext();
+const isBrowser = typeof window !== "undefined";
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if (!isBrowser) return;
+
         const token = localStorage.getItem("accessToken");
         const userRaw = localStorage.getItem("user");
 
-        if (!token || !userRaw) return null;
+        if (!token || !userRaw) {
+            setUser(null);
+            return;
+        }
 
         try {
-            return { token, ...JSON.parse(userRaw) };
+            setUser({ token, ...JSON.parse(userRaw) });
         } catch (error) {
             localStorage.removeItem("user");
             localStorage.removeItem("accessToken");
-            return null;
+            setUser(null);
         }
-    });
+    }, []);
 
     const persistUser = (nextUser) => {
+        if (!isBrowser) {
+            setUser(nextUser || null);
+            return;
+        }
+
         if (!nextUser) {
             localStorage.removeItem("user");
             localStorage.removeItem("accessToken");
@@ -46,6 +59,9 @@ export const AuthProvider = ({ children }) => {
                 return prev;
             }
             const next = { ...prev, ...partial };
+            if (!isBrowser) {
+                return next;
+            }
             const { token, ...userData } = next;
             if (token) {
                 localStorage.setItem("accessToken", token);

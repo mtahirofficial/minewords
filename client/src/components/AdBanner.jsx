@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-const ADSENSE_CLIENT = import.meta.env.VITE_ADSENSE_CLIENT?.trim() || "";
+const ADSENSE_CLIENT = process.env.VITE_ADSENSE_CLIENT?.trim() || "";
 
 const ensureAdSenseScript = () => {
   if (typeof window === "undefined") return Promise.resolve(false);
@@ -81,3 +81,4 @@ const AdBanner = ({
 };
 
 export default AdBanner;
+

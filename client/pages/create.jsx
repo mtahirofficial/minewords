@@ -1,17 +1,18 @@
+import ProtectedRoute from "../src/components/ProtectedRoute";
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import api from "../api";
-import { showToast } from "../toast";
-import BlogEditorForm from "../components/BlogEditorForm";
-import { useHandleCheckLogin } from "../helper";
+import { useRouter } from "next/router";
+import { useAuth } from "../src/context/AuthContext";
+import api from "../src/api";
+import { showToast } from "../src/toast";
+import BlogEditorForm from "../src/components/BlogEditorForm";
+import { useHandleCheckLogin } from "../src/helper";
 
 const BlogForm = () => {
-    const navigate = useNavigate();
-    const { slug } = useParams();
+    const router = useRouter();
+    const slug = Array.isArray(router.query.slug) ? router.query.slug[0] : router.query.slug;
     const { user } = useAuth();
     const handleCheckLogin = useHandleCheckLogin();
-    const isEdit = Boolean(slug);
+    const isEdit = router.pathname === "/blog/[slug]/edit";
 
     const [loading, setLoading] = useState(isEdit);
     const [initialValues, setInitialValues] = useState({
@@ -26,7 +27,7 @@ const BlogForm = () => {
         if (!isEdit && user && !user.isVerified) {
             const canProceed = handleCheckLogin({ requireVerified: true });
             if (!canProceed) {
-                navigate("/dashboard");
+                router.push("/dashboard");
                 return;
             }
         }
@@ -34,6 +35,11 @@ const BlogForm = () => {
         if (!isEdit) {
             setInitialValues((prev) => ({ ...prev, author: user?.name || prev.author || "" }));
             setLoading(false);
+            return;
+        }
+
+        if (!slug) {
+            setLoading(true);
             return;
         }
 
@@ -52,14 +58,14 @@ const BlogForm = () => {
             } catch (err) {
                 console.error("Error loading blog:", err);
                 showToast("Failed to load blog", "error");
-                navigate("/dashboard");
+                router.push("/dashboard");
             } finally {
                 setLoading(false);
             }
         };
 
         loadBlog();
-    }, [slug, isEdit, navigate, user, user?.name]);
+    }, [slug, isEdit, router, user, user?.name]);
 
     const handleSubmit = async (payload) => {
         const formData = new FormData();
@@ -77,7 +83,7 @@ const BlogForm = () => {
             try {
                 await api.put(`/blogs/${slug}`, formData);
                 showToast("Blog updated successfully!");
-                navigate(`/blog/${slug}`);
+                router.push(`/blog/${slug}`);
             } catch (err) {
                 console.error("Blog update failed:", err.response?.data || err.message);
                 showToast("Blog update failed!", "error");
@@ -94,7 +100,7 @@ const BlogForm = () => {
         try {
             const res = await api.post("/blogs", formData);
             showToast("Blog submitted successfully!");
-            navigate(`/blog/${res.data?.blog?.slug || res.data?.blog?.id}`);
+            router.push(`/blog/${res.data?.blog?.slug || res.data?.blog?.id}`);
         } catch (err) {
             console.error("Blog creation failed:", err.response?.data || err.message);
             showToast("Blog creation failed!", "error");
@@ -119,9 +125,15 @@ const BlogForm = () => {
             submitLabel={isEdit ? "Update Blog" : "Publish Blog"}
             initialValues={memoInitialValues}
             onSubmit={handleSubmit}
-            onCancel={() => navigate(-1)}
+            onCancel={() => router.back()}
         />
     );
 };
 
-export default BlogForm;
+export default function CreateBlogRoute() {
+  return (
+    <ProtectedRoute>
+      <BlogForm />
+    </ProtectedRoute>
+  );
+}

@@ -1,11 +1,20 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import menu from "../menu.json";
 import api from "../api";
 import mineWordsLogo from "../assets/minewords-logo.png";
 
+const resolveImageSrc = (asset, fallback = "") => {
+  if (typeof asset === "string") return asset;
+  if (asset && typeof asset === "object" && typeof asset.src === "string") {
+    return asset.src;
+  }
+  return fallback;
+};
+
 const Footer = () => {
-  const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "MineWords";
+  const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
+  const logoSrc = resolveImageSrc(mineWordsLogo, "/minewords-logo.png");
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
@@ -39,7 +48,7 @@ const Footer = () => {
           <div className="footer-brand">
             <div className="footer-brand-top">
               <img
-                src={mineWordsLogo}
+                src={logoSrc}
                 alt={`${siteName} logo`}
                 className="footer-logo"
               />
@@ -60,7 +69,7 @@ const Footer = () => {
               {menu.map((item, i) => {
                 return (
                   <li key={i}>
-                    <Link to={item.url}>{item.label}</Link>
+                    <Link href={item.url}>{item.label}</Link>
                   </li>
                 );
               })}
@@ -90,7 +99,7 @@ const Footer = () => {
               ) : categories.length > 0 ? (
                 categories.map((category, index) => (
                   <li key={index}>
-                    <Link to={`/categories/${category.slug || "general"}`}>
+                    <Link href={`/categories/${category.slug || "general"}`}>
                       {category.name}
                     </Link>
                   </li>
@@ -125,3 +134,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
