@@ -1,11 +1,16 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import api from "../api";
-import { useAuth } from "../context/AuthContext";
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import api from "../src/api";
+import { useAuth } from "../src/context/AuthContext";
 
 const VerifyEmailPage = () => {
-  const [searchParams] = useSearchParams();
-  const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
+  const router = useRouter();
+  const token = useMemo(() => {
+    const rawToken = router.query.token;
+    if (Array.isArray(rawToken)) return rawToken[0] || "";
+    return rawToken || "";
+  }, [router.query.token]);
   const { user, updateUser } = useAuth();
 
   const [status, setStatus] = useState("loading");
@@ -13,6 +18,7 @@ const VerifyEmailPage = () => {
 
   useEffect(() => {
     const verify = async () => {
+      if (!router.isReady) return;
       if (!token) {
         setStatus("error");
         setMessage("Verification token is missing from this link.");
@@ -20,7 +26,9 @@ const VerifyEmailPage = () => {
       }
 
       try {
-        const res = await api.get(`/auth/verify-email?token=${encodeURIComponent(token)}`);
+        const res = await api.get(
+          `/auth/verify-email?token=${encodeURIComponent(token)}`,
+        );
         const verifiedUser = res.data?.data?.user;
 
         if (user && verifiedUser?.email && user.email === verifiedUser.email) {
@@ -31,12 +39,15 @@ const VerifyEmailPage = () => {
         setMessage(res.data?.message || "Email verified successfully.");
       } catch (error) {
         setStatus("error");
-        setMessage(error.response?.data?.message || "Could not verify email. Please request a new link.");
+        setMessage(
+          error.response?.data?.message ||
+            "Could not verify email. Please request a new link.",
+        );
       }
     };
 
     verify();
-  }, [token, updateUser, user]);
+  }, [router.isReady, token, updateUser, user]);
 
   return (
     <main className="container">
@@ -48,7 +59,8 @@ const VerifyEmailPage = () => {
 
         {status === "success" && (
           <div className="success-message" style={{ marginTop: "12px" }}>
-            Your account is verified. You can now create and interact with blogs.
+            Your account is verified. You can now create and interact with
+            blogs.
           </div>
         )}
 
@@ -59,7 +71,7 @@ const VerifyEmailPage = () => {
         )}
 
         <div style={{ marginTop: "16px" }}>
-          <Link className="btn btn-primary" to={user ? "/dashboard" : "/login"}>
+          <Link className="btn btn-primary" href={user ? "/dashboard" : "/login"}>
             {user ? "Go to Dashboard" : "Go to Login"}
           </Link>
         </div>

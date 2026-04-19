@@ -1,18 +1,28 @@
-﻿import { useEffect, useState, useRef } from "react";
-import BlogCard from "../components/BlogCard";
-import Hero from "../components/Hero";
-import DynamicAboutBox from "../components/SideBar/DynamicAboutBox";
-import DynamicCategoriesBox from "../components/SideBar/DynamicCategoriesBox";
-import NewsletterBox from "../components/SideBar/NewsletterBox";
-import { loadBlogs, useHandleCheckLogin } from "../helper";
-import BlogCardSkeleton from "../components/BlogCardSkeleton";
-import Pagination from "../components/Pagination";
-import { useMain } from "../context/MainContext";
-import { Link } from "react-router-dom";
-import AdBanner from "../components/AdBanner";
+import { useEffect, useState, useRef } from "react";
+import Head from "next/head";
+import BlogCard from "../src/components/BlogCard";
+import Hero from "../src/components/Hero";
+import DynamicAboutBox from "../src/components/SideBar/DynamicAboutBox";
+import DynamicCategoriesBox from "../src/components/SideBar/DynamicCategoriesBox";
+import NewsletterBox from "../src/components/SideBar/NewsletterBox";
+import { loadBlogs, useHandleCheckLogin } from "../src/helper";
+import BlogCardSkeleton from "../src/components/BlogCardSkeleton";
+import Pagination from "../src/components/Pagination";
+import { useMain } from "../src/context/MainContext";
+import Link from "next/link";
+import AdBanner from "../src/components/AdBanner";
+import { getSiteOrigin } from "../src/config/runtime";
 
 const HomePage = () => {
-  const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "MineWords";
+  const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
+  const siteOrigin = getSiteOrigin();
+  const homeTitle = `${siteName} - Words Worth Reading.`;
+  const homeDescription =
+    "MineWords is your go-to blog for insightful articles, engaging stories, and fresh perspectives on topics that matter.";
+  const homeImage = `${siteOrigin}/files/minewords-cover.png`;
+  const homeCanonical = `${siteOrigin}/`;
+  const homeKeywords =
+    "blog, articles, stories, ideas, reading, magazine, publishing";
   const handleCheckLogin = useHandleCheckLogin();
   const { globalSearch, setGlobalSearch } = useMain();
   const [blogs, setBlogs] = useState([]);
@@ -24,10 +34,9 @@ const HomePage = () => {
   const limit = 5;
   const [totalPages, setTotalPages] = useState(1);
   const fetchHomeMetaOnLoad =
-    import.meta.env.VITE_HOME_FETCH_META_ON_LOAD === "true";
-  const homeInlineSlot = import.meta.env.VITE_ADSENSE_SLOT_HOME_INLINE?.trim();
-  const homeSidebarSlot =
-    import.meta.env.VITE_ADSENSE_SLOT_HOME_SIDEBAR?.trim();
+    process.env.VITE_HOME_FETCH_META_ON_LOAD === "true";
+  const homeInlineSlot = process.env.VITE_ADSENSE_SLOT_HOME_INLINE?.trim();
+  const homeSidebarSlot = process.env.VITE_ADSENSE_SLOT_HOME_SIDEBAR?.trim();
 
   // Refs for scrolling
   const articlesSectionRef = useRef(null);
@@ -102,6 +111,37 @@ const HomePage = () => {
 
   return (
     <>
+      <Head>
+        <title key="title">{homeTitle}</title>
+        <meta key="description" name="description" content={homeDescription} />
+        <meta key="keywords" name="keywords" content={homeKeywords} />
+        <meta key="robots" name="robots" content="index, follow" />
+        <link key="canonical" rel="canonical" href={homeCanonical} />
+
+        <meta key="og:type" property="og:type" content="website" />
+        <meta key="og:title" property="og:title" content={homeTitle} />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={homeDescription}
+        />
+        <meta key="og:url" property="og:url" content={homeCanonical} />
+        <meta key="og:image" property="og:image" content={homeImage} />
+        <meta key="og:site_name" property="og:site_name" content={siteName} />
+
+        <meta
+          key="twitter:card"
+          name="twitter:card"
+          content="summary_large_image"
+        />
+        <meta key="twitter:title" name="twitter:title" content={homeTitle} />
+        <meta
+          key="twitter:description"
+          name="twitter:description"
+          content={homeDescription}
+        />
+        <meta key="twitter:image" name="twitter:image" content={homeImage} />
+      </Head>
       <Hero
         title={`Welcome to ${siteName}`}
         description={heroDescription}
@@ -138,7 +178,7 @@ const HomePage = () => {
                 </p>
               </div>
               <Link
-                to="/create"
+                href="/create"
                 className="btn btn-primary"
                 onClick={(e) => {
                   const isLogged = handleCheckLogin({ requireVerified: true });
@@ -221,4 +261,3 @@ const HomePage = () => {
   );
 };
 export default HomePage;
-

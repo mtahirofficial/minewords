@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import BlogCard from "../components/BlogCard";
-import api from "../api";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import BlogCard from "../../src/components/BlogCard";
+import api from "../../src/api";
 
 const HashtagPage = () => {
-  const { tag = "" } = useParams();
+  const router = useRouter();
+  const rawTag = Array.isArray(router.query.tag)
+    ? router.query.tag[0]
+    : router.query.tag;
+  const tag = rawTag || "";
+  const routeReady = router.isReady && Boolean(tag);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!tag) return;
+
     const load = async () => {
       try {
         setLoading(true);
@@ -32,12 +40,12 @@ const HashtagPage = () => {
         <h1>#{tag.toLowerCase()}</h1>
       </div>
 
-      {loading ? (
+      {!routeReady || loading ? (
         <div className="single-blog-loading">Loading posts...</div>
       ) : blogs.length === 0 ? (
         <div className="single-blog-not-found">
           <h2>No posts found for #{tag.toLowerCase()}</h2>
-          <Link className="btn btn-secondary" to="/">
+          <Link className="btn btn-secondary" href="/">
             Browse all posts
           </Link>
         </div>

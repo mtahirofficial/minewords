@@ -1,9 +1,9 @@
-﻿import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useRouter } from "next/router";
 import { useMain } from "../context/MainContext";
 
 const VerificationPopup = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { verificationModal, setVerificationModal } = useMain();
 
   if (!verificationModal) return null;
@@ -13,14 +13,15 @@ const VerificationPopup = () => {
       <div className="popup-box">
         <h3>Email verification required</h3>
         <p className="popup-description">
-          Verify your email to create posts, like, and comment. You can resend the link from your dashboard.
+          Verify your email to create posts, like, and comment. You can resend
+          the link from your dashboard.
         </p>
 
         <div className="popup-actions">
           <button
             onClick={() => {
               setVerificationModal(false);
-              navigate("/dashboard");
+              router.push("/dashboard");
             }}
           >
             Go to Dashboard

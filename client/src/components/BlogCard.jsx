@@ -1,24 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Calendar, User, MessageCircle, Heart } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { splitTextByHashtags, useHandleCheckLogin } from "../helper";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import {
+  extractBlogHashtags,
+  splitTextByHashtags,
+  useHandleCheckLogin,
+} from "../helper";
 import api from "../api";
 import { showToast } from "../toast";
 import { resolveStaticFileUrl } from "../utils/staticUrl";
 
 const resolveBlogImageUrl = (value = "") => {
-  return resolveStaticFileUrl(value, import.meta.env.VITE_API_URL || api.defaults.baseURL);
+  return resolveStaticFileUrl(value, process.env.VITE_API_URL || api.defaults.baseURL);
 };
 
 const BlogCard = ({ post, onUpdate }) => {
   const handleCheckLogin = useHandleCheckLogin();
-  const navigate = useNavigate();
+  const router = useRouter();
   const blogPath = `/blog/${encodeURIComponent(post.slug || post.id)}`;
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [imageFailed, setImageFailed] = useState(false);
 
   const coverImageUrl = resolveBlogImageUrl(post?.coverImage);
+  const postTags = useMemo(() => extractBlogHashtags(post), [post]);
 
   useEffect(() => {
     setLikesCount(post.likesCount || 0);
@@ -59,13 +65,13 @@ const BlogCard = ({ post, onUpdate }) => {
     const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
 
-    navigate(`${blogPath}#comment`);
+    router.push(`${blogPath}#comment`);
   };
 
   const handleHashtagClick = (e, tag) => {
     e.preventDefault();
     e.stopPropagation();
-    navigate(`/hashtag/${tag.toLowerCase()}`);
+    router.push(`/hashtag/${tag.toLowerCase()}`);
   };
 
   const renderWithHashtags = (value = "", keyPrefix = "text") =>
@@ -90,7 +96,7 @@ const BlogCard = ({ post, onUpdate }) => {
     });
 
   return (
-    <Link to={blogPath}>
+    <Link href={blogPath}>
       <article className="blog-card">
         {!imageFailed && coverImageUrl && (
           <figure className="blog-card-cover-wrap">
@@ -112,6 +118,20 @@ const BlogCard = ({ post, onUpdate }) => {
         <h3>{renderWithHashtags(post.title || "", `title-${post.id}`)}</h3>
 
         <p>{renderWithHashtags(post.excerpt || "", `excerpt-${post.id}`)}</p>
+        {postTags.length > 0 && (
+          <div className="post-tag-list">
+            {postTags.slice(0, 8).map((tag) => (
+              <button
+                key={`${post.id}-tag-${tag}`}
+                type="button"
+                className="post-tag-chip"
+                onClick={(event) => handleHashtagClick(event, tag)}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="post-footer">
           <div className="author">
@@ -146,3 +166,4 @@ const BlogCard = ({ post, onUpdate }) => {
 };
 
 export default BlogCard;
+

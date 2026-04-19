@@ -1,20 +1,29 @@
 import { Search, Menu, X } from "lucide-react";
 import MenuList from "./MenuList";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
 import { useMain } from "../context/MainContext";
 import { useState, useEffect, useRef } from "react";
 import mineWordsLogo from "../assets/minewords-logo.png";
 
+const resolveImageSrc = (asset, fallback = "") => {
+    if (typeof asset === "string") return asset;
+    if (asset && typeof asset === "object" && typeof asset.src === "string") {
+        return asset.src;
+    }
+    return fallback;
+};
 
 const Header = ({ isMenuOpen, setIsMenuOpen }) => {
-    const siteName = import.meta.env.VITE_SITE_NAME?.trim() || "MineWords";
+    const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
+    const logoSrc = resolveImageSrc(mineWordsLogo, "/minewords-logo.png");
     const { user, logout } = useAuth();
     const { globalSearch, setGlobalSearch } = useMain();
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const pathname = router.asPath.split("?")[0];
     const searchInputRef = useRef(null);
 
     // Sync local search value with global search
@@ -43,8 +52,8 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
         if (searchValue.trim()) {
             setGlobalSearch(searchValue.trim());
             // Navigate to home page if not already there
-            if (location.pathname !== '/') {
-                navigate('/');
+            if (pathname !== '/') {
+                router.push('/');
             }
             // Scroll to articles section after a short delay
             setTimeout(() => {
@@ -64,8 +73,8 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
         <header className="site-header">
             <div className="max-width">
                 <div className="inner-header">
-                    <Link to="/" className="brand-link" aria-label={`${siteName} home`}>
-                        <img src={mineWordsLogo} alt={`${siteName} logo`} className="brand-logo-image" />
+                    <Link href="/" className="brand-link" aria-label={`${siteName} home`}>
+                        <img src={logoSrc} alt={`${siteName} logo`} className="brand-logo-image" />
                         <span className="brand-copy">
                             <span className="brand-name">{siteName}</span>
                             <span className="brand-tagline">Creative Writing &amp; Publishing</span>
@@ -145,15 +154,15 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
                                     {userMenuOpen && (
                                         <div className="dropdown-menu">
                                             {/* <Link to="/profile">Profile</Link> */}
-                                            <Link to="/dashboard" onClick={() => setUserMenuOpen(false)}>Dashboard</Link>
+                                            <Link href="/dashboard" onClick={() => setUserMenuOpen(false)}>Dashboard</Link>
                                             <button onClick={logout}>Logout</button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
                                 <>
-                                    <Link to="/login" className="account-link">Login</Link>
-                                    <Link to="/signup" className="account-link signup-btn">Signup</Link>
+                                    <Link href="/login" className="account-link">Login</Link>
+                                    <Link href="/signup" className="account-link signup-btn">Signup</Link>
                                 </>
                             )}
                         </div>
@@ -174,3 +183,4 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
 };
 
 export default Header;
+

@@ -25,7 +25,7 @@ const bootstrap = async () => {
         await sequelize.authenticate();
         await sequelize.sync();
         ConsoleLogger.info("Database connected and synchronized.");
-        app.startListening();
+        await app.startListening();
     } catch (error) {
         ConsoleLogger.error(`Database bootstrap failed: ${error.message}`);
         process.exit(1);

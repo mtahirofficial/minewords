@@ -79,18 +79,45 @@ export const withFreeHashtagSuggestion = (items = [], query = "") => {
     return [{ name: normalizedQuery, count: 0 }, ...items];
 };
 
+const normalizeHashtagSource = (value = "") =>
+    String(value)
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ");
+
 export const extractHashtags = (value = "") => {
     const found = new Set();
-    const text = String(value);
-    let match = HASHTAG_PATTERN.exec(text);
+    const text = normalizeHashtagSource(value);
+    const regex = /(^|[^A-Za-z0-9_])#([A-Za-z0-9_]+)/g;
+    let match = regex.exec(text);
 
     while (match) {
-        found.add(match[2].toLowerCase());
-        match = HASHTAG_PATTERN.exec(text);
+        found.add(String(match[2] || "").toLowerCase());
+        match = regex.exec(text);
     }
 
-    HASHTAG_PATTERN.lastIndex = 0;
     return [...found];
+};
+
+export const extractBlogHashtags = (post = {}) => {
+    const values = [
+        post?.title || "",
+        post?.excerpt || "",
+        post?.content || "",
+    ];
+
+    if (Array.isArray(post?.tags)) {
+        values.push(post.tags.join(" "));
+    } else if (typeof post?.tags === "string") {
+        values.push(post.tags);
+    }
+
+    if (Array.isArray(post?.hashtags)) {
+        values.push(post.hashtags.join(" "));
+    } else if (typeof post?.hashtags === "string") {
+        values.push(post.hashtags);
+    }
+
+    return extractHashtags(values.join(" "));
 };
 
 export const splitTextByHashtags = (value = "") =>

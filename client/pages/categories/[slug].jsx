@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import api from "../api";
-import CategoriesSidebar from "../components/CategoriesSidebar";
-import PostsList from "../components/PostsList";
-import Hero from "../components/Hero";
+import { useRouter } from "next/router";
+import api from "../../src/api";
+import CategoriesSidebar from "../../src/components/CategoriesSidebar";
+import PostsList from "../../src/components/PostsList";
+import Hero from "../../src/components/Hero";
 
 const CategoriesPage = () => {
-    const navigate = useNavigate();
-    const { slug } = useParams();
+    const router = useRouter();
+    const slug = Array.isArray(router.query.slug) ? router.query.slug[0] : router.query.slug;
     const CATEGORY_PAGE_SIZE = 6;
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -51,6 +51,8 @@ const CategoriesPage = () => {
 
     // Fetch categories from dedicated endpoint
     useEffect(() => {
+        if (!router.isReady) return;
+
         const fetchCategories = async () => {
             try {
                 setLoading(true);
@@ -77,11 +79,11 @@ const CategoriesPage = () => {
                         setSelectedCategory(categoryFromUrl);
                     } else if (categoryList.length > 0) {
                         setSelectedCategory(categoryList[0]);
-                        navigate(`/categories/${categoryList[0].slug}`, { replace: true });
+                        router.replace(`/categories/${categoryList[0].slug}`);
                     }
                 } else if (categoryList.length > 0) {
                     setSelectedCategory(categoryList[0]);
-                    navigate(`/categories/${categoryList[0].slug}`, { replace: true });
+                    router.replace(`/categories/${categoryList[0].slug}`);
                 }
             } catch (err) {
                 console.error("Error fetching categories:", err);
@@ -90,10 +92,12 @@ const CategoriesPage = () => {
             }
         };
         fetchCategories();
-    }, [navigate, slug]);
+    }, [router, router.isReady, slug]);
 
     // Sync selected category with URL slug changes (for browser back/forward)
     useEffect(() => {
+        if (!router.isReady) return;
+
         if (categories.length > 0) {
             if (slug) {
                 const categoryFromUrl = categories.find(cat => 
@@ -106,13 +110,13 @@ const CategoriesPage = () => {
                 setSelectedCategory(categories[0]);
             }
         }
-    }, [categories, selectedCategory, slug]);
+    }, [categories, router.isReady, selectedCategory, slug]);
 
     // Handle category selection and update URL
     const handleCategoryChange = (category) => {
         setSelectedCategory(category);
         if (category) {
-            navigate(`/categories/${category.slug}`);
+            router.push(`/categories/${category.slug}`);
         }
     };
 

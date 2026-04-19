@@ -320,6 +320,14 @@ class BlogController {
         return createdBlog;
       });
 
+      try {
+        await fetch(
+          "https://www.google.com/ping?sitemap=https://minewords.com/sitemap.xml",
+        );
+      } catch (pingError) {
+        console.warn(`Google sitemap ping failed: ${pingError.message}`);
+      }
+
       res.json({ status: 201, message: "Blog created", blog: blog });
     } catch (error) {
       next(new ServerException(error.message));

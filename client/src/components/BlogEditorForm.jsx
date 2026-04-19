@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import {
   fetchBlogCategories,
   fetchHashtagSuggestions,
@@ -101,89 +99,103 @@ const BlogEditorForm = ({
   useEffect(() => {
     if (!quillHostRef.current || quillInstanceRef.current) return;
 
-    const quill = new Quill(quillHostRef.current, {
-      theme: "snow",
-      modules: {
-        toolbar: [
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [
-            { list: "ordered" },
-            { list: "bullet" },
-            { indent: "-1" },
-            { indent: "+1" },
+    let cancelled = false;
+
+    const initQuill = async () => {
+      if (typeof window === "undefined") return;
+      const { default: Quill } = await import("quill");
+      if (cancelled || !quillHostRef.current || quillInstanceRef.current) return;
+
+      const quill = new Quill(quillHostRef.current, {
+        theme: "snow",
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [
+              { list: "ordered" },
+              { list: "bullet" },
+              { indent: "-1" },
+              { indent: "+1" },
+            ],
+            ["blockquote", "code-block", "link"],
+            ["clean"],
           ],
-          ["blockquote", "code-block", "link"],
-          ["clean"],
-        ],
-      },
-    });
+        },
+      });
 
-    quill.root.innerHTML = normalizeContentToHtml(formData.content);
-    const detectActiveHashtag = () => {
-      const selection = quill.getSelection(true);
-      const selectionIndex =
-        typeof selection?.index === "number"
-          ? selection.index
-          : Math.max(0, quill.getLength() - 1);
+      quill.root.innerHTML = normalizeContentToHtml(formData.content);
+      const detectActiveHashtag = () => {
+        const selection = quill.getSelection(true);
+        const selectionIndex =
+          typeof selection?.index === "number"
+            ? selection.index
+            : Math.max(0, quill.getLength() - 1);
 
-      const textBeforeCursor = quill.getText(0, selectionIndex);
-      const match = textBeforeCursor.match(/(?:^|\s)#([A-Za-z0-9_]*)$/);
+        const textBeforeCursor = quill.getText(0, selectionIndex);
+        const match = textBeforeCursor.match(/(?:^|\s)#([A-Za-z0-9_]*)$/);
 
-      if (!match) {
+        if (!match) {
+          if (activeHashtagFieldRef.current === "content")
+            hideHashtagSuggestions();
+          return null;
+        }
+
+        const query = match[1] || "";
+        setActiveHashtagQuery(query);
+        setShowHashtagList(true);
+        setActiveHashtagField("content");
+        return query;
+      };
+
+      quill.on("text-change", (_delta, _oldDelta, source) => {
+        if (source !== "user") return;
+        isProgrammaticSyncRef.current = true;
+        const nextHtml = quill.root.innerHTML;
+        setFormData((prev) => ({ ...prev, content: nextHtml }));
+        isProgrammaticSyncRef.current = false;
+
+        const query = detectActiveHashtag();
+        if (query === null) return;
+
+        if (hashtagDebounceRef.current) {
+          clearTimeout(hashtagDebounceRef.current);
+        }
+
+        hashtagDebounceRef.current = setTimeout(async () => {
+          try {
+            const items = await fetchHashtagSuggestions(query);
+            setHashtagSuggestions(withFreeHashtagSuggestion(items, query));
+          } catch (error) {
+            console.error("Failed to fetch hashtag suggestions", error);
+            setHashtagSuggestions([]);
+          }
+        }, 180);
+      });
+
+      quill.on("selection-change", (range) => {
+        if (isSelectingHashtagRef.current) return;
+        if (!range) {
+          if (activeHashtagFieldRef.current === "content")
+            hideHashtagSuggestions();
+          return;
+        }
+        detectActiveHashtag();
+      });
+
+      quill.root.addEventListener("blur", () => {
         if (activeHashtagFieldRef.current === "content")
-          hideHashtagSuggestions();
-        return null;
-      }
+          hideHashtagSuggestions(120);
+      });
 
-      const query = match[1] || "";
-      setActiveHashtagQuery(query);
-      setShowHashtagList(true);
-      setActiveHashtagField("content");
-      return query;
+      quillInstanceRef.current = quill;
     };
 
-    quill.on("text-change", (_delta, _oldDelta, source) => {
-      if (source !== "user") return;
-      isProgrammaticSyncRef.current = true;
-      const nextHtml = quill.root.innerHTML;
-      setFormData((prev) => ({ ...prev, content: nextHtml }));
-      isProgrammaticSyncRef.current = false;
+    initQuill();
 
-      const query = detectActiveHashtag();
-      if (query === null) return;
-
-      if (hashtagDebounceRef.current) {
-        clearTimeout(hashtagDebounceRef.current);
-      }
-
-      hashtagDebounceRef.current = setTimeout(async () => {
-        try {
-          const items = await fetchHashtagSuggestions(query);
-          setHashtagSuggestions(withFreeHashtagSuggestion(items, query));
-        } catch (error) {
-          console.error("Failed to fetch hashtag suggestions", error);
-          setHashtagSuggestions([]);
-        }
-      }, 180);
-    });
-
-    quill.on("selection-change", (range) => {
-      if (isSelectingHashtagRef.current) return;
-      if (!range) {
-        if (activeHashtagFieldRef.current === "content")
-          hideHashtagSuggestions();
-        return;
-      }
-      detectActiveHashtag();
-    });
-
-    quill.root.addEventListener("blur", () => {
-      if (activeHashtagFieldRef.current === "content")
-        hideHashtagSuggestions(120);
-    });
-
-    quillInstanceRef.current = quill;
+    return () => {
+      cancelled = true;
+    };
   }, [formData.content]);
 
   useEffect(

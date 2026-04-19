@@ -1,14 +1,14 @@
 import { Search, X } from "lucide-react";
 import MenuList from "./MenuList";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useMain } from "../context/MainContext";
 import { useState, useEffect } from "react";
 
 const MobileMenu = ({ setIsMenuOpen }) => {
     const { globalSearch, setGlobalSearch } = useMain();
     const [searchValue, setSearchValue] = useState("");
-    const navigate = useNavigate();
-    const location = useLocation();
+    const router = useRouter();
+    const pathname = router.asPath.split("?")[0];
 
     // Sync local search value with global search
     useEffect(() => {
@@ -25,8 +25,8 @@ const MobileMenu = ({ setIsMenuOpen }) => {
         if (searchValue.trim()) {
             setGlobalSearch(searchValue.trim());
             // Navigate to home page if not already there
-            if (location.pathname !== '/') {
-                navigate('/');
+            if (pathname !== '/') {
+                router.push('/');
             }
             // Scroll to articles section after a short delay
             setTimeout(() => {

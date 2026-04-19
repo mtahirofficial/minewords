@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const DynamicAboutBox = ({
   siteName = "our platform",
@@ -11,10 +11,11 @@ const DynamicAboutBox = ({
       {siteName} is a community-driven platform for sharing knowledge and
       insights. .
     </p>
-    <Link to="/about" className="learn-more-about">
+    <Link href="/about" className="learn-more-about">
       Learn More
     </Link>
   </div>
 );
 
 export default DynamicAboutBox;
+

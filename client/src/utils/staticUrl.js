@@ -1,3 +1,5 @@
+import { getStaticOrigin } from "../config/runtime";
+
 const stripApiPrefix = (value = "") => {
   const normalized = String(value || "").trim();
   if (!normalized) return "";
@@ -26,34 +28,18 @@ export const resolveStaticFileUrl = (value = "", apiBase = "") => {
   }
 
   if (raw.startsWith("//")) {
-    return `${window.location.protocol}${raw}`;
+    const protocol =
+      typeof window !== "undefined" ? window.location.protocol : "https:";
+    return `${protocol}${raw}`;
   }
 
-  let origin = window.location.origin;
-  const base = String(apiBase || "").trim();
-  const staticOrigin = String(import.meta.env.VITE_STATIC_ORIGIN || "").trim();
-  const proxyTarget = String(import.meta.env.VITE_API_PROXY_TARGET || "").trim();
-  if (staticOrigin && /^https?:\/\//i.test(staticOrigin)) {
-    try {
-      origin = new URL(staticOrigin).origin;
-    } catch (_error) {
-      origin = window.location.origin;
-    }
-  } else if (base && /^https?:\/\//i.test(base)) {
-    try {
-      origin = new URL(base).origin;
-    } catch (_error) {
-      origin = window.location.origin;
-    }
-  } else if (import.meta.env.DEV && proxyTarget && /^https?:\/\//i.test(proxyTarget)) {
-    try {
-      origin = new URL(proxyTarget).origin;
-    } catch (_error) {
-      origin = window.location.origin;
-    }
-  }
+  const browserOrigin =
+    typeof window !== "undefined" ? window.location.origin : "";
+  const fallbackOrigin = getStaticOrigin(apiBase);
+  const origin = fallbackOrigin || browserOrigin;
 
   const withLeadingSlash = raw.startsWith("/") ? raw : `/${raw}`;
   const normalizedPath = stripApiPrefix(withLeadingSlash);
-  return `${origin}${normalizedPath}`;
+  return origin ? `${origin}${normalizedPath}` : normalizedPath;
 };
+
