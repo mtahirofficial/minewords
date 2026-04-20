@@ -24,8 +24,14 @@ class AppServer {
     this.initMiddleWares();
     this.initLogger();
     this.initializeControllers(controllers);
-    if (process.env.IS_SSR) {
+    const ssrEnabled =
+      String(process.env.IS_SSR || "true")
+        .trim()
+        .toLowerCase() !== "false";
+    if (ssrEnabled) {
       this.initFrontendRenderer();
+    } else {
+      this.registerStaticFrontend();
     }
     this.initErrorHandling();
   }
@@ -110,9 +116,13 @@ class AppServer {
       );
       next = requireFromClient("next");
       const nextDir = join(__dirname, "client");
-      isDev = String(process.env.NEXT_DEV || "")
+      const nextDevEnv = String(process.env.NEXT_DEV || "")
         .trim()
-        .toLowerCase() === "true";
+        .toLowerCase();
+      isDev = nextDevEnv
+        ? nextDevEnv === "true"
+        : String(process.env.NODE_ENV || "").trim().toLowerCase() !==
+          "production";
       nextApp = next({ dev: isDev, dir: nextDir });
     } catch (error) {
       ConsoleLogger.error(
