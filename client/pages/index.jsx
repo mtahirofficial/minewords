@@ -11,9 +11,61 @@ import Pagination from "../src/components/Pagination";
 import { useMain } from "../src/context/MainContext";
 import Link from "next/link";
 import AdBanner from "../src/components/AdBanner";
-import { getSiteOrigin } from "../src/config/runtime";
+import { getServerApiBaseUrl, getSiteOrigin } from "../src/config/runtime";
 
-const HomePage = () => {
+const HOME_PAGE_LIMIT = 5;
+
+const fetchJsonSafe = async (url) => {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return response.json();
+  } catch (_error) {
+    return null;
+  }
+};
+
+export async function getServerSideProps() {
+  const apiBase = getServerApiBaseUrl();
+  const blogsUrl = `${apiBase}/blogs?page=1&limit=${HOME_PAGE_LIMIT}`;
+  const categoriesUrl = `${apiBase}/categories`;
+
+  const [blogsPayload, categoriesPayload] = await Promise.all([
+    fetchJsonSafe(blogsUrl),
+    fetchJsonSafe(categoriesUrl),
+  ]);
+
+  const initialBlogs = Array.isArray(blogsPayload?.blogs)
+    ? blogsPayload.blogs
+    : [];
+  const initialTotalPages = Number(blogsPayload?.pagination?.totalPages || 1);
+  const initialCategoryStats = Array.isArray(categoriesPayload?.categories)
+    ? categoriesPayload.categories
+        .map((item) => ({
+          name: item?.name,
+          count: Number(item?.count || 0),
+        }))
+        .filter((item) => item.name)
+    : [];
+
+  return {
+    props: {
+      initialBlogs,
+      initialTotalPages,
+      initialCategoryStats,
+      initialTotalBlogs: Number(blogsPayload?.pagination?.total || initialBlogs.length || 0),
+      serverHydrated: Boolean(blogsPayload || categoriesPayload),
+    },
+  };
+}
+
+const HomePage = ({
+  initialBlogs = [],
+  initialTotalPages = 1,
+  initialCategoryStats = [],
+  initialTotalBlogs = 0,
+  serverHydrated = false,
+}) => {
   const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
   const siteOrigin = getSiteOrigin();
   const homeTitle = `${siteName} - Words Worth Reading.`;
@@ -25,14 +77,15 @@ const HomePage = () => {
     "blog, articles, stories, ideas, reading, magazine, publishing";
   const handleCheckLogin = useHandleCheckLogin();
   const { globalSearch, setGlobalSearch } = useMain();
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(initialBlogs);
   const [loading, setLoading] = useState(false);
-  const [categoryStats, setCategoryStats] = useState([]);
-  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [categoryStats, setCategoryStats] = useState(initialCategoryStats);
+  const [totalBlogs, setTotalBlogs] = useState(initialTotalBlogs);
+  const usedServerPayloadRef = useRef(serverHydrated);
 
   const [page, setPage] = useState(1);
-  const limit = 5;
-  const [totalPages, setTotalPages] = useState(1);
+  const limit = HOME_PAGE_LIMIT;
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
   const fetchHomeMetaOnLoad =
     process.env.VITE_HOME_FETCH_META_ON_LOAD === "true";
   const homeInlineSlot = process.env.VITE_ADSENSE_SLOT_HOME_INLINE?.trim();
@@ -49,6 +102,11 @@ const HomePage = () => {
 
   // Fetch blogs using global search
   useEffect(() => {
+    if (usedServerPayloadRef.current && page === 1 && !globalSearch) {
+      usedServerPayloadRef.current = false;
+      return;
+    }
+
     loadBlogs({
       page,
       limit,
