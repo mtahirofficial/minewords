@@ -20,3 +20,4 @@ updated_services.json
 service.json
 payment_webhooks.json
 shop.json
+/files/*

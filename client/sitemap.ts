@@ -3,16 +3,33 @@
 // Every time a new post is published, it appears here instantly.
 
 import { MetadataRoute } from "next";
+import { getServerApiBaseUrl, getSiteOrigin } from "./src/config/runtime";
 
-const BASE_URL = "https://minewords.com";
+const BASE_URL = getSiteOrigin();
+const SERVER_API_BASE_URL = getServerApiBaseUrl();
 
 async function getAllPosts() {
-  const res = await fetch(`${BASE_URL}/api/blogs?page=1&limit=1000`, {
-    next: { revalidate: 3600 }, // refresh sitemap every hour
-  });
-  if (!res.ok) return [];
-  const payload = await res.json();
-  return payload?.blogs || [];
+  const apiCandidates = [
+    SERVER_API_BASE_URL,
+    `${BASE_URL}/api`,
+  ].filter(Boolean);
+
+  for (const apiBase of apiCandidates) {
+    try {
+      const res = await fetch(`${apiBase}/blogs?page=1&limit=1000`, {
+        next: { revalidate: 3600 }, // refresh sitemap every hour
+      });
+      if (!res.ok) continue;
+
+      const payload = await res.json();
+      const blogs = Array.isArray(payload?.blogs) ? payload.blogs : [];
+      if (blogs.length > 0) return blogs;
+    } catch (_error) {
+      // Try the next candidate base URL.
+    }
+  }
+
+  return [];
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -28,7 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }),
   );
-  console.log("postUrls", postUrls);
 
   // 3. Static pages — always included
   const staticPages = [
