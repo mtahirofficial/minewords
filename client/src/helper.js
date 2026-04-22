@@ -117,6 +117,27 @@ export const extractBlogHashtags = (post = {}) => {
         values.push(post.hashtags);
     }
 
+    const normalizedTags = (() => {
+        const source = post?.tags;
+        if (Array.isArray(source)) return source;
+        if (typeof source === "string") {
+            try {
+                const parsed = JSON.parse(source);
+                if (Array.isArray(parsed)) return parsed;
+            } catch (error) {
+                return source.split(",");
+            }
+        }
+        return [];
+    })()
+        .map((item) => String(item || "").trim().replace(/^#+/, "").toLowerCase())
+        .filter(Boolean)
+        .slice(0, 10);
+
+    if (normalizedTags.length) {
+        values.push(normalizedTags.map((tag) => `#${tag}`).join(" "));
+    }
+
     return extractHashtags(values.join(" "));
 };
 

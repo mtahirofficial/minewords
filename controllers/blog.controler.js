@@ -13,12 +13,64 @@ const { calculateReadTime } = require("../utils");
 
 const escapeLikeTerm = (value = "") => value.replace(/[%_\\]/g, "\\$&");
 const stripHtmlTags = (value = "") => String(value).replace(/<[^>]*>/g, " ");
+const MAX_TAGS = 10;
 const makeSlug = (value = "", fallback = "item") =>
   String(value || fallback)
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "") || fallback;
+
+const normalizeTag = (value = "") =>
+  String(value || "")
+    .trim()
+    .replace(/^#+/, "")
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
+const parseStoredTags = (value = null) => {
+  if (!value) return [];
+
+  try {
+    const parsed = JSON.parse(String(value));
+    if (!Array.isArray(parsed)) return [];
+    return [...new Set(parsed.map((item) => normalizeTag(item)).filter(Boolean))];
+  } catch (error) {
+    return String(value)
+      .split(",")
+      .map((item) => normalizeTag(item))
+      .filter(Boolean);
+  }
+};
+
+const parseTagListFromInput = (value = undefined, fallback = []) => {
+  if (value === undefined || value === null || value === "") return fallback;
+
+  let source = value;
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        source = parsed;
+      }
+    } catch (error) {
+      source = value.split(",");
+    }
+  }
+
+  const normalized = Array.isArray(source)
+    ? source.map((item) => normalizeTag(item)).filter(Boolean)
+    : [];
+
+  return [...new Set(normalized)].slice(0, MAX_TAGS);
+};
+
+const tagsToHashtagText = (tags = []) =>
+  tags
+    .map((tag) => normalizeTag(tag))
+    .filter(Boolean)
+    .map((tag) => `#${tag}`)
+    .join(" ");
 
 const extractHashtags = (value = "") => {
   const text = stripHtmlTags(value);
@@ -227,6 +279,7 @@ class BlogController {
         distinct: true, // Important for accurate pagination with includes
         logging: false,
       });
+      console.log(blogs);
 
       const result = blogs.map((blog) => {
         const blogData = blog.toJSON();
@@ -235,6 +288,7 @@ class BlogController {
           : false;
         return {
           ...blogData,
+          tags: parseStoredTags(blogData.tags),
           likesCount: (blog.Likes || []).length,
           isLiked,
         };
@@ -277,6 +331,7 @@ class BlogController {
         : false;
       const result = {
         ...blog.toJSON(),
+        tags: parseStoredTags(blog.tags),
         likesCount: blog.Likes.length,
         isLiked,
       };
@@ -291,8 +346,9 @@ class BlogController {
     try {
       const { author, title, excerpt, content, category } = req.body;
       const userId = req.user.id;
+      const parsedTags = parseTagListFromInput(req.body?.tags, []);
       const hashtags = extractHashtags(
-        `${title || ""} ${excerpt || ""} ${content || ""}`,
+        `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
       );
       const coverImage = req.file
         ? `${MulterMiddleware.baseFilePath}${req.file.filename}`
@@ -310,6 +366,7 @@ class BlogController {
             category,
             categorySlug: makeSlug(category, "general"),
             coverImage,
+            tags: JSON.stringify(parsedTags),
             readTime: calculateReadTime(content),
             userId,
           },
@@ -328,7 +385,12 @@ class BlogController {
         console.warn(`Google sitemap ping failed: ${pingError.message}`);
       }
 
-      res.json({ status: 201, message: "Blog created", blog: blog });
+      const blogData = blog.toJSON ? blog.toJSON() : blog;
+      res.json({
+        status: 201,
+        message: "Blog created",
+        blog: { ...blogData, tags: parseStoredTags(blogData.tags) },
+      });
     } catch (error) {
       next(new ServerException(error.message));
     }
@@ -342,11 +404,15 @@ class BlogController {
         return next(new ForbiddenException("Not allowed"));
 
       const { title, excerpt, content, category } = req.body;
+      const parsedTags = parseTagListFromInput(
+        req.body?.tags,
+        parseStoredTags(blog.tags),
+      );
       const previousTags = extractHashtags(
-        `${blog.title || ""} ${blog.excerpt || ""} ${blog.content || ""}`,
+        `${blog.title || ""} ${blog.excerpt || ""} ${blog.content || ""} ${tagsToHashtagText(parseStoredTags(blog.tags))}`,
       );
       const nextTags = extractHashtags(
-        `${title || ""} ${excerpt || ""} ${content || ""}`,
+        `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
       );
       const coverImage = req.file
         ? `${MulterMiddleware.baseFilePath}${req.file.filename}`
@@ -367,6 +433,7 @@ class BlogController {
             category,
             categorySlug: makeSlug(category, "general"),
             coverImage,
+            tags: JSON.stringify(parsedTags),
             readTime: calculateReadTime(content),
           },
           { transaction },
@@ -374,7 +441,11 @@ class BlogController {
         await this.syncHashtagCounts(previousTags, nextTags, transaction);
       });
 
-      res.json({ status: 200, message: "Blog updated", data: blog });
+      res.json({
+        status: 200,
+        message: "Blog updated",
+        data: { ...blog.toJSON(), tags: parseStoredTags(blog.tags) },
+      });
     } catch (error) {
       next(new ServerException(error.message));
     }
@@ -387,7 +458,7 @@ class BlogController {
       if (blog.userId !== req.user.id)
         return next(new ForbiddenException("Not allowed"));
       const tags = extractHashtags(
-        `${blog.title || ""} ${blog.excerpt || ""} ${blog.content || ""}`,
+        `${blog.title || ""} ${blog.excerpt || ""} ${blog.content || ""} ${tagsToHashtagText(parseStoredTags(blog.tags))}`,
       );
 
       await sequelize.transaction(async (transaction) => {
@@ -478,6 +549,7 @@ class BlogController {
           : false;
         return {
           ...data,
+          tags: parseStoredTags(data.tags),
           likesCount: (blog.Likes || []).length,
           isLiked,
         };

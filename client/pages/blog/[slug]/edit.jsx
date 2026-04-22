@@ -20,7 +20,8 @@ const BlogForm = () => {
         excerpt: "",
         content: "",
         author: user?.name || "",
-        category: ""
+        category: "",
+        tags: []
     });
 
     useEffect(() => {
@@ -53,7 +54,10 @@ const BlogForm = () => {
                     excerpt: blog.excerpt || "",
                     content: blog.content || "",
                     author: blog.author || blog?.User?.name || "",
-                    category: blog.category || ""
+                    category: blog.category || "",
+                    tags: Array.isArray(blog.tags)
+                        ? blog.tags
+                        : (typeof blog.tags === "string" ? blog.tags.split(",") : [])
                 });
             } catch (err) {
                 console.error("Error loading blog:", err);
@@ -74,6 +78,7 @@ const BlogForm = () => {
         formData.append("content", payload.content || "");
         formData.append("author", payload.author || "");
         formData.append("category", payload.category || "");
+        formData.append("tags", JSON.stringify(payload.tags || []));
 
         if (payload.coverImage) {
             formData.append("coverImage", payload.coverImage);

@@ -38,6 +38,30 @@ const htmlToPlainText = (html = "") =>
     .replace(/\s+/g, " ")
     .trim();
 
+const MAX_TAGS = 10;
+
+const normalizeTag = (value = "") =>
+  String(value || "")
+    .trim()
+    .replace(/^#+/, "")
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+
+const parseInitialTags = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((tag) => normalizeTag(tag)).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((tag) => normalizeTag(tag))
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
 const BlogEditorForm = ({
   pageTitle,
   pageSubtitle,
@@ -53,6 +77,8 @@ const BlogEditorForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
   const [coverImagePreview, setCoverImagePreview] = useState("");
+  const [tags, setTags] = useState(parseInitialTags(initialValues.tags));
+  const [tagInput, setTagInput] = useState("");
   const quillHostRef = useRef(null);
   const quillInstanceRef = useRef(null);
   const titleRef = useRef(null);
@@ -94,6 +120,8 @@ const BlogEditorForm = ({
       ...initialValues,
       content: normalizeContentToHtml(initialValues.content),
     });
+    setTags(parseInitialTags(initialValues.tags));
+    setTagInput("");
   }, [initialValues]);
 
   useEffect(() => {
@@ -104,7 +132,8 @@ const BlogEditorForm = ({
     const initQuill = async () => {
       if (typeof window === "undefined") return;
       const { default: Quill } = await import("quill");
-      if (cancelled || !quillHostRef.current || quillInstanceRef.current) return;
+      if (cancelled || !quillHostRef.current || quillInstanceRef.current)
+        return;
 
       const quill = new Quill(quillHostRef.current, {
         theme: "snow",
@@ -331,6 +360,84 @@ const BlogEditorForm = ({
     setCoverImagePreview("");
   };
 
+  const addTags = (rawTags = []) => {
+    const incoming = rawTags.map((tag) => normalizeTag(tag)).filter(Boolean);
+    if (!incoming.length) return;
+
+    setTags((prev) => {
+      const existing = new Set(prev.map((tag) => tag.toLowerCase()));
+      const next = [...prev];
+      let blockedByLimit = false;
+
+      for (const item of incoming) {
+        const key = item.toLowerCase();
+        if (existing.has(key)) continue;
+        if (next.length >= MAX_TAGS) {
+          blockedByLimit = true;
+          break;
+        }
+        next.push(item);
+        existing.add(key);
+      }
+
+      if (blockedByLimit) {
+        showToast(`You can add up to ${MAX_TAGS} tags only.`, "error");
+      }
+
+      return next;
+    });
+  };
+
+  const commitTagInput = () => {
+    const next = normalizeTag(tagInput);
+    if (!next) {
+      setTagInput("");
+      return;
+    }
+    addTags([next]);
+    setTagInput("");
+  };
+
+  const handleTagInputChange = (e) => {
+    const nextValue = e.target.value || "";
+    if (!nextValue.includes(",")) {
+      setTagInput(nextValue);
+      return;
+    }
+
+    const parts = nextValue.split(",");
+    const completeTags = parts.slice(0, -1);
+    const remainder = parts[parts.length - 1] || "";
+    addTags(completeTags);
+    setTagInput(remainder);
+  };
+
+  const handleTagInputPaste = (e) => {
+    const pastedText = e.clipboardData?.getData("text") || "";
+    if (!pastedText.includes(",")) return;
+
+    e.preventDefault();
+    const parsedTags = pastedText.split(",");
+    addTags(parsedTags);
+    setTagInput("");
+  };
+
+  const handleTagInputKeyDown = (e) => {
+    if (e.key === "," || e.key === "Enter") {
+      e.preventDefault();
+      commitTagInput();
+      return;
+    }
+
+    if (e.key === "Backspace" && !tagInput && tags.length > 0) {
+      setTags((prev) => prev.slice(0, -1));
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+  };
+
   const plainTextContent = useMemo(
     () => htmlToPlainText(formData.content),
     [formData.content],
@@ -344,11 +451,23 @@ const BlogEditorForm = ({
       return;
     }
 
+    let finalTags = tags;
+    const pendingTag = normalizeTag(tagInput);
+    if (pendingTag) {
+      const tagSet = new Set(tags.map((item) => item.toLowerCase()));
+      if (!tagSet.has(pendingTag) && tags.length < MAX_TAGS) {
+        finalTags = [...tags, pendingTag];
+        setTags(finalTags);
+      }
+      setTagInput("");
+    }
+
     try {
       setIsSubmitting(true);
       await onSubmit({
         ...formData,
         content: formData.content,
+        tags: finalTags,
         coverImage,
       });
     } finally {
@@ -540,6 +659,8 @@ const BlogEditorForm = ({
                 }}
                 placeholder="Add a short summary that appears in listings and previews"
                 rows={4}
+                minLength={200}
+                maxLength={250}
                 required
               />
               {showHashtagList && activeHashtagField === "excerpt" && (
@@ -568,7 +689,43 @@ const BlogEditorForm = ({
                   )}
                 </div>
               )}
-              <small>Recommended: 120 to 180 characters.</small>
+              <small>Recommended: 200 to 250 characters.</small>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="tags">Tags</label>
+              <input
+                id="tags"
+                name="tags"
+                type="text"
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={handleTagInputKeyDown}
+                onPaste={handleTagInputPaste}
+                onBlur={commitTagInput}
+                placeholder="Type a tag and press comma (,) to add"
+                disabled={tags.length >= MAX_TAGS}
+              />
+              <small>
+                Add up to {MAX_TAGS} tags. Comma creates a tag. Paste
+                comma-separated values to add many at once.
+              </small>
+              {tags.length > 0 && (
+                <div className="compose-tags-list">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className="compose-tag-chip"
+                      onClick={() => removeTag(tag)}
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      {tag}
+                      <span aria-hidden="true">x</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="form-group">

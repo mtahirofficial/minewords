@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       category: DataTypes.STRING,
       categorySlug: DataTypes.STRING,
       coverImage: DataTypes.STRING,
+      tags: DataTypes.TEXT,
       author: DataTypes.STRING,
       readTime: DataTypes.STRING,
       date: DataTypes.DATE,

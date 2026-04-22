@@ -4308,6 +4308,38 @@ button:disabled {
   font-size: 0.8rem;
 }
 
+.compose-tags-list {
+  margin-top: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.compose-tag-chip {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e3a8a;
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.compose-tag-chip:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.compose-tag-chip span {
+  font-size: 0.78rem;
+  color: #1d4ed8;
+}
+
 .compose-editor {
   border: 1px solid #d1dbe8;
   border-radius: 14px;
@@ -4890,4 +4922,9 @@ button:disabled {
 
 img {
   image-rendering: high-quality;
+}
+
+.compose-quill-host {
+  overflow-y: scroll;
+  max-height: 320px;
 }

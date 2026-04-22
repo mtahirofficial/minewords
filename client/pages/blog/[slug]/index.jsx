@@ -20,7 +20,10 @@ import api from "../../../src/api";
 import { showToast } from "../../../src/toast";
 import AdBanner from "../../../src/components/AdBanner";
 import BlogPostSchema from "../../../src/components/BlogPostSchema";
-import { getServerApiBaseUrl, getSiteOrigin } from "../../../src/config/runtime";
+import {
+  getServerApiBaseUrl,
+  getSiteOrigin,
+} from "../../../src/config/runtime";
 import { resolveStaticFileUrl } from "../../../src/utils/staticUrl";
 
 const BLOGS_PAGE_LIMIT = 1000;
@@ -81,7 +84,10 @@ const linkifyHashtagsInHtml = (safeHtml = "") => {
 
   textNodes.forEach((textNode) => {
     const value = textNode.nodeValue || "";
-    if (!/#([A-Za-z0-9_]+)/.test(value) && !/(https?:\/\/[^\s<]+)/i.test(value)) {
+    if (
+      !/#([A-Za-z0-9_]+)/.test(value) &&
+      !/(https?:\/\/[^\s<]+)/i.test(value)
+    ) {
       return;
     }
     if (!textNode.parentElement || textNode.parentElement.closest("a")) return;
@@ -120,7 +126,10 @@ const linkifyHashtagsInHtml = (safeHtml = "") => {
 };
 
 const resolveBlogImageUrl = (value = "") => {
-  return resolveStaticFileUrl(value, process.env.VITE_API_URL || api.defaults.baseURL);
+  return resolveStaticFileUrl(
+    value,
+    process.env.VITE_API_URL || api.defaults.baseURL,
+  );
 };
 
 const formatStableDate = (value) => {
@@ -139,7 +148,9 @@ async function fetchPostBySlug(slug) {
 }
 
 async function fetchAllPosts() {
-  const response = await fetch(`${API_BASE}/blogs?page=1&limit=${BLOGS_PAGE_LIMIT}`);
+  const response = await fetch(
+    `${API_BASE}/blogs?page=1&limit=${BLOGS_PAGE_LIMIT}`,
+  );
   if (!response.ok) return [];
 
   const payload = await response.json();
@@ -217,7 +228,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     return linkifyHashtagsInHtml(sanitizedContent);
   }, [sanitizedContent]);
   const blogTags = useMemo(() => extractBlogHashtags(blog || {}), [blog]);
-  const coverImageUrl = useMemo(() => resolveBlogImageUrl(blog?.coverImage), [blog?.coverImage]);
+  const coverImageUrl = useMemo(
+    () => resolveBlogImageUrl(blog?.coverImage),
+    [blog?.coverImage],
+  );
 
   const schemaPost = useMemo(() => {
     if (!blog) return null;
@@ -247,7 +261,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     const description =
       blog.excerpt ||
       (blog.content
-        ? String(blog.content).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+        ? String(blog.content)
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim()
         : "Read this article on MineWords.");
     const image = toAbsoluteUrl(coverImageUrl) || `${SITE_ORIGIN}/og-cover.jpg`;
     const authorName =
@@ -264,7 +281,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       authorName,
       publishedTime: blog.createdAt,
       modifiedTime: blog.updatedAt || blog.createdAt,
-      keywords: blogTags.length ? blogTags.map((tag) => `#${tag}`).join(", ") : "",
+      keywords: blogTags.length
+        ? blogTags.map((tag) => `#${tag}`).join(", ")
+        : "",
     };
   }, [blog, blogTags, coverImageUrl, routeSlug, staticSlug]);
 
@@ -372,7 +391,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
   };
 
   const detectCommentHashtag = (value = "", cursor = 0) => {
-    const textBeforeCursor = String(value).slice(0, Math.max(0, Number(cursor || 0)));
+    const textBeforeCursor = String(value).slice(
+      0,
+      Math.max(0, Number(cursor || 0)),
+    );
     const match = textBeforeCursor.match(/(?:^|\s)#([A-Za-z0-9_]*)$/);
     if (!match) {
       hideCommentSuggestions();
@@ -415,8 +437,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
 
     const matchedText = match[0];
     const startsWithSpace = matchedText.startsWith(" ");
-    const replaceStart = cursor - matchedText.length + (startsWithSpace ? 1 : 0);
-    const nextValue = comment.slice(0, replaceStart) + `#${tagName} ` + comment.slice(cursor);
+    const replaceStart =
+      cursor - matchedText.length + (startsWithSpace ? 1 : 0);
+    const nextValue =
+      comment.slice(0, replaceStart) + `#${tagName} ` + comment.slice(cursor);
     const nextCursor = replaceStart + tagName.length + 2;
 
     setComment(nextValue);
@@ -455,7 +479,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           );
         }
         if (!/^#[A-Za-z0-9_]+$/.test(part)) {
-          return <React.Fragment key={`${keyPrefix}-${i}`}>{part}</React.Fragment>;
+          return (
+            <React.Fragment key={`${keyPrefix}-${i}`}>{part}</React.Fragment>
+          );
         }
 
         const clean = part.slice(1).toLowerCase();
@@ -484,7 +510,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       <main className="container single-blog-shell">
         <div className="single-blog-not-found">
           <h2>Blog not found</h2>
-          <button className="btn btn-secondary" onClick={() => router.push("/")}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => router.push("/")}
+          >
             Back to home
           </button>
         </div>
@@ -492,14 +521,20 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     );
   }
 
-  const contentLines = blogContent.split("\n").filter((line) => line.trim() !== "");
+  const contentLines = blogContent
+    .split("\n")
+    .filter((line) => line.trim() !== "");
 
   return (
     <>
       {seoMeta && (
         <Head>
           <title key="title">{seoMeta.title}</title>
-          <meta key="description" name="description" content={seoMeta.description} />
+          <meta
+            key="description"
+            name="description"
+            content={seoMeta.description}
+          />
           <meta key="robots" name="robots" content="index, follow" />
           {seoMeta.keywords && (
             <meta key="keywords" name="keywords" content={seoMeta.keywords} />
@@ -525,17 +560,44 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             property="article:modified_time"
             content={seoMeta.modifiedTime}
           />
-          <meta key="article:author" property="article:author" content={seoMeta.authorName} />
+          <meta
+            key="article:author"
+            property="article:author"
+            content={seoMeta.authorName}
+          />
+          {blogTags.map((tag) => (
+            <meta
+              key={`article:tag:${tag}`}
+              property="article:tag"
+              content={tag}
+            />
+          ))}
 
-          <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
-          <meta key="twitter:title" name="twitter:title" content={seoMeta.title} />
+          <meta
+            key="twitter:card"
+            name="twitter:card"
+            content="summary_large_image"
+          />
+          <meta
+            key="twitter:title"
+            name="twitter:title"
+            content={seoMeta.title}
+          />
           <meta
             key="twitter:description"
             name="twitter:description"
             content={seoMeta.description}
           />
-          <meta key="twitter:image" name="twitter:image" content={seoMeta.image} />
-          <meta key="twitter:url" name="twitter:url" content={seoMeta.canonicalUrl} />
+          <meta
+            key="twitter:image"
+            name="twitter:image"
+            content={seoMeta.image}
+          />
+          <meta
+            key="twitter:url"
+            name="twitter:url"
+            content={seoMeta.canonicalUrl}
+          />
         </Head>
       )}
       {schemaPost && <BlogPostSchema post={schemaPost} />}
@@ -543,11 +605,11 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       <main className="container single-blog-shell">
         <article className="single-blog-card">
           <div className="single-blog-content">
+            <span className="category-badge">{blog.category}</span>
             <div className="single-blog-header">
               <h1 className="single-blog-title">
                 {renderLineWithHashtags(blog.title || "", "title")}
               </h1>
-              <span className="category-badge">{blog.category}</span>
             </div>
 
             {!!blog.excerpt && (
@@ -608,14 +670,20 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
                     const anchor = e.target.closest("a.mw-hashtag-link");
                     if (!anchor) return;
                     e.preventDefault();
-                    const tag = anchor.getAttribute("href")?.split("/hashtag/")[1];
+                    const tag = anchor
+                      .getAttribute("href")
+                      ?.split("/hashtag/")[1];
                     if (tag) handleHashtagClick(decodeURIComponent(tag));
                   }}
                 />
               ) : (
-                (contentLines.length ? contentLines : [blog.content || ""]).map((line, index) => (
-                  <p key={index}>{renderLineWithHashtags(line, `plain-${index}`)}</p>
-                ))
+                (contentLines.length ? contentLines : [blog.content || ""]).map(
+                  (line, index) => (
+                    <p key={index}>
+                      {renderLineWithHashtags(line, `plain-${index}`)}
+                    </p>
+                  ),
+                )
               )}
             </div>
 
@@ -624,9 +692,13 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
                 className={`single-blog-action-btn ${liked ? "liked" : ""}`}
                 onClick={handleLike}
               >
-                <Heart fill={liked ? "currentColor" : "none"} /> <span>{blog?.likesCount ?? 0}</span>
+                <Heart fill={liked ? "currentColor" : "none"} />{" "}
+                <span>{blog?.likesCount ?? 0}</span>
               </button>
-              <button className="single-blog-action-btn" onClick={handleComment}>
+              <button
+                className="single-blog-action-btn"
+                onClick={handleComment}
+              >
                 <MessageCircle /> <span>{blog?.Comments?.length ?? 0}</span>
               </button>
               <button className="single-blog-action-btn" onClick={handleShare}>
@@ -647,7 +719,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
 
           <div className="single-blog-comments">
             <div className="single-blog-comments-header">
-              <span className="single-blog-comments-count">{blog?.Comments?.length ?? 0}</span>
+              <span className="single-blog-comments-count">
+                {blog?.Comments?.length ?? 0}
+              </span>
               <h3>Comments</h3>
             </div>
 
@@ -657,29 +731,48 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
                   <div key={c.id} className="single-blog-comment">
                     <div className="single-blog-comment-meta">
                       <User />
-                      <span className="author">{c.User?.name || "Anonymous"}</span>
+                      <span className="author">
+                        {c.User?.name || "Anonymous"}
+                      </span>
                       <span className="date">
                         {formatStableDate(c.date || c.createdAt)}
                       </span>
                     </div>
-                    <p>{renderLineWithHashtags(c.content || "", `comment-${c.id}`)}</p>
+                    <p>
+                      {renderLineWithHashtags(
+                        c.content || "",
+                        `comment-${c.id}`,
+                      )}
+                    </p>
                   </div>
                 ))}
               </div>
             )}
 
             {(!blog?.Comments || blog.Comments.length === 0) && (
-              <div className="single-blog-comments-empty">No comments yet. Start the conversation.</div>
+              <div className="single-blog-comments-empty">
+                No comments yet. Start the conversation.
+              </div>
             )}
 
-            <form id="comment" onSubmit={handleCommentSubmit} className="single-blog-comment-form">
+            <form
+              id="comment"
+              onSubmit={handleCommentSubmit}
+              className="single-blog-comment-form"
+            >
               <textarea
                 ref={textareaRef}
                 value={comment}
                 onChange={handleCommentChange}
-                onKeyUp={(e) => detectCommentHashtag(e.target.value, e.target.selectionStart)}
-                onClick={(e) => detectCommentHashtag(e.target.value, e.target.selectionStart)}
-                onFocus={(e) => detectCommentHashtag(e.target.value, e.target.selectionStart)}
+                onKeyUp={(e) =>
+                  detectCommentHashtag(e.target.value, e.target.selectionStart)
+                }
+                onClick={(e) =>
+                  detectCommentHashtag(e.target.value, e.target.selectionStart)
+                }
+                onFocus={(e) =>
+                  detectCommentHashtag(e.target.value, e.target.selectionStart)
+                }
                 onBlur={() => hideCommentSuggestions(120)}
                 placeholder="Write your comment..."
                 rows="4"
@@ -704,7 +797,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
                     </ul>
                   ) : (
                     <div className="hashtag-suggestions-empty">
-                      {commentTagQuery ? "No hashtag found" : "Type to search hashtag"}
+                      {commentTagQuery
+                        ? "No hashtag found"
+                        : "Type to search hashtag"}
                     </div>
                   )}
                 </div>

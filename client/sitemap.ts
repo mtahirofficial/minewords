@@ -28,6 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }),
   );
+  console.log("postUrls", postUrls);
 
   // 3. Static pages — always included
   const staticPages = [
