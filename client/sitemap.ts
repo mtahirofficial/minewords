@@ -8,11 +8,26 @@ import { getServerApiBaseUrl, getSiteOrigin } from "./src/config/runtime";
 const BASE_URL = getSiteOrigin();
 const SERVER_API_BASE_URL = getServerApiBaseUrl();
 
+const trim = (value = "") => String(value || "").trim();
+const trimTrailingSlash = (value = "") => trim(value).replace(/\/$/, "");
+const isAbsoluteUrl = (value = "") => /^https?:\/\//i.test(trim(value));
+
+const toApiBase = (origin = "") => {
+  const safeOrigin = trimTrailingSlash(origin);
+  if (!safeOrigin || !isAbsoluteUrl(safeOrigin)) return "";
+  return `${safeOrigin}/api`;
+};
+
 async function getAllPosts() {
-  const apiCandidates = [SERVER_API_BASE_URL, `${BASE_URL}/api`].filter(
-    Boolean,
-  );
-  console.log("apiCandidates", apiCandidates);
+  const apiCandidates = [
+    SERVER_API_BASE_URL,
+    toApiBase(process.env.VITE_API_PROXY_TARGET),
+    toApiBase(process.env.NEXT_PUBLIC_API_PROXY_TARGET),
+    toApiBase(process.env.API_ORIGIN),
+    `${BASE_URL}/api`,
+  ]
+    .map((value) => trimTrailingSlash(value))
+    .filter(Boolean);
 
   for (const apiBase of apiCandidates) {
     try {

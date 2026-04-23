@@ -1,13 +1,39 @@
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  process.env.VITE_SITE_URL ||
-  "https://minewords.com";
+import { getServerApiBaseUrl, getSiteOrigin } from "../src/config/runtime";
 
-const API_ORIGIN =
-  process.env.VITE_API_PROXY_TARGET ||
-  process.env.NEXT_PUBLIC_API_PROXY_TARGET ||
-  process.env.API_ORIGIN ||
-  "http://localhost:9000";
+const SITE_URL = getSiteOrigin();
+
+const trim = (value = "") => String(value || "").trim();
+const trimTrailingSlash = (value = "") => trim(value).replace(/\/$/, "");
+const isAbsoluteUrl = (value = "") => /^https?:\/\//i.test(trim(value));
+
+const toApiBase = (origin = "") => {
+  const safeOrigin = trimTrailingSlash(origin);
+  if (!safeOrigin || !isAbsoluteUrl(safeOrigin)) return "";
+  return `${safeOrigin}/api`;
+};
+
+const getRequestOrigin = (req) => {
+  const host = trim(req?.headers?.host);
+  if (!host) return "";
+  const protoHeader = trim(req?.headers?.["x-forwarded-proto"]);
+  const protocol = protoHeader || (host.includes("localhost") ? "http" : "https");
+  return `${protocol}://${host}`;
+};
+
+const buildApiCandidates = (req) => {
+  const candidates = [
+    getServerApiBaseUrl(),
+    toApiBase(process.env.VITE_API_PROXY_TARGET),
+    toApiBase(process.env.NEXT_PUBLIC_API_PROXY_TARGET),
+    toApiBase(process.env.API_ORIGIN),
+    `${SITE_URL}/api`,
+    toApiBase(getRequestOrigin(req)),
+  ]
+    .map((value) => trimTrailingSlash(value))
+    .filter(Boolean);
+
+  return [...new Set(candidates)];
+};
 
 const escapeXml = (value = "") =>
   String(value)
@@ -23,15 +49,21 @@ const toIso = (value) => {
   return date.toISOString();
 };
 
-async function fetchPosts() {
-  try {
-    const response = await fetch(`${API_ORIGIN}/api/blogs?page=1&limit=1000`);
-    if (!response.ok) return [];
-    const payload = await response.json();
-    return Array.isArray(payload?.blogs) ? payload.blogs : [];
-  } catch (_error) {
-    return [];
+async function fetchPosts(apiCandidates = []) {
+  for (const apiBase of apiCandidates) {
+    try {
+      const response = await fetch(`${apiBase}/blogs?page=1&limit=1000`);
+      if (!response.ok) continue;
+
+      const payload = await response.json();
+      const blogs = Array.isArray(payload?.blogs) ? payload.blogs : [];
+      if (blogs.length > 0) return blogs;
+    } catch (_error) {
+      // Try the next API candidate.
+    }
   }
+
+  return [];
 }
 
 function buildSitemapXml(posts = []) {
@@ -75,8 +107,8 @@ ${urls}
 </urlset>`;
 }
 
-export async function getServerSideProps({ res }) {
-  const posts = await fetchPosts();
+export async function getServerSideProps({ req, res }) {
+  const posts = await fetchPosts(buildApiCandidates(req));
   const xml = buildSitemapXml(posts);
 
   res.setHeader("Content-Type", "application/xml; charset=utf-8");
