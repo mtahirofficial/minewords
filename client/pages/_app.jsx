@@ -133,6 +133,12 @@ export default function MyApp({ Component, pageProps }) {
           name="twitter:image:alt"
           content="MineWords - Blog and magazine for curious readers"
         />
+        <script
+          key="ahrefs-analytics"
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="BCPYEPfKQOzu9AOkEynSSg"
+          async
+        />
 
         <script
           type="application/ld+json"
