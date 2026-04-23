@@ -9,10 +9,10 @@ const BASE_URL = getSiteOrigin();
 const SERVER_API_BASE_URL = getServerApiBaseUrl();
 
 async function getAllPosts() {
-  const apiCandidates = [
-    SERVER_API_BASE_URL,
-    `${BASE_URL}/api`,
-  ].filter(Boolean);
+  const apiCandidates = [SERVER_API_BASE_URL, `${BASE_URL}/api`].filter(
+    Boolean,
+  );
+  console.log("apiCandidates", apiCandidates);
 
   for (const apiBase of apiCandidates) {
     try {
@@ -59,12 +59,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/about`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
     },
     {
       url: `${BASE_URL}/contact`,

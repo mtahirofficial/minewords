@@ -34,7 +34,9 @@ const parseStoredTags = (value = null) => {
   try {
     const parsed = JSON.parse(String(value));
     if (!Array.isArray(parsed)) return [];
-    return [...new Set(parsed.map((item) => normalizeTag(item)).filter(Boolean))];
+    return [
+      ...new Set(parsed.map((item) => normalizeTag(item)).filter(Boolean)),
+    ];
   } catch (error) {
     return String(value)
       .split(",")
@@ -279,7 +281,6 @@ class BlogController {
         distinct: true, // Important for accurate pagination with includes
         logging: false,
       });
-      console.log(blogs);
 
       const result = blogs.map((blog) => {
         const blogData = blog.toJSON();

@@ -7,11 +7,7 @@ const { createRequire } = require("module");
 const { ErrorsMiddleware, LoggerMiddleware } = require("./middleware");
 const { ConsoleLogger } = require("./core");
 const path = require("path");
-const cron = require("node-cron");
 const cookieParser = require("cookie-parser");
-
-// This runs every day at midnight
-cron.schedule("0 0 * * *", () => {});
 
 class AppServer {
   _app = express();
@@ -71,17 +67,13 @@ class AppServer {
         return next();
       }
 
-      return res.sendFile(
-        "index.html",
-        { root: distDir },
-        (err) => {
-          if (err)
-            return res.send(
-              `<div style="text-align: center;font-size: xxx-large;color: red;margin-top: 100px;">Maintenance in progress...</div><div style="text-align: center;font-size: 16px;color: red;margin-top: 20px;">Checkout is functional just app dashboard in maintenance.</div>`,
-            );
-          return res.end();
-        },
-      );
+      return res.sendFile("index.html", { root: distDir }, (err) => {
+        if (err)
+          return res.send(
+            `<div style="text-align: center;font-size: xxx-large;color: red;margin-top: 100px;">Maintenance in progress...</div><div style="text-align: center;font-size: 16px;color: red;margin-top: 20px;">Checkout is functional just app dashboard in maintenance.</div>`,
+          );
+        return res.end();
+      });
     });
 
     ConsoleLogger.info("Frontend renderer: static dist fallback");
@@ -121,8 +113,9 @@ class AppServer {
         .toLowerCase();
       isDev = nextDevEnv
         ? nextDevEnv === "true"
-        : String(process.env.NODE_ENV || "").trim().toLowerCase() !==
-          "production";
+        : String(process.env.NODE_ENV || "")
+            .trim()
+            .toLowerCase() !== "production";
       nextApp = next({ dev: isDev, dir: nextDir });
     } catch (error) {
       ConsoleLogger.error(
