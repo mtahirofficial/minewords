@@ -12,7 +12,10 @@ import { showToast } from "../toast";
 import { resolveStaticFileUrl } from "../utils/staticUrl";
 
 const resolveBlogImageUrl = (value = "") => {
-  return resolveStaticFileUrl(value, process.env.VITE_API_URL || api.defaults.baseURL);
+  return resolveStaticFileUrl(
+    value,
+    process.env.VITE_API_URL || api.defaults.baseURL,
+  );
 };
 
 const BlogCard = ({ post, onUpdate }) => {
@@ -118,7 +121,7 @@ const BlogCard = ({ post, onUpdate }) => {
         <h3>{renderWithHashtags(post.title || "", `title-${post.id}`)}</h3>
 
         <p>{renderWithHashtags(post.excerpt || "", `excerpt-${post.id}`)}</p>
-        {postTags.length > 0 && (
+        {/* {postTags.length > 0 && (
           <div className="post-tag-list">
             {postTags.slice(0, 8).map((tag) => (
               <button
@@ -131,7 +134,7 @@ const BlogCard = ({ post, onUpdate }) => {
               </button>
             ))}
           </div>
-        )}
+        )} */}
 
         <div className="post-footer">
           <div className="author">
@@ -166,4 +169,3 @@ const BlogCard = ({ post, onUpdate }) => {
 };
 
 export default BlogCard;
-

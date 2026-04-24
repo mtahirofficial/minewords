@@ -132,6 +132,14 @@ const resolveBlogImageUrl = (value = "") => {
   );
 };
 
+const slugifyHeading = (value = "") =>
+  String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 const formatStableDate = (value) => {
   if (!value) return "";
   const date = new Date(value);
@@ -144,6 +152,8 @@ async function fetchPostBySlug(slug) {
   if (!response.ok) return null;
 
   const payload = await response.json();
+  console.log("payload", payload);
+
   return payload?.blog || null;
 }
 
@@ -158,8 +168,11 @@ async function fetchAllPosts() {
 }
 
 export async function getStaticProps({ params }) {
+  console.log("Fetching static props for slug:", params);
+
   const slug = params?.slug;
   if (!slug) {
+    console.log("No slug provided");
     return {
       notFound: true,
       revalidate: 60,
@@ -212,6 +225,8 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
   const [showCommentTagSuggestions, setShowCommentTagSuggestions] =
     useState(false);
   const [commentTagQuery, setCommentTagQuery] = useState("");
+  const [tocItems, setTocItems] = useState([]);
+  const [enhancedHtmlContent, setEnhancedHtmlContent] = useState("");
   const commentTagDebounceRef = useRef(null);
   const blogInlineSlot = process.env.VITE_ADSENSE_SLOT_BLOG_INLINE?.trim();
   const blogFooterSlot = process.env.VITE_ADSENSE_SLOT_BLOG_FOOTER?.trim();
@@ -321,6 +336,45 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     }
   }, [blog, loading]);
 
+  useEffect(() => {
+    if (!hasHtmlContent || !linkifiedHtmlContent) {
+      setTocItems([]);
+      setEnhancedHtmlContent("");
+      return;
+    }
+
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(linkifiedHtmlContent, "text/html");
+      const headings = Array.from(doc.querySelectorAll("h2, h3"));
+      const usedIds = new Map();
+
+      const items = headings
+        .map((heading, index) => {
+          const text = heading.textContent?.trim() || "";
+          if (!text) return null;
+
+          const level = heading.tagName === "H3" ? 3 : 2;
+          const baseId = slugifyHeading(text) || `section-${index + 1}`;
+          const currentCount = usedIds.get(baseId) || 0;
+          const id = currentCount ? `${baseId}-${currentCount + 1}` : baseId;
+          usedIds.set(baseId, currentCount + 1);
+
+          heading.setAttribute("id", id);
+
+          return { id, text, level };
+        })
+        .filter(Boolean);
+
+      setTocItems(items);
+      setEnhancedHtmlContent(doc.body.innerHTML);
+    } catch (err) {
+      console.error("Failed to build blog TOC", err);
+      setTocItems([]);
+      setEnhancedHtmlContent("");
+    }
+  }, [hasHtmlContent, linkifiedHtmlContent]);
+
   const handleLike = async () => {
     const isLogged = handleCheckLogin({ requireVerified: true });
     if (!isLogged) return;
@@ -375,6 +429,14 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
 
   const handleHashtagClick = (tag) => {
     router.push(`/hashtag/${tag.toLowerCase()}`);
+  };
+
+  const handleTocNavigate = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", `#${id}`);
   };
 
   const hideCommentSuggestions = (delay = 0) => {
@@ -525,6 +587,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     .split("\n")
     .filter((line) => line.trim() !== "");
 
+  const displayHtmlContent = enhancedHtmlContent || linkifiedHtmlContent;
+  const displayCategory = (blog?.category || "").trim();
+
   return (
     <>
       {seoMeta && (
@@ -598,6 +663,11 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             name="twitter:url"
             content={seoMeta.canonicalUrl}
           />
+          <link
+            key="blog-fonts"
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap"
+            rel="stylesheet"
+          />
         </Head>
       )}
       {schemaPost && <BlogPostSchema post={schemaPost} />}
@@ -605,19 +675,36 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       <main className="container single-blog-shell">
         <article className="single-blog-card">
           <div className="single-blog-content">
-            <span className="category-badge">{blog.category}</span>
-            <div className="single-blog-header">
+            <header className="single-blog-post-header">
+              {!!displayCategory && (
+                <span className="single-blog-category-tag">
+                  {displayCategory}
+                </span>
+              )}
+
               <h1 className="single-blog-title">
                 {renderLineWithHashtags(blog.title || "", "title")}
               </h1>
-            </div>
 
-            {!!blog.excerpt && (
-              <p className="single-blog-excerpt">
-                {renderLineWithHashtags(blog.excerpt, "excerpt")}
-              </p>
-            )}
-            {blogTags.length > 0 && (
+              {!!blog.excerpt && (
+                <p className="single-blog-excerpt">
+                  {renderLineWithHashtags(blog.excerpt, "excerpt")}
+                </p>
+              )}
+
+              <div className="single-blog-meta">
+                <div className="single-blog-meta-item">
+                  <BookOpen /> {blog?.author || blog?.User?.name || ""}
+                </div>
+                <div className="single-blog-meta-item">
+                  <Calendar /> {formatStableDate(blog.createdAt)}
+                </div>
+                <div className="single-blog-meta-item">
+                  <Clock /> {blog?.readTime ?? ""}
+                </div>
+              </div>
+            </header>
+            {/* {blogTags.length > 0 && (
               <div className="single-blog-tag-list">
                 {blogTags.map((tag) => (
                   <button
@@ -630,7 +717,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
                   </button>
                 ))}
               </div>
-            )}
+            )} */}
 
             {coverImageUrl && (
               <figure className="single-blog-cover-wrap">
@@ -643,17 +730,26 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
               </figure>
             )}
 
-            <div className="single-blog-meta">
-              <div className="single-blog-meta-item">
-                <BookOpen /> {blog?.author || blog?.User?.name || ""}
-              </div>
-              <div className="single-blog-meta-item">
-                <Calendar /> {formatStableDate(blog.createdAt)}
-              </div>
-              <div className="single-blog-meta-item">
-                <Clock /> {blog?.readTime ?? ""}
-              </div>
-            </div>
+            {hasHtmlContent && tocItems.length >= 2 && (
+              <nav className="single-blog-toc" aria-label="Table of contents">
+                <div className="single-blog-toc-title">In this article</div>
+                <ol>
+                  {tocItems.map((item) => (
+                    <li
+                      key={`toc-${item.id}`}
+                      className={`single-blog-toc-item level-${item.level}`}
+                    >
+                      <a
+                        href={`#${item.id}`}
+                        onClick={(e) => handleTocNavigate(e, item.id)}
+                      >
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )}
 
             <AdBanner
               slot={blogInlineSlot}
@@ -665,7 +761,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
               {hasHtmlContent ? (
                 <div
                   className="single-blog-html-content"
-                  dangerouslySetInnerHTML={{ __html: linkifiedHtmlContent }}
+                  dangerouslySetInnerHTML={{ __html: displayHtmlContent }}
                   onClick={(e) => {
                     const anchor = e.target.closest("a.mw-hashtag-link");
                     if (!anchor) return;

@@ -6,6 +6,7 @@ import api from "../src/api";
 import { showToast } from "../src/toast";
 import Modal from "../src/components/Modal";
 import { useHandleCheckLogin } from "../src/helper";
+import { Trash, Pencil } from "lucide-react";
 
 const DashboardPage = () => {
   const router = useRouter();
@@ -44,12 +45,20 @@ const DashboardPage = () => {
 
         const blogsRes = await api.get("/blogs?page=1&limit=1000");
         const allBlogs = blogsRes.data?.blogs || [];
-        const userBlogs = allBlogs.filter((blog) => blog.userId === currentUser.id);
+        const userBlogs = allBlogs.filter(
+          (blog) => blog.userId === currentUser.id,
+        );
 
         const postsCount = userBlogs.length;
         const draftsCount = 0;
-        const totalLikes = userBlogs.reduce((sum, blog) => sum + (blog.likesCount || 0), 0);
-        const totalComments = userBlogs.reduce((sum, blog) => sum + (blog.Comments?.length || 0), 0);
+        const totalLikes = userBlogs.reduce(
+          (sum, blog) => sum + (blog.likesCount || 0),
+          0,
+        );
+        const totalComments = userBlogs.reduce(
+          (sum, blog) => sum + (blog.Comments?.length || 0),
+          0,
+        );
 
         setStats({
           posts: postsCount,
@@ -72,7 +81,9 @@ const DashboardPage = () => {
           })),
         );
 
-        const uniqueCategories = [...new Set(userBlogs.map((b) => b.category).filter(Boolean))];
+        const uniqueCategories = [
+          ...new Set(userBlogs.map((b) => b.category).filter(Boolean)),
+        ];
         setCategories(uniqueCategories);
 
         const allComments = [];
@@ -135,7 +146,9 @@ const DashboardPage = () => {
       const allBlogs = blogsRes.data?.blogs || [];
       const userRes = await api.get("/auth/me");
       const currentUser = userRes.data.data;
-      const userBlogs = allBlogs.filter((blog) => blog.userId === currentUser.id);
+      const userBlogs = allBlogs.filter(
+        (blog) => blog.userId === currentUser.id,
+      );
 
       const sortedPosts = [...userBlogs]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -170,7 +183,10 @@ const DashboardPage = () => {
       await api.post("/auth/resend-verification");
       showToast("Verification email sent. Please check your inbox.", "success");
     } catch (err) {
-      showToast(err.response?.data?.message || "Failed to resend verification email", "error");
+      showToast(
+        err.response?.data?.message || "Failed to resend verification email",
+        "error",
+      );
     } finally {
       setIsResendingVerification(false);
     }
@@ -184,8 +200,8 @@ const DashboardPage = () => {
           Here is a quick overview of your blog activity and performance.
         </p>
         <p className="welcome-description">
-          Track your post performance, manage drafts, view recent comments, and stay updated
-          with what is trending on your blog.
+          Track your post performance, manage drafts, view recent comments, and
+          stay updated with what is trending on your blog.
         </p>
       </section>
 
@@ -194,7 +210,8 @@ const DashboardPage = () => {
           <div>
             <h3>Verify your email to unlock posting and interactions</h3>
             <p>
-              You can login and browse, but creating posts, likes, and comments need email verification.
+              You can login and browse, but creating posts, likes, and comments
+              need email verification.
             </p>
           </div>
           <button
@@ -202,7 +219,9 @@ const DashboardPage = () => {
             onClick={handleResendVerification}
             disabled={isResendingVerification}
           >
-            {isResendingVerification ? "Sending..." : "Resend verification link"}
+            {isResendingVerification
+              ? "Sending..."
+              : "Resend verification link"}
           </button>
         </section>
       )}
@@ -254,13 +273,19 @@ const DashboardPage = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+                <td
+                  colSpan="4"
+                  style={{ textAlign: "center", padding: "20px" }}
+                >
                   Loading...
                 </td>
               </tr>
             ) : recentPosts.length === 0 ? (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+                <td
+                  colSpan="4"
+                  style={{ textAlign: "center", padding: "20px" }}
+                >
                   No posts yet. Create your first post.
                 </td>
               </tr>
@@ -275,13 +300,13 @@ const DashboardPage = () => {
                       className="btn btn-secondary"
                       onClick={() => router.push(`/blog/${post.slug}/edit`)}
                     >
-                      Edit
+                      <Pencil size={16} />
                     </button>
                     <button
                       className="btn btn-critical"
                       onClick={() => handleDeleteClick(post.slug)}
                     >
-                      Delete
+                      <Trash size={16} />
                     </button>
                   </td>
                 </tr>
@@ -350,10 +375,12 @@ const DashboardPage = () => {
         closeOnOverlayClick={true}
       >
         <p>
-          Are you sure you want to delete <strong>"{blogToDelete?.title}"</strong>?
+          Are you sure you want to delete{" "}
+          <strong>"{blogToDelete?.title}"</strong>?
         </p>
         <p>
-          This action cannot be undone and all associated comments and likes will be permanently removed.
+          This action cannot be undone and all associated comments and likes
+          will be permanently removed.
         </p>
       </Modal>
     </main>
@@ -367,4 +394,3 @@ export default function DashboardRoute() {
     </ProtectedRoute>
   );
 }
-
