@@ -139,15 +139,23 @@ const BlogEditorForm = ({
         theme: "snow",
         modules: {
           toolbar: [
+            [{ font: [] }],
             [{ header: [1, 2, 3, 4, 5, 6, false] }],
             ["bold", "italic", "underline", "strike"],
             [
+              { align: [] },
               { list: "ordered" },
               { list: "bullet" },
+              { list: "check" },
               { indent: "-1" },
               { indent: "+1" },
             ],
-            ["blockquote", "code-block", "link"],
+            ["blockquote", "code-block"],
+            [{ direction: "rtl" }],
+            [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+            ["link", "image", "video"],
+            // [{ size: ["small", false, "large", "huge"] }],
+            ["table"],
             ["clean"],
           ],
         },
@@ -729,13 +737,9 @@ const BlogEditorForm = ({
             </div>
 
             <div className="form-group">
-              {/* <label htmlFor="content-editor">Article Content</label> */}
               <div className="compose-editor compose-editor-library">
                 <div className="compose-editor-head">
                   <span className="compose-editor-title">Article Content</span>
-                  {/* <span className="compose-editor-hint">
-                    Library-powered editor with standard formatting tools
-                  </span> */}
                   <small>
                     Tip: Highlight text, then apply formatting from the toolbar.
                   </small>
