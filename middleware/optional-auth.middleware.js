@@ -5,7 +5,7 @@ async function OptionalAuthMiddleware(req, res, next) {
   try {
     // 1. Get token from Authorization header
     const authHeader = req.headers["authorization"];
-    
+
     // If no auth header, continue without user (optional auth)
     if (!authHeader) {
       req.user = null;
@@ -46,4 +46,3 @@ async function OptionalAuthMiddleware(req, res, next) {
 }
 
 module.exports = OptionalAuthMiddleware;
-

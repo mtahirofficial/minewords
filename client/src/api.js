@@ -15,6 +15,13 @@ const api = axios.create({
   withCredentials: true,
 });
 
+const refreshClient = axios.create({
+  baseURL: apiBaseUrl,
+  withCredentials: true,
+});
+
+let refreshPromise = null;
+
 api.interceptors.request.use(
   (config) => {
     const token =
@@ -44,32 +51,58 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config || {};
+    const rawUrl = String(originalRequest.url || "");
+    const pathname = rawUrl.startsWith("http") ? new URL(rawUrl).pathname : rawUrl;
+    const isRefreshRequest = pathname === "/auth/refresh-token";
+    const isAuthMeRequest = pathname === "/auth/me";
 
     if (
       error.response &&
       error.response.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isRefreshRequest
     ) {
       originalRequest._retry = true;
 
       try {
-        const refreshRes = await api.post("/auth/refresh-token");
-        const nextToken = refreshRes?.data?.data?.accessToken || "";
+        if (!refreshPromise) {
+          refreshPromise = refreshClient
+            .post("/auth/refresh-token")
+            .then((refreshRes) => refreshRes?.data?.data?.accessToken || "")
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
+
+        const nextToken = await refreshPromise;
 
         if (typeof window !== "undefined" && nextToken) {
           localStorage.setItem("accessToken", nextToken);
         }
 
         if (!originalRequest.headers) originalRequest.headers = {};
-        originalRequest.headers["Authorization"] = `Bearer ${nextToken}`;
+        if (nextToken) {
+          originalRequest.headers["Authorization"] = `Bearer ${nextToken}`;
+        }
         return api(originalRequest);
       } catch (err) {
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("user");
-          window.location.href = "/login";
+          // Avoid redirect loops; let the current navigation finish if already on login.
+          if (window.location.pathname !== "/login") {
+            window.location.assign("/login");
+          }
         }
         return Promise.reject(err);
+      }
+    }
+
+    // If auth/me itself fails, don't attempt additional recovery here.
+    if (error.response && error.response.status === 401 && isAuthMeRequest) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
       }
     }
 

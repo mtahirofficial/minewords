@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   fetchBlogCategories,
   fetchHashtagSuggestions,
@@ -68,8 +74,15 @@ const BlogEditorForm = ({
   submitLabel,
   initialValues,
   onSubmit,
+  onSaveDraft,
+  draftStorageKey,
   onCancel,
 }) => {
+  const resolvedDraftKey = useMemo(() => {
+    const key = String(draftStorageKey || "").trim();
+    return key ? `minewords:blogDraft:${key}` : "";
+  }, [draftStorageKey]);
+
   const [formData, setFormData] = useState({
     ...initialValues,
     content: normalizeContentToHtml(initialValues.content),
@@ -84,6 +97,9 @@ const BlogEditorForm = ({
   const titleRef = useRef(null);
   const excerptRef = useRef(null);
   const isProgrammaticSyncRef = useRef(false);
+  const draftSaveTimerRef = useRef(null);
+  const hasRestoredDraftRef = useRef(false);
+  const [lastDraftSavedAt, setLastDraftSavedAt] = useState(null);
 
   const [showCategoryList, setShowCategoryList] = useState(false);
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -123,6 +139,122 @@ const BlogEditorForm = ({
     setTags(parseInitialTags(initialValues.tags));
     setTagInput("");
   }, [initialValues]);
+
+  const loadDraft = useCallback(() => {
+    if (typeof window === "undefined") return null;
+    if (!resolvedDraftKey) return null;
+    const raw = window.localStorage.getItem(resolvedDraftKey);
+    if (!raw) return null;
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return null;
+      const data = parsed.data || null;
+      if (!data || typeof data !== "object") return null;
+      return parsed;
+    } catch (error) {
+      return null;
+    }
+  }, [resolvedDraftKey]);
+
+  const saveDraft = useCallback(
+    (next = null) => {
+      if (typeof window === "undefined") return false;
+      if (!resolvedDraftKey) return false;
+
+      const payload = next || {
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        author: formData.author,
+        category: formData.category,
+        tags,
+      };
+
+      const record = {
+        updatedAt: new Date().toISOString(),
+        data: {
+          title: payload.title || "",
+          excerpt: payload.excerpt || "",
+          content: payload.content || "<p><br></p>",
+          author: payload.author || "",
+          category: payload.category || "",
+          tags: Array.isArray(payload.tags) ? payload.tags : [],
+        },
+      };
+
+      try {
+        window.localStorage.setItem(resolvedDraftKey, JSON.stringify(record));
+        setLastDraftSavedAt(record.updatedAt);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    [formData, resolvedDraftKey, tags],
+  );
+
+  const clearDraft = useCallback(() => {
+    if (typeof window === "undefined") return;
+    if (!resolvedDraftKey) return;
+    window.localStorage.removeItem(resolvedDraftKey);
+    setLastDraftSavedAt(null);
+  }, [resolvedDraftKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!resolvedDraftKey) return;
+    if (hasRestoredDraftRef.current) return;
+
+    const draft = loadDraft();
+    if (!draft?.data) return;
+
+    const initialEmpty =
+      !String(initialValues?.title || "").trim() &&
+      !String(initialValues?.excerpt || "").trim() &&
+      !String(initialValues?.content || "").trim();
+
+    if (!initialEmpty) return;
+
+    hasRestoredDraftRef.current = true;
+    setFormData((prev) => ({
+      ...prev,
+      ...draft.data,
+      content: normalizeContentToHtml(draft.data.content),
+    }));
+    setTags(parseInitialTags(draft.data.tags));
+    setTagInput("");
+    setLastDraftSavedAt(draft.updatedAt || null);
+    // showToast("Draft restored", "success");
+  }, [initialValues, loadDraft, resolvedDraftKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!resolvedDraftKey) return;
+
+    if (draftSaveTimerRef.current) {
+      clearTimeout(draftSaveTimerRef.current);
+    }
+
+    draftSaveTimerRef.current = setTimeout(() => {
+      saveDraft();
+    }, 900);
+
+    return () => {
+      if (draftSaveTimerRef.current) {
+        clearTimeout(draftSaveTimerRef.current);
+      }
+    };
+  }, [
+    formData.title,
+    formData.excerpt,
+    formData.content,
+    formData.author,
+    formData.category,
+    tags,
+    resolvedDraftKey,
+    saveDraft,
+  ]);
 
   useEffect(() => {
     if (!quillHostRef.current || quillInstanceRef.current) return;
@@ -478,6 +610,7 @@ const BlogEditorForm = ({
         tags: finalTags,
         coverImage,
       });
+      clearDraft();
     } finally {
       setIsSubmitting(false);
     }
@@ -701,42 +834,6 @@ const BlogEditorForm = ({
             </div>
 
             <div className="form-group">
-              <label htmlFor="tags">Tags</label>
-              <input
-                id="tags"
-                name="tags"
-                type="text"
-                value={tagInput}
-                onChange={handleTagInputChange}
-                onKeyDown={handleTagInputKeyDown}
-                onPaste={handleTagInputPaste}
-                onBlur={commitTagInput}
-                placeholder="Type a tag and press comma (,) to add"
-                disabled={tags.length >= MAX_TAGS}
-              />
-              <small>
-                Add up to {MAX_TAGS} tags. Comma creates a tag. Paste
-                comma-separated values to add many at once.
-              </small>
-              {tags.length > 0 && (
-                <div className="compose-tags-list">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      className="compose-tag-chip"
-                      onClick={() => removeTag(tag)}
-                      aria-label={`Remove tag ${tag}`}
-                    >
-                      {tag}
-                      <span aria-hidden="true">x</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="form-group">
               <div className="compose-editor compose-editor-library">
                 <div className="compose-editor-head">
                   <span className="compose-editor-title">Article Content</span>
@@ -775,6 +872,42 @@ const BlogEditorForm = ({
               {/* <small>
                 Tip: Highlight text, then apply formatting from the toolbar.
               </small> */}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="tags">Tags</label>
+              <input
+                id="tags"
+                name="tags"
+                type="text"
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={handleTagInputKeyDown}
+                onPaste={handleTagInputPaste}
+                onBlur={commitTagInput}
+                placeholder="Type a tag and press comma (,) to add"
+                disabled={tags.length >= MAX_TAGS}
+              />
+              <small>
+                Add up to {MAX_TAGS} tags. Comma creates a tag. Paste
+                comma-separated values to add many at once.
+              </small>
+              {tags.length > 0 && (
+                <div className="compose-tags-list">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className="compose-tag-chip"
+                      onClick={() => removeTag(tag)}
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      {tag}
+                      <span aria-hidden="true">x</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="compose-form-row">
@@ -827,6 +960,60 @@ const BlogEditorForm = ({
               >
                 Cancel
               </button>
+              {resolvedDraftKey ? (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled={isSubmitting}
+                  onClick={async () => {
+                    let finalTags = tags;
+                    const pendingTag = normalizeTag(tagInput);
+                    if (pendingTag) {
+                      const tagSet = new Set(
+                        tags.map((item) => item.toLowerCase()),
+                      );
+                      if (!tagSet.has(pendingTag) && tags.length < MAX_TAGS) {
+                        finalTags = [...tags, pendingTag];
+                        setTags(finalTags);
+                      }
+                      setTagInput("");
+                    }
+
+                    const ok = saveDraft({
+                      ...formData,
+                      content: formData.content,
+                      tags: finalTags,
+                    });
+                    if (!ok) {
+                      showToast("Unable to save draft locally", "error");
+                      return;
+                    }
+
+                    if (typeof onSaveDraft !== "function") {
+                      showToast("Draft saved", "success");
+                      return;
+                    }
+
+                    try {
+                      setIsSubmitting(true);
+                      await onSaveDraft({
+                        ...formData,
+                        content: formData.content,
+                        tags: finalTags,
+                        coverImage,
+                      });
+                      showToast("Draft saved", "success");
+                    } catch (error) {
+                      console.error("Draft save failed:", error);
+                      showToast("Draft save failed", "error");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
+                  Save Draft
+                </button>
+              ) : null}
               <button
                 type="submit"
                 className="btn btn-success"
@@ -835,6 +1022,20 @@ const BlogEditorForm = ({
                 {isSubmitting ? "Saving..." : submitLabel}
               </button>
             </div>
+            {resolvedDraftKey && lastDraftSavedAt ? (
+              <div className="compose-draft-meta">
+                <small>
+                  Draft saved{" "}
+                  {new Date(lastDraftSavedAt).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </small>
+              </div>
+            ) : null}
           </form>
         </div>
 

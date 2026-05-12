@@ -2,8 +2,10 @@ import "../src/index.css";
 import "../src/App.css";
 import "quill/dist/quill.snow.css";
 
-import { Fragment, StrictMode } from "react";
+import { Fragment, StrictMode, useEffect } from "react";
 import Head from "next/head";
+import Script from "next/script";
+import { useRouter } from "next/router";
 import { AuthProvider } from "../src/context/AuthContext.jsx";
 import { MainProvider } from "../src/context/MainContext.jsx";
 import AppLayout from "../src/App.jsx";
@@ -33,7 +35,7 @@ const organizationSchema = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "hello@minewords.com",
+    email: "info@minewords.com",
   },
 };
 
@@ -73,10 +75,35 @@ const blogSchema = {
 };
 
 export default function MyApp({ Component, pageProps }) {
+  const router = useRouter();
+  const clarityProjectId =
+    process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
+    process.env.VITE_CLARITY_PROJECT_ID;
+
   const enableStrictMode =
     process.env.NEXT_PUBLIC_ENABLE_STRICT_MODE === "true" ||
     process.env.VITE_ENABLE_STRICT_MODE === "true";
   const RootWrapper = enableStrictMode ? StrictMode : Fragment;
+
+  useEffect(() => {
+    if (!clarityProjectId) return;
+
+    const handleRouteChange = (url) => {
+      if (
+        typeof window !== "undefined" &&
+        typeof window.clarity === "function"
+      ) {
+        window.clarity("set", "page", url);
+      }
+    };
+
+    router.events.on("routeChangeComplete", handleRouteChange);
+    handleRouteChange(router.asPath);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events, clarityProjectId]);
 
   return (
     <RootWrapper>
@@ -97,7 +124,11 @@ export default function MyApp({ Component, pageProps }) {
         <link key="canonical" rel="canonical" href={`${siteOrigin}/`} />
         <link rel="icon" type="image/png" href="/minewords-logo.png" />
 
-        <meta key="og:title" property="og:title" content="MineWords - Words Worth Reading" />
+        <meta
+          key="og:title"
+          property="og:title"
+          content="MineWords - Words Worth Reading"
+        />
         <meta
           key="og:description"
           property="og:description"
@@ -115,9 +146,17 @@ export default function MyApp({ Component, pageProps }) {
         <meta key="og:site_name" property="og:site_name" content="MineWords" />
         <meta key="og:locale" property="og:locale" content="en_US" />
 
-        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta
+          key="twitter:card"
+          name="twitter:card"
+          content="summary_large_image"
+        />
         <meta key="twitter:site" name="twitter:site" content="@minewords" />
-        <meta key="twitter:title" name="twitter:title" content="MineWords - Words Worth Reading." />
+        <meta
+          key="twitter:title"
+          name="twitter:title"
+          content="MineWords - Words Worth Reading."
+        />
         <meta
           key="twitter:description"
           name="twitter:description"
@@ -142,7 +181,9 @@ export default function MyApp({ Component, pageProps }) {
 
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
         />
         <script
           type="application/ld+json"
@@ -153,6 +194,17 @@ export default function MyApp({ Component, pageProps }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
         />
       </Head>
+
+      {clarityProjectId ? (
+        <Script id="ms-clarity" strategy="afterInteractive">{`
+          (function(c,l,a,r,i,t,y){
+              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", "${clarityProjectId}");
+        `}</Script>
+      ) : null}
+
       <AuthProvider>
         <MainProvider>
           <AppLayout>

@@ -86,6 +86,13 @@ const extractHashtags = (value = "") => {
   ];
 };
 
+const normalizeBlogStatus = (value = "") => {
+  const status = String(value || "")
+    .trim()
+    .toLowerCase();
+  return status === "draft" ? "draft" : "published";
+};
+
 class BlogController {
   _path = "/blogs";
   _router = express.Router();
@@ -174,6 +181,7 @@ class BlogController {
         categorySlug = "",
         category = "",
         userId = null,
+        includeDrafts = "false",
       } = req.query;
 
       page = parseInt(page);
@@ -231,6 +239,14 @@ class BlogController {
       const normalizedUserId = String(userId || "")
         .trim()
         .toLowerCase();
+      const wantsDrafts =
+        String(includeDrafts || "")
+          .trim()
+          .toLowerCase() === "true";
+      const allowDraftsForUser =
+        wantsDrafts &&
+        req.user?.id &&
+        (normalizedUserId === "me" || normalizedUserId === String(req.user.id));
       if (normalizedUserId) {
         if (normalizedUserId === "me") {
           if (req.user?.id) {
@@ -241,6 +257,12 @@ class BlogController {
         } else if (/^\d+$/.test(normalizedUserId)) {
           andConditions.push({ userId: Number(normalizedUserId) });
         }
+      }
+
+      if (!allowDraftsForUser) {
+        andConditions.push({
+          [Op.or]: [{ status: { [Op.is]: null } }, { status: "published" }],
+        });
       }
 
       const whereCondition =
@@ -325,6 +347,11 @@ class BlogController {
       });
 
       if (!blog) return next(new NotFoundException("Blog not found"));
+      const blogStatus = normalizeBlogStatus(blog.status || "published");
+
+      // if (blogStatus === "draft" && req.user?.id !== blog.userId) {
+      //   return next(new NotFoundException("Blog not found"));
+      // }
 
       const userId = req.user?.id || null;
       const isLiked = userId
@@ -347,10 +374,14 @@ class BlogController {
     try {
       const { author, title, excerpt, content, category } = req.body;
       const userId = req.user.id;
+      const status = normalizeBlogStatus(req.body?.status);
       const parsedTags = parseTagListFromInput(req.body?.tags, []);
-      const hashtags = extractHashtags(
-        `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
-      );
+      const hashtags =
+        status === "published"
+          ? extractHashtags(
+              `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
+            )
+          : [];
       const coverImage = req.file
         ? `${MulterMiddleware.baseFilePath}${req.file.filename}`
         : null;
@@ -369,27 +400,32 @@ class BlogController {
             coverImage,
             tags: JSON.stringify(parsedTags),
             readTime: calculateReadTime(content),
+            status,
             userId,
           },
           { transaction },
         );
 
-        await this.syncHashtagCounts([], hashtags, transaction);
+        if (status === "published") {
+          await this.syncHashtagCounts([], hashtags, transaction);
+        }
         return createdBlog;
       });
 
-      try {
-        await fetch(
-          "https://www.google.com/ping?sitemap=https://minewords.com/sitemap.xml",
-        );
-      } catch (pingError) {
-        console.warn(`Google sitemap ping failed: ${pingError.message}`);
+      if (status === "published") {
+        try {
+          await fetch(
+            "https://www.google.com/ping?sitemap=https://minewords.com/sitemap.xml",
+          );
+        } catch (pingError) {
+          console.warn(`Google sitemap ping failed: ${pingError.message}`);
+        }
       }
 
       const blogData = blog.toJSON ? blog.toJSON() : blog;
       res.json({
         status: 201,
-        message: "Blog created",
+        message: status === "draft" ? "Draft saved" : "Blog created",
         blog: { ...blogData, tags: parseStoredTags(blogData.tags) },
       });
     } catch (error) {
@@ -405,6 +441,10 @@ class BlogController {
         return next(new ForbiddenException("Not allowed"));
 
       const { title, excerpt, content, category } = req.body;
+      const previousStatus = normalizeBlogStatus(blog.status || "published");
+      const nextStatus = normalizeBlogStatus(
+        req.body?.status || previousStatus,
+      );
       const parsedTags = parseTagListFromInput(
         req.body?.tags,
         parseStoredTags(blog.tags),
@@ -436,15 +476,29 @@ class BlogController {
             coverImage,
             tags: JSON.stringify(parsedTags),
             readTime: calculateReadTime(content),
+            status: nextStatus,
           },
           { transaction },
         );
-        await this.syncHashtagCounts(previousTags, nextTags, transaction);
+
+        if (previousStatus === "published" && nextStatus === "published") {
+          await this.syncHashtagCounts(previousTags, nextTags, transaction);
+        } else if (
+          previousStatus !== "published" &&
+          nextStatus === "published"
+        ) {
+          await this.syncHashtagCounts([], nextTags, transaction);
+        } else if (
+          previousStatus === "published" &&
+          nextStatus !== "published"
+        ) {
+          await this.syncHashtagCounts(previousTags, [], transaction);
+        }
       });
 
       res.json({
         status: 200,
-        message: "Blog updated",
+        message: nextStatus === "draft" ? "Draft saved" : "Blog updated",
         data: { ...blog.toJSON(), tags: parseStoredTags(blog.tags) },
       });
     } catch (error) {
@@ -458,12 +512,15 @@ class BlogController {
       if (!blog) return next(new NotFoundException("Blog not found"));
       if (blog.userId !== req.user.id)
         return next(new ForbiddenException("Not allowed"));
+      const blogStatus = normalizeBlogStatus(blog.status || "published");
       const tags = extractHashtags(
         `${blog.title || ""} ${blog.excerpt || ""} ${blog.content || ""} ${tagsToHashtagText(parseStoredTags(blog.tags))}`,
       );
 
       await sequelize.transaction(async (transaction) => {
-        await this.syncHashtagCounts(tags, [], transaction);
+        if (blogStatus === "published") {
+          await this.syncHashtagCounts(tags, [], transaction);
+        }
         await blog.destroy({ transaction });
       });
       res.json({ status: 200, message: "Blog deleted" });
@@ -514,19 +571,26 @@ class BlogController {
       const searchPattern = `%#${escapeLikeTerm(safeTag)}%`;
       const blogs = await Blog.findAll({
         where: {
-          [Op.or]: [
-            Sequelize.where(
-              Sequelize.fn("LOWER", Sequelize.col("Blog.content")),
-              { [Op.like]: searchPattern },
-            ),
-            Sequelize.where(
-              Sequelize.fn("LOWER", Sequelize.col("Blog.excerpt")),
-              { [Op.like]: searchPattern },
-            ),
-            Sequelize.where(
-              Sequelize.fn("LOWER", Sequelize.col("Blog.title")),
-              { [Op.like]: searchPattern },
-            ),
+          [Op.and]: [
+            {
+              [Op.or]: [{ status: { [Op.is]: null } }, { status: "published" }],
+            },
+            {
+              [Op.or]: [
+                Sequelize.where(
+                  Sequelize.fn("LOWER", Sequelize.col("Blog.content")),
+                  { [Op.like]: searchPattern },
+                ),
+                Sequelize.where(
+                  Sequelize.fn("LOWER", Sequelize.col("Blog.excerpt")),
+                  { [Op.like]: searchPattern },
+                ),
+                Sequelize.where(
+                  Sequelize.fn("LOWER", Sequelize.col("Blog.title")),
+                  { [Op.like]: searchPattern },
+                ),
+              ],
+            },
           ],
         },
         include: [
@@ -575,6 +639,7 @@ class BlogController {
         ],
         where: {
           category: { [Op.ne]: null },
+          [Op.or]: [{ status: { [Op.is]: null } }, { status: "published" }],
         },
         group: ["category", "categorySlug"],
         order: [
@@ -605,38 +670,32 @@ class BlogController {
 
   initializeRoutes() {
     // Make getAll and getOne optionally authenticated (middleware runs but doesn't require auth)
-    this._router.get(
-      "/categories",
-      OptionalAuthMiddleware,
-      this.getCategories.bind(this),
-    );
+    this._router.get("/categories", this.getCategories.bind(this));
     this._router.get("/hashtags", this.getHashtagSuggestions.bind(this));
-    this._router.get(
-      "/hashtags/:tag/blogs",
-      OptionalAuthMiddleware,
-      this.getBlogsByHashtag.bind(this),
-    );
-    this._router.get(
-      `${this._path}`,
-      OptionalAuthMiddleware,
-      this.getAll.bind(this),
-    );
-    this._router.get(
-      `${this._path}/:slug`,
-      OptionalAuthMiddleware,
-      this.getOne.bind(this),
-    );
+    this._router.get("/hashtags/:tag/blogs", this.getBlogsByHashtag.bind(this));
+    this._router.get(`${this._path}`, this.getAll.bind(this));
+    this._router.get(`${this._path}/:slug`, this.getOne.bind(this));
     this._router.post(
       `${this._path}`,
       AuthMiddleware,
-      VerifiedMiddleware,
       MulterMiddleware.upload.single("coverImage"),
+      (req, res, next) => {
+        const status = normalizeBlogStatus(req.body?.status);
+        if (status === "draft") return next();
+        return VerifiedMiddleware(req, res, next);
+      },
       this.create.bind(this),
     );
     this._router.put(
       `${this._path}/:slug`,
       AuthMiddleware,
       MulterMiddleware.upload.single("coverImage"),
+      (req, res, next) => {
+        if (!("status" in (req.body || {}))) return next();
+        const status = normalizeBlogStatus(req.body?.status);
+        if (status === "draft") return next();
+        return VerifiedMiddleware(req, res, next);
+      },
       this.update.bind(this),
     );
     this._router.delete(

@@ -43,14 +43,12 @@ const DashboardPage = () => {
           updateUser({ isVerified: currentUser.isVerified });
         }
 
-        const blogsRes = await api.get("/blogs?page=1&limit=1000");
+        const blogsRes = await api.get("/blogs?page=1&limit=1000&userId=me&includeDrafts=true");
         const allBlogs = blogsRes.data?.blogs || [];
-        const userBlogs = allBlogs.filter(
-          (blog) => blog.userId === currentUser.id,
-        );
+        const userBlogs = allBlogs.filter((blog) => blog.userId === currentUser.id);
 
-        const postsCount = userBlogs.length;
-        const draftsCount = 0;
+        const draftsCount = userBlogs.filter((blog) => blog.status === "draft").length;
+        const postsCount = userBlogs.length - draftsCount;
         const totalLikes = userBlogs.reduce(
           (sum, blog) => sum + (blog.likesCount || 0),
           0,
@@ -77,7 +75,7 @@ const DashboardPage = () => {
             slug: blog.slug || String(blog.id),
             title: blog.title,
             date: new Date(blog.createdAt).toLocaleDateString(),
-            status: "Published",
+            status: blog.status === "draft" ? "Draft" : "Published",
           })),
         );
 

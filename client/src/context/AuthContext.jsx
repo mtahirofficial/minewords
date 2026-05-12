@@ -1,5 +1,6 @@
 // src/context/AuthContext.jsx
-import { createContext, useEffect, useState, useContext } from "react";
+import { createContext, useCallback, useEffect, useState, useContext } from "react";
+import api from "../api";
 
 const AuthContext = createContext();
 const isBrowser = typeof window !== "undefined";
@@ -8,30 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(isBrowser);
 
-  useEffect(() => {
-    if (!isBrowser) return;
-
-    const token = localStorage.getItem("accessToken");
-    const userRaw = localStorage.getItem("user");
-
-    if (!token || !userRaw) {
-      setUser(null);
-      setAuthLoading(false);
-      return;
-    }
-
-    try {
-      setUser({ token, ...JSON.parse(userRaw) });
-    } catch (error) {
-      localStorage.removeItem("user");
-      localStorage.removeItem("accessToken");
-      setUser(null);
-    } finally {
-      setAuthLoading(false);
-    }
-  }, []);
-
-  const persistUser = (nextUser) => {
+  const persistUser = useCallback((nextUser) => {
     if (!isBrowser) {
       setUser(nextUser || null);
       return;
@@ -51,7 +29,69 @@ export const AuthProvider = ({ children }) => {
     const { token, ...userData } = nextUser;
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(nextUser);
-  };
+  }, []);
+
+  const refreshAuth = useCallback(async () => {
+    if (!isBrowser) return false;
+
+    const token = localStorage.getItem("accessToken");
+    const userRaw = localStorage.getItem("user");
+
+    if (!token || !userRaw) {
+      persistUser(null);
+      return false;
+    }
+
+    let storedUser = null;
+    try {
+      storedUser = JSON.parse(userRaw);
+    } catch (error) {
+      persistUser(null);
+      return false;
+    }
+
+    // Hydrate immediately so UI doesn't flicker, then validate with /auth/me.
+    setUser({ token, ...storedUser });
+
+    try {
+      const res = await api.get("/auth/me");
+      const freshUser = res?.data?.data || null;
+      if (!freshUser) {
+        persistUser(null);
+        return false;
+      }
+      persistUser({ token: localStorage.getItem("accessToken") || token, ...freshUser });
+      return true;
+    } catch (error) {
+      // api.js will clear storage + navigate on hard auth failure; mirror state here.
+      persistUser(null);
+      return false;
+    }
+  }, [persistUser]);
+
+  useEffect(() => {
+    if (!isBrowser) return;
+
+    let cancelled = false;
+
+    const boot = async () => {
+      setAuthLoading(true);
+      await refreshAuth();
+      if (!cancelled) setAuthLoading(false);
+    };
+
+    boot();
+
+    const handleFocus = () => {
+      refreshAuth();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [refreshAuth]);
 
   const login = (userData) => persistUser(userData);
   const updateUser = (partial = {}) => {
@@ -81,7 +121,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, authLoading, login, logout, updateUser }}
+      value={{ user, authLoading, login, logout, updateUser, refreshAuth }}
     >
       {children}
     </AuthContext.Provider>

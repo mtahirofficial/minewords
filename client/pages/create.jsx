@@ -13,6 +13,9 @@ const BlogForm = () => {
     const { user } = useAuth();
     const handleCheckLogin = useHandleCheckLogin();
     const isEdit = router.pathname === "/blog/[slug]/edit";
+    const draftStorageKey = !isEdit && user?.id ? `create:${user.id}` : "";
+    const draftServerKey = !isEdit && user?.id ? `minewords:blogDraftServer:create:${user.id}` : "";
+    const [draftServerSlug, setDraftServerSlug] = useState("");
 
     const [loading, setLoading] = useState(isEdit);
     const [initialValues, setInitialValues] = useState({
@@ -25,14 +28,6 @@ const BlogForm = () => {
     });
 
     useEffect(() => {
-        if (!isEdit && user && !user.isVerified) {
-            const canProceed = handleCheckLogin({ requireVerified: true });
-            if (!canProceed) {
-                router.push("/dashboard");
-                return;
-            }
-        }
-
         if (!isEdit) {
             setInitialValues((prev) => ({ ...prev, author: user?.name || prev.author || "" }));
             setLoading(false);
@@ -71,6 +66,25 @@ const BlogForm = () => {
         loadBlog();
     }, [slug, isEdit, router, user, user?.name]);
 
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        if (!draftServerKey) return;
+        const existing = window.localStorage.getItem(draftServerKey) || "";
+        if (existing) setDraftServerSlug(existing);
+    }, [draftServerKey]);
+
+    const persistDraftServerSlug = (next) => {
+        const value = String(next || "");
+        setDraftServerSlug(value);
+        if (typeof window === "undefined") return;
+        if (!draftServerKey) return;
+        if (!value) {
+            window.localStorage.removeItem(draftServerKey);
+            return;
+        }
+        window.localStorage.setItem(draftServerKey, value);
+    };
+
     const handleSubmit = async (payload) => {
         const formData = new FormData();
         formData.append("title", payload.title || "");
@@ -79,6 +93,7 @@ const BlogForm = () => {
         formData.append("author", payload.author || "");
         formData.append("category", payload.category || "");
         formData.append("tags", JSON.stringify(payload.tags || []));
+        formData.append("status", "published");
 
         if (payload.coverImage) {
             formData.append("coverImage", payload.coverImage);
@@ -103,13 +118,75 @@ const BlogForm = () => {
         }
 
         try {
-            const res = await api.post("/blogs", formData);
+            let res;
+            const normalizedDraftId = String(draftServerSlug || "").trim();
+
+            if (normalizedDraftId) {
+                try {
+                    res = await api.put(`/blogs/${normalizedDraftId}`, formData);
+                } catch (error) {
+                    const status = error?.response?.status;
+                    if (status === 404) {
+                        persistDraftServerSlug("");
+                        res = await api.post("/blogs", formData);
+                    } else {
+                        throw error;
+                    }
+                }
+            } else {
+                res = await api.post("/blogs", formData);
+            }
             showToast("Blog submitted successfully!");
-            router.push(`/blog/${res.data?.blog?.slug || res.data?.blog?.id}`);
+            persistDraftServerSlug("");
+            router.push(`/blog/${res.data?.blog?.slug || res.data?.data?.slug || res.data?.blog?.id || res.data?.data?.id}`);
         } catch (err) {
             console.error("Blog creation failed:", err.response?.data || err.message);
             showToast("Blog creation failed!", "error");
             throw err;
+        }
+    };
+
+    const handleSaveDraft = async (payload) => {
+        if (!user?.id) {
+            throw new Error("Login required");
+        }
+
+        const formData = new FormData();
+        formData.append("title", payload.title || "");
+        formData.append("excerpt", payload.excerpt || "");
+        formData.append("content", payload.content || "");
+        formData.append("author", payload.author || "");
+        formData.append("category", payload.category || "");
+        formData.append("tags", JSON.stringify(payload.tags || []));
+        formData.append("status", "draft");
+
+        if (payload.coverImage) {
+            formData.append("coverImage", payload.coverImage);
+        }
+
+        let res;
+        const normalizedDraftId = String(draftServerSlug || "").trim();
+
+        if (normalizedDraftId) {
+            try {
+                res = await api.put(`/blogs/${normalizedDraftId}`, formData);
+            } catch (error) {
+                const status = error?.response?.status;
+                if (status === 404) {
+                    // Stale local draft pointer (draft deleted server-side). Create a new one.
+                    persistDraftServerSlug("");
+                    res = await api.post("/blogs", formData);
+                } else {
+                    throw error;
+                }
+            }
+        } else {
+            res = await api.post("/blogs", formData);
+        }
+
+        const nextSlug = res.data?.blog?.slug || res.data?.data?.slug || res.data?.blog?.id || res.data?.data?.id || "";
+        if (nextSlug) {
+            persistDraftServerSlug(nextSlug);
         }
     };
 
@@ -130,6 +207,8 @@ const BlogForm = () => {
             submitLabel={isEdit ? "Update Blog" : "Publish Blog"}
             initialValues={memoInitialValues}
             onSubmit={handleSubmit}
+            onSaveDraft={isEdit ? undefined : handleSaveDraft}
+            draftStorageKey={draftStorageKey}
             onCancel={() => router.back()}
         />
     );
