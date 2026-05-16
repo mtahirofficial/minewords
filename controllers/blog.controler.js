@@ -18,7 +18,9 @@ const makeSlug = (value = "", fallback = "item") =>
   String(value || fallback)
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, "-")
+    // keep Urdu + English letters/numbers
+    .replace(/[^\u0600-\u06FFa-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "") || fallback;
 
 const normalizeTag = (value = "") =>

@@ -120,7 +120,13 @@ const BlogCard = ({ post, onUpdate }) => {
 
         <h3>{renderWithHashtags(post.title || "", `title-${post.id}`)}</h3>
 
-        <p>{renderWithHashtags(post.excerpt || "", `excerpt-${post.id}`)}</p>
+        <p>
+          {renderWithHashtags(post.excerpt || "", `excerpt-${post.id}`)}{" "}
+          <Link className="read-more" href={blogPath}>
+            Read More
+          </Link>
+        </p>
+
         {/* {postTags.length > 0 && (
           <div className="post-tag-list">
             {postTags.slice(0, 8).map((tag) => (

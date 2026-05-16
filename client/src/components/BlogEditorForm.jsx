@@ -701,42 +701,6 @@ const BlogEditorForm = ({
             </div>
 
             <div className="form-group">
-              <label htmlFor="tags">Tags</label>
-              <input
-                id="tags"
-                name="tags"
-                type="text"
-                value={tagInput}
-                onChange={handleTagInputChange}
-                onKeyDown={handleTagInputKeyDown}
-                onPaste={handleTagInputPaste}
-                onBlur={commitTagInput}
-                placeholder="Type a tag and press comma (,) to add"
-                disabled={tags.length >= MAX_TAGS}
-              />
-              <small>
-                Add up to {MAX_TAGS} tags. Comma creates a tag. Paste
-                comma-separated values to add many at once.
-              </small>
-              {tags.length > 0 && (
-                <div className="compose-tags-list">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      className="compose-tag-chip"
-                      onClick={() => removeTag(tag)}
-                      aria-label={`Remove tag ${tag}`}
-                    >
-                      {tag}
-                      <span aria-hidden="true">x</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="form-group">
               <div className="compose-editor compose-editor-library">
                 <div className="compose-editor-head">
                   <span className="compose-editor-title">Article Content</span>
@@ -777,6 +741,41 @@ const BlogEditorForm = ({
               </small> */}
             </div>
 
+            <div className="form-group">
+              <label htmlFor="tags">Tags</label>
+              <input
+                id="tags"
+                name="tags"
+                type="text"
+                value={tagInput}
+                onChange={handleTagInputChange}
+                onKeyDown={handleTagInputKeyDown}
+                onPaste={handleTagInputPaste}
+                onBlur={commitTagInput}
+                placeholder="Type a tag and press comma (,) to add"
+                disabled={tags.length >= MAX_TAGS}
+              />
+              <small>
+                Add up to {MAX_TAGS} tags. Comma creates a tag. Paste
+                comma-separated values to add many at once.
+              </small>
+              {tags.length > 0 && (
+                <div className="compose-tags-list">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className="compose-tag-chip"
+                      onClick={() => removeTag(tag)}
+                      aria-label={`Remove tag ${tag}`}
+                    >
+                      {tag}
+                      <span aria-hidden="true">x</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="compose-form-row">
               <div className="form-group">
                 <label htmlFor="author">Author</label>

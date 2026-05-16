@@ -53,7 +53,9 @@ export async function getServerSideProps() {
       initialBlogs,
       initialTotalPages,
       initialCategoryStats,
-      initialTotalBlogs: Number(blogsPayload?.pagination?.total || initialBlogs.length || 0),
+      initialTotalBlogs: Number(
+        blogsPayload?.pagination?.total || initialBlogs.length || 0,
+      ),
       serverHydrated: Boolean(blogsPayload || categoriesPayload),
     },
   };
@@ -289,11 +291,11 @@ const HomePage = ({
                   ))}
                 </div>
               )}
-              <Pagination
+              {/* <Pagination
                 page={page}
                 setPage={setPage}
                 totalPages={totalPages}
-              />
+              /> */}
             </div>
           </div>
 
