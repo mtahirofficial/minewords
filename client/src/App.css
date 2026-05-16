@@ -2027,8 +2027,9 @@ textarea {
 .single-blog-cover-image {
   display: block;
   width: 100%;
-  max-height: min(52vh, 480px);
-  object-fit: cover;
+  height: 100%;
+  /* max-height: min(52vh, 480px); */
+  object-fit: contain;
 }
 
 .single-blog-meta {
