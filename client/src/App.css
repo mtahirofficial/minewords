@@ -1032,8 +1032,10 @@ header button svg {
 
 .blog-card-cover-image {
   width: 100%;
-  height: clamp(170px, 22vw, 260px);
-  object-fit: cover;
+  height: 100%;
+  /* height: clamp(170px, 22vw, 260px); */
+  /* object-fit: cover; */
+  object-fit: contain;
   display: block;
 }
 
