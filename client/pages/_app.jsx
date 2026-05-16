@@ -5,6 +5,7 @@ import "quill/dist/quill.snow.css";
 import { Fragment, StrictMode, useEffect } from "react";
 import Head from "next/head";
 import Script from "next/script";
+
 import { useRouter } from "next/router";
 import { AuthProvider } from "../src/context/AuthContext.jsx";
 import { MainProvider } from "../src/context/MainContext.jsx";
@@ -76,6 +77,7 @@ const blogSchema = {
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
+
   const clarityProjectId =
     process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ||
     process.env.VITE_CLARITY_PROJECT_ID;

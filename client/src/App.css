@@ -1032,8 +1032,10 @@ header button svg {
 
 .blog-card-cover-image {
   width: 100%;
-  height: clamp(170px, 22vw, 260px);
-  object-fit: cover;
+  height: 100%;
+  /* height: clamp(170px, 22vw, 260px); */
+  /* object-fit: cover; */
+  object-fit: contain;
   display: block;
 }
 
@@ -2025,8 +2027,9 @@ textarea {
 .single-blog-cover-image {
   display: block;
   width: 100%;
-  max-height: min(52vh, 480px);
-  object-fit: cover;
+  height: 100%;
+  /* max-height: min(52vh, 480px); */
+  object-fit: contain;
 }
 
 .single-blog-meta {
@@ -5014,4 +5017,14 @@ img {
 .compose-quill-host {
   overflow-y: scroll;
   max-height: 320px;
+}
+
+a.read-more {
+  color: blue;
+  padding: 0 10px;
+  text-decoration: underline;
+  opacity: 0.7;
+}
+a.read-more:hover {
+  opacity: 1;
 }
