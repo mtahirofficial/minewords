@@ -174,12 +174,6 @@ export default function MyApp({ Component, pageProps }) {
           name="twitter:image:alt"
           content="MineWords - Blog and magazine for curious readers"
         />
-        <script
-          key="ahrefs-analytics"
-          src="https://analytics.ahrefs.com/analytics.js"
-          data-key="BCPYEPfKQOzu9AOkEynSSg"
-          async
-        />
 
         <script
           type="application/ld+json"
@@ -206,6 +200,16 @@ export default function MyApp({ Component, pageProps }) {
           })(window, document, "clarity", "script", "${clarityProjectId}");
         `}</Script>
       ) : null}
+
+      <Script id="ahrefs-analytics" strategy="afterInteractive">{`
+        (function() {
+          var script = document.createElement('script');
+          script.src = 'https://analytics.ahrefs.com/analytics.js';
+          script.setAttribute('data-key', 'BCPYEPfKQOzu9AOkEynSSg');
+          script.async = true;
+          document.head.appendChild(script);
+        })();
+      `}</Script>
 
       <AuthProvider>
         <MainProvider>

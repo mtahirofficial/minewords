@@ -152,7 +152,6 @@ async function fetchPostBySlug(slug) {
   if (!response.ok) return null;
 
   const payload = await response.json();
-  console.log("payload", payload);
 
   return payload?.blog || null;
 }

@@ -1,0 +1,12 @@
+name = "minewords"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+routes = []
+
+[[r2_buckets]]
+binding = "MY_BUCKET"
+bucket_name = "minewords"
+
+[vars]
+PUBLIC_BASE_URL = "https://3897f17cbdb8ee09944f08349870a8d6.r2.cloudflarestorage.com"

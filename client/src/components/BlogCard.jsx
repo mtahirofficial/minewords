@@ -122,9 +122,7 @@ const BlogCard = ({ post, onUpdate }) => {
 
         <p>
           {renderWithHashtags(post.excerpt || "", `excerpt-${post.id}`)}{" "}
-          <Link className="read-more" href={blogPath}>
-            Read More
-          </Link>
+          <span className="read-more">Read More</span>
         </p>
 
         {/* {postTags.length > 0 && (

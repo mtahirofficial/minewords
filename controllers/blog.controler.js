@@ -2,7 +2,7 @@ const express = require("express");
 const { Blog, User, Comment, Like, Hashtag, sequelize } = require("../models");
 const { AuthMiddleware, VerifiedMiddleware } = require("../middleware");
 const OptionalAuthMiddleware = require("../middleware/optional-auth.middleware");
-const MulterMiddleware = require("../middleware/multer.middleware");
+const { parseMultipartSingle } = require("../middleware/busboy.middleware");
 const {
   ServerException,
   NotFoundException,
@@ -10,6 +10,16 @@ const {
 } = require("../exceptions");
 const { Op, Sequelize } = require("sequelize");
 const { calculateReadTime } = require("../utils");
+
+const getR2Helpers = (() => {
+  let cached = null;
+  return async () => {
+    if (!cached) {
+      cached = import("../lib/r2.js");
+    }
+    return cached;
+  };
+})();
 
 const escapeLikeTerm = (value = "") => value.replace(/[%_\\]/g, "\\$&");
 const stripHtmlTags = (value = "") => String(value).replace(/<[^>]*>/g, " ");
@@ -86,6 +96,24 @@ const extractHashtags = (value = "") => {
         .filter(Boolean),
     ),
   ];
+};
+
+const extensionFromMimeType = (mimeType = "") => {
+  const normalized = String(mimeType || "").toLowerCase();
+  if (normalized === "image/jpeg") return "jpg";
+  if (normalized === "image/png") return "png";
+  if (normalized === "image/webp") return "webp";
+  if (normalized === "image/gif") return "gif";
+  return "bin";
+};
+
+const extensionFromUpload = (file) => {
+  const name = String(file?.originalname || "").trim();
+  if (name.includes(".")) {
+    const ext = name.split(".").pop()?.toLowerCase();
+    if (ext) return ext;
+  }
+  return extensionFromMimeType(file?.mimetype);
 };
 
 class BlogController {
@@ -353,32 +381,59 @@ class BlogController {
       const hashtags = extractHashtags(
         `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
       );
-      const coverImage = req.file
-        ? `${MulterMiddleware.baseFilePath}${req.file.filename}`
-        : null;
 
-      const blog = await sequelize.transaction(async (transaction) => {
-        const slug = await this.buildUniqueBlogSlug(title, null, transaction);
-        const createdBlog = await Blog.create(
-          {
-            author,
-            title,
-            slug,
-            excerpt,
-            content,
-            category,
-            categorySlug: makeSlug(category, "general"),
-            coverImage,
-            tags: JSON.stringify(parsedTags),
-            readTime: calculateReadTime(content),
-            userId,
-          },
-          { transaction },
-        );
+      const { uploadBufferToR2, deleteAssetFromR2 } = await getR2Helpers();
 
-        await this.syncHashtagCounts([], hashtags, transaction);
-        return createdBlog;
-      });
+      let uploadedCoverUrl = null;
+
+      let blog;
+      try {
+        blog = await sequelize.transaction(async (transaction) => {
+          const slug = await this.buildUniqueBlogSlug(title, null, transaction);
+
+          if (req.file?.buffer) {
+            const ext = extensionFromUpload(req.file);
+            uploadedCoverUrl = await uploadBufferToR2(
+              {
+                buffer: req.file.buffer,
+                mimetype: req.file.mimetype,
+                fileName: `${slug}.${ext}`,
+              },
+              "blog-covers",
+            );
+          }
+          const createdBlog = await Blog.create(
+            {
+              author,
+              title,
+              slug,
+              excerpt,
+              content,
+              category,
+              categorySlug: makeSlug(category, "general"),
+              coverImage: uploadedCoverUrl,
+              tags: JSON.stringify(parsedTags),
+              readTime: calculateReadTime(content),
+              userId,
+            },
+            { transaction },
+          );
+
+          await this.syncHashtagCounts([], hashtags, transaction);
+          return createdBlog;
+        });
+      } catch (error) {
+        if (uploadedCoverUrl) {
+          try {
+            await deleteAssetFromR2(uploadedCoverUrl);
+          } catch (cleanupError) {
+            console.warn(
+              `Cover image cleanup failed: ${cleanupError.message}`,
+            );
+          }
+        }
+        throw error;
+      }
 
       try {
         await fetch(
@@ -405,8 +460,8 @@ class BlogController {
       if (!blog) return next(new NotFoundException("Blog not found"));
       if (blog.userId !== req.user.id)
         return next(new ForbiddenException("Not allowed"));
-
       const { title, excerpt, content, category } = req.body;
+      const previousCoverImage = blog.coverImage || null;
       const parsedTags = parseTagListFromInput(
         req.body?.tags,
         parseStoredTags(blog.tags),
@@ -417,32 +472,75 @@ class BlogController {
       const nextTags = extractHashtags(
         `${title || ""} ${excerpt || ""} ${content || ""} ${tagsToHashtagText(parsedTags)}`,
       );
-      const coverImage = req.file
-        ? `${MulterMiddleware.baseFilePath}${req.file.filename}`
-        : blog.coverImage;
 
-      await sequelize.transaction(async (transaction) => {
-        const nextSlug = await this.buildUniqueBlogSlug(
-          title,
-          blog.id,
-          transaction,
-        );
-        await blog.update(
-          {
+      const { uploadBufferToR2, deleteAssetFromR2 } = await getR2Helpers();
+      let uploadedCoverUrl = null;
+      let coverImage = blog.coverImage;
+
+      try {
+        await sequelize.transaction(async (transaction) => {
+          const nextSlug = await this.buildUniqueBlogSlug(
             title,
-            slug: nextSlug,
-            excerpt,
-            content,
-            category,
-            categorySlug: makeSlug(category, "general"),
-            coverImage,
-            tags: JSON.stringify(parsedTags),
-            readTime: calculateReadTime(content),
-          },
-          { transaction },
-        );
-        await this.syncHashtagCounts(previousTags, nextTags, transaction);
-      });
+            blog.id,
+            transaction,
+          );
+
+          if (req.file?.buffer) {
+            const ext = extensionFromUpload(req.file);
+            uploadedCoverUrl = await uploadBufferToR2(
+              {
+                buffer: req.file.buffer,
+                mimetype: req.file.mimetype,
+                fileName: `${nextSlug}.${ext}`,
+              },
+              "blog-covers",
+            );
+            coverImage = uploadedCoverUrl;
+          }
+
+          await blog.update(
+            {
+              title,
+              slug: nextSlug,
+              excerpt,
+              content,
+              category,
+              categorySlug: makeSlug(category, "general"),
+              coverImage,
+              tags: JSON.stringify(parsedTags),
+              readTime: calculateReadTime(content),
+            },
+            { transaction },
+          );
+          await this.syncHashtagCounts(previousTags, nextTags, transaction);
+        });
+      } catch (error) {
+        if (uploadedCoverUrl) {
+          try {
+            await deleteAssetFromR2(uploadedCoverUrl);
+          } catch (cleanupError) {
+            console.warn(
+              `Cover image cleanup failed: ${cleanupError.message}`,
+            );
+          }
+        }
+        throw error;
+      }
+
+      if (
+        uploadedCoverUrl &&
+        previousCoverImage &&
+        previousCoverImage !== uploadedCoverUrl &&
+        /^https?:\/\//i.test(previousCoverImage)
+      ) {
+        try {
+          await deleteAssetFromR2(previousCoverImage);
+        } catch (cleanupError) {
+          console.warn(
+            `Previous cover image delete failed: ${cleanupError.message}`,
+          );
+        }
+      }
 
       res.json({
         status: 200,
@@ -632,13 +730,13 @@ class BlogController {
       `${this._path}`,
       AuthMiddleware,
       VerifiedMiddleware,
-      MulterMiddleware.upload.single("coverImage"),
+      parseMultipartSingle("coverImage"),
       this.create.bind(this),
     );
     this._router.put(
       `${this._path}/:slug`,
       AuthMiddleware,
-      MulterMiddleware.upload.single("coverImage"),
+      parseMultipartSingle("coverImage"),
       this.update.bind(this),
     );
     this._router.delete(
