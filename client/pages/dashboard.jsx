@@ -22,6 +22,7 @@ const DashboardPage = () => {
   });
 
   const [recentPosts, setRecentPosts] = useState([]);
+  const [myPosts, setMyPosts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [comments, setComments] = useState([]);
   const [trending, setTrending] = useState([]);
@@ -43,14 +44,20 @@ const DashboardPage = () => {
           updateUser({ isVerified: currentUser.isVerified });
         }
 
-        const blogsRes = await api.get("/blogs?page=1&limit=1000");
-        const allBlogs = blogsRes.data?.blogs || [];
-        const userBlogs = allBlogs.filter(
-          (blog) => blog.userId === currentUser.id,
+        const blogsRes = await api.get("/blogs?page=1&limit=1000&userId=me", {
+          _forceAuth: true,
+        });
+        const userBlogs = blogsRes.data?.blogs || [];
+
+        const publishedBlogs = userBlogs.filter(
+          (blog) => (blog.status || "published") === "published",
+        );
+        const draftBlogs = userBlogs.filter(
+          (blog) => (blog.status || "published") === "draft",
         );
 
-        const postsCount = userBlogs.length;
-        const draftsCount = 0;
+        const postsCount = publishedBlogs.length;
+        const draftsCount = draftBlogs.length;
         const totalLikes = userBlogs.reduce(
           (sum, blog) => sum + (blog.likesCount || 0),
           0,
@@ -67,6 +74,12 @@ const DashboardPage = () => {
           views: totalLikes,
         });
 
+        setMyPosts(
+          [...userBlogs].sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+          ),
+        );
+
         const sortedPosts = [...userBlogs]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
@@ -77,7 +90,8 @@ const DashboardPage = () => {
             slug: blog.slug || String(blog.id),
             title: blog.title,
             date: new Date(blog.createdAt).toLocaleDateString(),
-            status: "Published",
+            status:
+              (blog.status || "published") === "draft" ? "Draft" : "Published",
           })),
         );
 
@@ -106,7 +120,7 @@ const DashboardPage = () => {
           .slice(0, 5);
         setComments(sortedComments);
 
-        const sortedByLikes = [...allBlogs]
+        const sortedByLikes = [...userBlogs]
           .sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
           .slice(0, 3);
 
@@ -142,13 +156,10 @@ const DashboardPage = () => {
       await api.delete(`/blogs/${blogToDelete.slug}`);
       showToast("Blog deleted successfully", "success");
 
-      const blogsRes = await api.get("/blogs?page=1&limit=1000");
-      const allBlogs = blogsRes.data?.blogs || [];
-      const userRes = await api.get("/auth/me");
-      const currentUser = userRes.data.data;
-      const userBlogs = allBlogs.filter(
-        (blog) => blog.userId === currentUser.id,
-      );
+      const blogsRes = await api.get("/blogs?page=1&limit=1000&userId=me", {
+        _forceAuth: true,
+      });
+      const userBlogs = blogsRes.data?.blogs || [];
 
       const sortedPosts = [...userBlogs]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -160,11 +171,27 @@ const DashboardPage = () => {
           slug: blog.slug || String(blog.id),
           title: blog.title,
           date: new Date(blog.createdAt).toLocaleDateString(),
-          status: "Published",
+          status:
+            (blog.status || "published") === "draft" ? "Draft" : "Published",
         })),
       );
 
-      setStats((prev) => ({ ...prev, posts: userBlogs.length }));
+      const publishedBlogs = userBlogs.filter(
+        (blog) => (blog.status || "published") === "published",
+      );
+      const draftBlogs = userBlogs.filter(
+        (blog) => (blog.status || "published") === "draft",
+      );
+      setStats((prev) => ({
+        ...prev,
+        posts: publishedBlogs.length,
+        drafts: draftBlogs.length,
+      }));
+      setMyPosts(
+        [...userBlogs].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        ),
+      );
       setDeleteModalOpen(false);
       setBlogToDelete(null);
     } catch (err) {
@@ -260,7 +287,7 @@ const DashboardPage = () => {
       </section>
 
       <section className="recent-posts">
-        <h2>Recent Posts</h2>
+        <h2>Your Posts</h2>
         <table className="posts-table">
           <thead>
             <tr>
@@ -280,7 +307,7 @@ const DashboardPage = () => {
                   Loading...
                 </td>
               </tr>
-            ) : recentPosts.length === 0 ? (
+            ) : myPosts.length === 0 ? (
               <tr>
                 <td
                   colSpan="4"
@@ -290,21 +317,33 @@ const DashboardPage = () => {
                 </td>
               </tr>
             ) : (
-              recentPosts.map((post) => (
+              myPosts.map((post) => (
                 <tr key={post.id}>
                   <td>{post.title}</td>
-                  <td>{post.date}</td>
-                  <td>{post.status}</td>
+                  <td>{new Date(post.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    {(post.status || "published") === "draft"
+                      ? "Draft"
+                      : "Published"}
+                  </td>
                   <td className="post-actions">
                     <button
                       className="btn btn-secondary"
-                      onClick={() => router.push(`/blog/${post.slug}/edit`)}
+                      onClick={() =>
+                        router.push(
+                          `/blog/${encodeURIComponent(
+                            post.slug || String(post.id),
+                          )}/edit`,
+                        )
+                      }
                     >
                       <Pencil size={16} />
                     </button>
                     <button
                       className="btn btn-critical"
-                      onClick={() => handleDeleteClick(post.slug)}
+                      onClick={() =>
+                        handleDeleteClick(post.slug || String(post.id))
+                      }
                     >
                       <Trash size={16} />
                     </button>

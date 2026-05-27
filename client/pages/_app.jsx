@@ -1,5 +1,6 @@
 import "../src/index.css";
 import "../src/App.css";
+import "../src/editor.css";
 import "quill/dist/quill.snow.css";
 
 import { Fragment, StrictMode, useEffect } from "react";

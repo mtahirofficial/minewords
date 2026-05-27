@@ -4431,21 +4431,20 @@ button:disabled {
 }
 
 .compose-editor {
-  border: 1px solid #d1dbe8;
-  border-radius: 14px;
+  /* border: 1px solid #d1dbe8;
+  border-radius: 14px; */
   overflow: hidden;
-  background: #ffffff;
+  /* background: #ffffff; */
   /* box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06); */
 }
 
 .compose-editor-head {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  display: flex;
+  background: rgb(255, 255, 255);
   gap: 0.75rem;
-  padding: 0.65rem 0.75rem 0.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  background: #ffffff;
+  padding: 0.65rem 0.75rem 0.5rem 0;
 }
 
 .compose-editor-title {
@@ -4584,8 +4583,7 @@ button:disabled {
 }
 
 .compose-editor:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-ring);
+  box-shadow: none !important;
 }
 
 .compose-editor-library .ql-toolbar.ql-snow {

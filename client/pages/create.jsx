@@ -17,13 +17,18 @@ const BlogForm = () => {
   const isEdit = router.pathname === "/blog/[slug]/edit";
 
   const [loading, setLoading] = useState(isEdit);
+  const [currentIdentifier, setCurrentIdentifier] = useState(null);
   const [initialValues, setInitialValues] = useState({
+    id: null,
     title: "",
+    slug: "",
     excerpt: "",
     content: "",
     author: user?.name || "",
     category: "",
     tags: [],
+    coverImage: "",
+    status: "draft",
   });
 
   useEffect(() => {
@@ -78,14 +83,18 @@ const BlogForm = () => {
     loadBlog();
   }, [slug, isEdit, router, user, user?.name]);
 
-  const handleSubmit = async (payload) => {
+  const handleSubmit = async (payload, { intent } = {}) => {
+    const nextStatus =
+      intent === "publish" ? "published" : intent ? "draft" : payload.status;
     const formData = new FormData();
     formData.append("title", payload.title || "");
+    formData.append("slug", payload.slug || "");
     formData.append("excerpt", payload.excerpt || "");
     formData.append("content", payload.content || "");
     formData.append("author", payload.author || "");
     formData.append("category", payload.category || "");
     formData.append("tags", JSON.stringify(payload.tags || []));
+    formData.append("status", nextStatus || "draft");
 
     if (payload.coverImage) {
       formData.append("coverImage", payload.coverImage);
@@ -110,9 +119,26 @@ const BlogForm = () => {
     }
 
     try {
-      const res = await api.post("/blogs", formData);
+      let res;
+      if (currentIdentifier) {
+        res = await api.put(`/blogs/${currentIdentifier}`, formData);
+      } else {
+        res = await api.post("/blogs", formData);
+      }
+
+      const nextBlog = res.data?.blog || res.data?.data || {};
+      const nextIdentifier = nextBlog?.slug || nextBlog?.id || null;
+      if (nextIdentifier) {
+        setCurrentIdentifier(nextIdentifier);
+      }
+
+      if (intent !== "publish") {
+        // Keep user on editor for drafts/autosave.
+        return;
+      }
+
       showToast("Blog submitted successfully!");
-      router.push(`/blog/${res.data?.blog?.slug || res.data?.blog?.id}`);
+      router.push(`/blog/${nextIdentifier}`);
     } catch (err) {
       console.error("Blog creation failed:", err.response?.data || err.message);
       showToast("Blog creation failed!", "error");
@@ -139,6 +165,7 @@ const BlogForm = () => {
           : "Write, format, and publish a polished post with complete metadata."
       }
       submitLabel={isEdit ? "Update Blog" : "Publish Blog"}
+      draftLabel="Save Draft"
       initialValues={memoInitialValues}
       onSubmit={handleSubmit}
       onCancel={() => router.back()}

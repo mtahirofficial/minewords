@@ -16,12 +16,16 @@ const BlogForm = () => {
 
     const [loading, setLoading] = useState(isEdit);
     const [initialValues, setInitialValues] = useState({
+        id: null,
         title: "",
+        slug: "",
         excerpt: "",
         content: "",
         author: user?.name || "",
         category: "",
-        tags: []
+        tags: [],
+        coverImage: "",
+        status: "draft",
     });
 
     useEffect(() => {
@@ -47,17 +51,21 @@ const BlogForm = () => {
         const loadBlog = async () => {
             try {
                 setLoading(true);
-                const blogRes = await api.get(`/blogs/${slug}`);
+                const blogRes = await api.get(`/blogs/${slug}`, { _forceAuth: true });
                 const blog = blogRes.data.blog;
                 setInitialValues({
+                    id: blog.id || null,
                     title: blog.title || "",
+                    slug: blog.slug || "",
                     excerpt: blog.excerpt || "",
                     content: blog.content || "",
                     author: blog.author || blog?.User?.name || "",
                     category: blog.category || "",
                     tags: Array.isArray(blog.tags)
                         ? blog.tags
-                        : (typeof blog.tags === "string" ? blog.tags.split(",") : [])
+                        : (typeof blog.tags === "string" ? blog.tags.split(",") : []),
+                    coverImage: blog.coverImage || "",
+                    status: blog.status || "draft",
                 });
             } catch (err) {
                 console.error("Error loading blog:", err);
@@ -71,14 +79,18 @@ const BlogForm = () => {
         loadBlog();
     }, [slug, isEdit, router, user, user?.name]);
 
-    const handleSubmit = async (payload) => {
+    const handleSubmit = async (payload, { intent } = {}) => {
         const formData = new FormData();
         formData.append("title", payload.title || "");
+        formData.append("slug", payload.slug || "");
         formData.append("excerpt", payload.excerpt || "");
         formData.append("content", payload.content || "");
         formData.append("author", payload.author || "");
         formData.append("category", payload.category || "");
         formData.append("tags", JSON.stringify(payload.tags || []));
+        if (payload.status) {
+          formData.append("status", payload.status);
+        }
 
         if (payload.coverImage) {
             formData.append("coverImage", payload.coverImage);
@@ -86,9 +98,20 @@ const BlogForm = () => {
 
         if (isEdit) {
             try {
-                await api.put(`/blogs/${slug}`, formData);
-                showToast("Blog updated successfully!");
-                router.push(`/blog/${slug}`);
+                const res = await api.put(`/blogs/${slug}`, formData);
+                const nextBlog = res.data?.data || res.data?.blog || {};
+                const nextSlug = nextBlog?.slug || slug;
+
+                if (intent === "autosave") {
+                  return;
+                }
+
+                showToast(intent === "draft" ? "Draft saved successfully!" : "Blog updated successfully!");
+                if (intent === "draft") {
+                  router.push(`/blog/${encodeURIComponent(nextSlug)}/edit`);
+                  return;
+                }
+                router.push(`/blog/${encodeURIComponent(nextSlug)}`);
             } catch (err) {
                 console.error("Blog update failed:", err.response?.data || err.message);
                 showToast("Blog update failed!", "error");

@@ -7,6 +7,7 @@ const {
   ServerException,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } = require("../exceptions");
 const { Op, Sequelize } = require("sequelize");
 const { calculateReadTime } = require("../utils");
@@ -124,8 +125,8 @@ class BlogController {
     this.initializeRoutes();
   }
 
-  async buildUniqueBlogSlug(title = "", excludeId = null, transaction = null) {
-    const base = makeSlug(title, "blog");
+  async buildUniqueBlogSlug(seed = "", excludeId = null, transaction = null) {
+    const base = makeSlug(seed, "blog");
     const possibleMatches = await Blog.findAll({
       where: {
         slug: {
@@ -147,6 +148,74 @@ class BlogController {
       next = `${base}-${suffix}`;
     }
     return next;
+  }
+
+  normalizeRequestedSlug(value = "", fallback = "") {
+    const requested = String(value || "").trim();
+    if (!requested) return "";
+    return makeSlug(requested, fallback || "blog");
+  }
+
+  async ensureSlugAvailable(slug = "", excludeId = null, transaction = null) {
+    const existing = await Blog.findOne({
+      where: {
+        slug,
+        ...(excludeId ? { id: { [Op.ne]: excludeId } } : {}),
+      },
+      attributes: ["id"],
+      transaction,
+    });
+    if (existing) {
+      throw new BadRequestException("Slug already exists");
+    }
+  }
+
+  async validateSlug(req, res, next) {
+    try {
+      const rawSlug = String(req.query.slug || "").trim();
+      const excludeIdRaw = String(req.query.excludeId || "").trim();
+      const excludeId = /^\d+$/.test(excludeIdRaw) ? Number(excludeIdRaw) : null;
+
+      const normalized = this.normalizeRequestedSlug(rawSlug, "blog");
+
+      if (!rawSlug) {
+        return res.json({
+          status: 200,
+          ok: false,
+          available: false,
+          slug: "",
+          reason: "Slug is required",
+        });
+      }
+
+      // Basic length + character validation (must match makeSlug output)
+      if (!normalized || normalized.length < 3 || normalized.length > 120) {
+        return res.json({
+          status: 200,
+          ok: false,
+          available: false,
+          slug: normalized,
+          reason: "Slug must be 3-120 characters",
+        });
+      }
+
+      const exists = await Blog.findOne({
+        where: {
+          slug: normalized,
+          ...(excludeId ? { id: { [Op.ne]: excludeId } } : {}),
+        },
+        attributes: ["id"],
+      });
+
+      return res.json({
+        status: 200,
+        ok: true,
+        available: !exists,
+        slug: normalized,
+      });
+    } catch (error) {
+      next(new ServerException(error.message));
+    }
   }
 
   async findBlogByIdentifier(identifier, options = {}) {
@@ -269,8 +338,25 @@ class BlogController {
             andConditions.push({ userId: -1 });
           }
         } else if (/^\d+$/.test(normalizedUserId)) {
-          andConditions.push({ userId: Number(normalizedUserId) });
+          const requestedUserId = Number(normalizedUserId);
+          andConditions.push({ userId: requestedUserId });
+
+          // If the caller is requesting their own posts explicitly, include drafts.
+          // Otherwise, keep public-only behavior.
+          if (req.user?.id && requestedUserId === req.user.id) {
+            // no-op: drafts allowed for owner
+          }
         }
+      }
+
+      // Only return published blogs for public queries.
+      // Users can see their own drafts via `userId=me`.
+      const isOwnerQuery =
+        normalizedUserId === "me" ||
+        (req.user?.id && /^\d+$/.test(normalizedUserId) && Number(normalizedUserId) === req.user.id);
+
+      if (!isOwnerQuery) {
+        andConditions.push({ status: "published" });
       }
 
       const whereCondition =
@@ -356,6 +442,13 @@ class BlogController {
 
       if (!blog) return next(new NotFoundException("Blog not found"));
 
+      if (
+        String(blog.status || "published") !== "published" &&
+        (!req.user?.id || blog.userId !== req.user.id)
+      ) {
+        return next(new NotFoundException("Blog not found"));
+      }
+
       const userId = req.user?.id || null;
       const isLiked = userId
         ? blog.Likes.some((like) => like.userId === userId)
@@ -376,6 +469,12 @@ class BlogController {
   async create(req, res, next) {
     try {
       const { author, title, excerpt, content, category } = req.body;
+      const requestedSlug = this.normalizeRequestedSlug(req.body?.slug, "blog");
+      const requestedStatus = String(req.body?.status || "published").trim();
+      const status =
+        requestedStatus === "draft" || requestedStatus === "published"
+          ? requestedStatus
+          : "published";
       const userId = req.user.id;
       const parsedTags = parseTagListFromInput(req.body?.tags, []);
       const hashtags = extractHashtags(
@@ -389,7 +488,13 @@ class BlogController {
       let blog;
       try {
         blog = await sequelize.transaction(async (transaction) => {
-          const slug = await this.buildUniqueBlogSlug(title, null, transaction);
+          let slug = "";
+          if (requestedSlug) {
+            await this.ensureSlugAvailable(requestedSlug, null, transaction);
+            slug = requestedSlug;
+          } else {
+            slug = await this.buildUniqueBlogSlug(title, null, transaction);
+          }
 
           if (req.file?.buffer) {
             const ext = extensionFromUpload(req.file);
@@ -414,6 +519,7 @@ class BlogController {
               coverImage: uploadedCoverUrl,
               tags: JSON.stringify(parsedTags),
               readTime: calculateReadTime(content),
+              status,
               userId,
             },
             { transaction },
@@ -461,6 +567,12 @@ class BlogController {
       if (blog.userId !== req.user.id)
         return next(new ForbiddenException("Not allowed"));
       const { title, excerpt, content, category } = req.body;
+      const requestedSlug = this.normalizeRequestedSlug(req.body?.slug, "blog");
+      const requestedStatus = String(req.body?.status || "").trim();
+      const nextStatus =
+        requestedStatus === "draft" || requestedStatus === "published"
+          ? requestedStatus
+          : null;
       const previousCoverImage = blog.coverImage || null;
       const parsedTags = parseTagListFromInput(
         req.body?.tags,
@@ -479,11 +591,13 @@ class BlogController {
 
       try {
         await sequelize.transaction(async (transaction) => {
-          const nextSlug = await this.buildUniqueBlogSlug(
-            title,
-            blog.id,
-            transaction,
-          );
+          let nextSlug = blog.slug;
+          if (requestedSlug && requestedSlug !== blog.slug) {
+            await this.ensureSlugAvailable(requestedSlug, blog.id, transaction);
+            nextSlug = requestedSlug;
+          } else if (!requestedSlug) {
+            nextSlug = await this.buildUniqueBlogSlug(title, blog.id, transaction);
+          }
 
           if (req.file?.buffer) {
             const ext = extensionFromUpload(req.file);
@@ -509,6 +623,7 @@ class BlogController {
               coverImage,
               tags: JSON.stringify(parsedTags),
               readTime: calculateReadTime(content),
+              ...(nextStatus ? { status: nextStatus } : {}),
             },
             { transaction },
           );
@@ -614,6 +729,7 @@ class BlogController {
       const searchPattern = `%#${escapeLikeTerm(safeTag)}%`;
       const blogs = await Blog.findAll({
         where: {
+          status: "published",
           [Op.or]: [
             Sequelize.where(
               Sequelize.fn("LOWER", Sequelize.col("Blog.content")),
@@ -674,6 +790,7 @@ class BlogController {
           [Sequelize.fn("COUNT", Sequelize.col("id")), "count"],
         ],
         where: {
+          status: "published",
           category: { [Op.ne]: null },
         },
         group: ["category", "categorySlug"],
@@ -720,6 +837,11 @@ class BlogController {
       `${this._path}`,
       OptionalAuthMiddleware,
       this.getAll.bind(this),
+    );
+    this._router.get(
+      `${this._path}/validate-slug`,
+      OptionalAuthMiddleware,
+      this.validateSlug.bind(this),
     );
     this._router.get(
       `${this._path}/:slug`,

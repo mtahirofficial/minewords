@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import api from "../api";
 import {
   fetchBlogCategories,
   fetchHashtagSuggestions,
   withFreeHashtagSuggestion,
 } from "../helper";
 import { showToast } from "../toast";
+import { resolveStaticFileUrl } from "../utils/staticUrl";
+import Editor from "./editor";
 
 const containsHtmlTag = (value = "") => /<\/?[a-z][\s\S]*>/i.test(value);
 
@@ -39,6 +42,16 @@ const htmlToPlainText = (html = "") =>
     .trim();
 
 const MAX_TAGS = 10;
+const VALID_SLUG_RE = /^[\u0600-\u06FFa-z0-9]+(?:-[\u0600-\u06FFa-z0-9]+)*$/;
+
+const slugify = (value = "", fallback = "") =>
+  String(value || fallback)
+    .toLowerCase()
+    .trim()
+    // keep Urdu + English letters/numbers
+    .replace(/[^\u0600-\u06FFa-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const normalizeTag = (value = "") =>
   String(value || "")
@@ -66,6 +79,7 @@ const BlogEditorForm = ({
   pageTitle,
   pageSubtitle,
   submitLabel,
+  draftLabel = "Save Draft",
   initialValues,
   onSubmit,
   onCancel,
@@ -73,17 +87,16 @@ const BlogEditorForm = ({
   const [formData, setFormData] = useState({
     ...initialValues,
     content: normalizeContentToHtml(initialValues.content),
+    slug: initialValues.slug || "",
+    status: initialValues.status || "published",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
   const [coverImagePreview, setCoverImagePreview] = useState("");
   const [tags, setTags] = useState(parseInitialTags(initialValues.tags));
   const [tagInput, setTagInput] = useState("");
-  const quillHostRef = useRef(null);
-  const quillInstanceRef = useRef(null);
   const titleRef = useRef(null);
   const excerptRef = useRef(null);
-  const isProgrammaticSyncRef = useRef(false);
 
   const [showCategoryList, setShowCategoryList] = useState(false);
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -94,7 +107,22 @@ const BlogEditorForm = ({
   const [activeHashtagField, setActiveHashtagField] = useState(null);
   const activeHashtagFieldRef = useRef(null);
   const hashtagDebounceRef = useRef(null);
-  const isSelectingHashtagRef = useRef(false);
+  const autosaveTimerRef = useRef(null);
+  const slugCheckTimerRef = useRef(null);
+  const autosaveLastSnapshotRef = useRef("");
+  const [slugState, setSlugState] = useState({
+    value: initialValues.slug || "",
+    normalized: initialValues.slug ? slugify(initialValues.slug) : "",
+    checking: false,
+    available: null,
+    message: "",
+  });
+  const [autosaveState, setAutosaveState] = useState({
+    enabled: true,
+    saving: false,
+    lastSavedAt: null,
+    error: "",
+  });
 
   const hideHashtagSuggestions = (delay = 0) => {
     const close = () => {
@@ -119,121 +147,258 @@ const BlogEditorForm = ({
     setFormData({
       ...initialValues,
       content: normalizeContentToHtml(initialValues.content),
+      slug: initialValues.slug || "",
+      status: initialValues.status || "published",
     });
     setTags(parseInitialTags(initialValues.tags));
     setTagInput("");
+
+    const existingCover = String(initialValues.coverImage || "").trim();
+    if (existingCover) {
+      const resolved = resolveStaticFileUrl(
+        existingCover,
+        process.env.VITE_API_URL || api.defaults.baseURL,
+      );
+      setCoverImage(null);
+      setCoverImagePreview(resolved);
+    } else {
+      setCoverImage(null);
+      setCoverImagePreview("");
+    }
+
+    setSlugState({
+      value: initialValues.slug || "",
+      normalized: initialValues.slug ? slugify(initialValues.slug) : "",
+      checking: false,
+      available: null,
+      message: "",
+    });
   }, [initialValues]);
 
-  useEffect(() => {
-    if (!quillHostRef.current || quillInstanceRef.current) return;
-
-    let cancelled = false;
-
-    const initQuill = async () => {
-      if (typeof window === "undefined") return;
-      const { default: Quill } = await import("quill");
-      if (cancelled || !quillHostRef.current || quillInstanceRef.current)
-        return;
-
-      const quill = new Quill(quillHostRef.current, {
-        theme: "snow",
-        modules: {
-          toolbar: [
-            [{ font: [] }],
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            ["bold", "italic", "underline", "strike"],
-            [
-              { align: [] },
-              { list: "ordered" },
-              { list: "bullet" },
-              { list: "check" },
-              { indent: "-1" },
-              { indent: "+1" },
-            ],
-            ["blockquote", "code-block"],
-            [{ direction: "rtl" }],
-            [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-            ["link", "image", "video"],
-            // [{ size: ["small", false, "large", "huge"] }],
-            ["table"],
-            ["clean"],
-          ],
-        },
-      });
-
-      quill.root.innerHTML = normalizeContentToHtml(formData.content);
-      const detectActiveHashtag = () => {
-        const selection = quill.getSelection(true);
-        const selectionIndex =
-          typeof selection?.index === "number"
-            ? selection.index
-            : Math.max(0, quill.getLength() - 1);
-
-        const textBeforeCursor = quill.getText(0, selectionIndex);
-        const match = textBeforeCursor.match(/(?:^|\s)#([A-Za-z0-9_]*)$/);
-
-        if (!match) {
-          if (activeHashtagFieldRef.current === "content")
-            hideHashtagSuggestions();
-          return null;
-        }
-
-        const query = match[1] || "";
-        setActiveHashtagQuery(query);
-        setShowHashtagList(true);
-        setActiveHashtagField("content");
-        return query;
+  const validateSlugLocal = (normalized = "") => {
+    const value = String(normalized || "").trim();
+    if (!value) {
+      return { ok: true, message: "" };
+    }
+    if (value.length < 3) {
+      return { ok: false, message: "Slug must be at least 3 characters" };
+    }
+    if (value.length > 120) {
+      return { ok: false, message: "Slug must be 120 characters or less" };
+    }
+    if (!VALID_SLUG_RE.test(value)) {
+      return {
+        ok: false,
+        message: "Slug may contain letters, numbers, and '-'",
       };
+    }
+    return { ok: true, message: "" };
+  };
 
-      quill.on("text-change", (_delta, _oldDelta, source) => {
-        if (source !== "user") return;
-        isProgrammaticSyncRef.current = true;
-        const nextHtml = quill.root.innerHTML;
-        setFormData((prev) => ({ ...prev, content: nextHtml }));
-        isProgrammaticSyncRef.current = false;
+  const checkSlugAvailability = (normalized) => {
+    const localValidation = validateSlugLocal(normalized);
+    if (!localValidation.ok) {
+      setSlugState((prev) => ({
+        ...prev,
+        normalized,
+        checking: false,
+        available: false,
+        message: localValidation.message,
+      }));
+      return;
+    }
 
-        const query = detectActiveHashtag();
-        if (query === null) return;
+    setSlugState((prev) => ({
+      ...prev,
+      normalized,
+      checking: true,
+      message: "Checking availability...",
+      available: null,
+    }));
 
-        if (hashtagDebounceRef.current) {
-          clearTimeout(hashtagDebounceRef.current);
-        }
+    if (slugCheckTimerRef.current) {
+      clearTimeout(slugCheckTimerRef.current);
+    }
 
-        hashtagDebounceRef.current = setTimeout(async () => {
-          try {
-            const items = await fetchHashtagSuggestions(query);
-            setHashtagSuggestions(withFreeHashtagSuggestion(items, query));
-          } catch (error) {
-            console.error("Failed to fetch hashtag suggestions", error);
-            setHashtagSuggestions([]);
-          }
-        }, 180);
-      });
+    slugCheckTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await api.get("/blogs/validate-slug", {
+          params: {
+            slug: normalized,
+            excludeId: initialValues?.id || "",
+          },
+        });
+        const available = Boolean(res?.data?.available);
+        setSlugState((prev) => ({
+          ...prev,
+          checking: false,
+          available,
+          message: available ? "Slug is available" : "Slug is already taken",
+        }));
+      } catch (_error) {
+        setSlugState((prev) => ({
+          ...prev,
+          checking: false,
+          available: null,
+          message: "Unable to validate slug right now",
+        }));
+      }
+    }, 450);
+  };
 
-      quill.on("selection-change", (range) => {
-        if (isSelectingHashtagRef.current) return;
-        if (!range) {
-          if (activeHashtagFieldRef.current === "content")
-            hideHashtagSuggestions();
-          return;
-        }
-        detectActiveHashtag();
-      });
+  const handleSlugChange = (e) => {
+    const raw = e.target.value || "";
+    const normalized = slugify(raw);
 
-      quill.root.addEventListener("blur", () => {
-        if (activeHashtagFieldRef.current === "content")
-          hideHashtagSuggestions(120);
-      });
+    setFormData((prev) => ({
+      ...prev,
+      slug: normalized,
+    }));
 
-      quillInstanceRef.current = quill;
+    setSlugState((prev) => ({
+      ...prev,
+      value: raw,
+      normalized,
+    }));
+
+    if (!normalized) {
+      setSlugState((prev) => ({
+        ...prev,
+        checking: false,
+        available: null,
+        message: "",
+      }));
+      return;
+    }
+
+    checkSlugAvailability(normalized);
+  };
+
+  const submitWithIntent = async (intent = "publish", options = {}) => {
+    const { requireContent = false } = options || {};
+    if (isSubmitting) return;
+
+    const normalizedSlug = slugify(formData.slug || "");
+    const slugValidation = validateSlugLocal(normalizedSlug);
+    if (!slugValidation.ok) {
+      showToast(slugValidation.message, "error");
+      return;
+    }
+    if (normalizedSlug && slugState.available === false) {
+      showToast("Slug is already taken", "error");
+      return;
+    }
+
+    const plainTextContent = htmlToPlainText(formData.content);
+    if (requireContent && !plainTextContent) {
+      showToast("Article content is required.", "error");
+      return;
+    }
+
+    let finalTags = tags;
+    const pendingTag = normalizeTag(tagInput);
+    if (pendingTag) {
+      const tagSet = new Set(tags.map((item) => item.toLowerCase()));
+      if (!tagSet.has(pendingTag) && tags.length < MAX_TAGS) {
+        finalTags = [...tags, pendingTag];
+        setTags(finalTags);
+      }
+      setTagInput("");
+    }
+
+    const payload = {
+      ...formData,
+      slug: normalizedSlug,
+      status:
+        intent === "draft"
+          ? "draft"
+          : intent === "publish"
+            ? "published"
+            : formData.status || "draft",
+      tags: finalTags,
+      coverImage,
+      coverImagePreview,
     };
 
-    initQuill();
+    setIsSubmitting(true);
+    try {
+      await onSubmit(payload, { intent });
+      if (intent === "draft") {
+        showToast("Draft saved", "success");
+      } else if (intent === "autosave") {
+        setAutosaveState((prev) => ({
+          ...prev,
+          saving: false,
+          lastSavedAt: Date.now(),
+          error: "",
+        }));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!autosaveState.enabled) return;
+    if (!onSubmit) return;
+
+    const snapshot = JSON.stringify({
+      title: formData.title || "",
+      excerpt: formData.excerpt || "",
+      content: formData.content || "",
+      author: formData.author || "",
+      category: formData.category || "",
+      slug: formData.slug || "",
+      tags,
+    });
+
+    // Avoid autosaving before the user types anything meaningful.
+    const hasMeaningfulContent =
+      String(formData.title || "").trim() ||
+      String(formData.excerpt || "").trim() ||
+      htmlToPlainText(formData.content || "").length > 30;
+
+    if (!hasMeaningfulContent) {
+      autosaveLastSnapshotRef.current = snapshot;
+      return;
+    }
+
+    if (autosaveLastSnapshotRef.current === snapshot) {
+      return;
+    }
+
+    if (autosaveTimerRef.current) {
+      clearTimeout(autosaveTimerRef.current);
+    }
+
+    autosaveTimerRef.current = setTimeout(async () => {
+      autosaveLastSnapshotRef.current = snapshot;
+      setAutosaveState((prev) => ({ ...prev, saving: true, error: "" }));
+      try {
+        await submitWithIntent("autosave");
+      } catch (_error) {
+        setAutosaveState((prev) => ({
+          ...prev,
+          saving: false,
+          error: "Autosave failed",
+        }));
+      }
+    }, 20000);
 
     return () => {
-      cancelled = true;
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     };
-  }, [formData.content]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData, tags, autosaveState.enabled]);
+
+  useEffect(() => {
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+      if (slugCheckTimerRef.current) clearTimeout(slugCheckTimerRef.current);
+      if (hashtagDebounceRef.current) clearTimeout(hashtagDebounceRef.current);
+    };
+  }, []);
 
   useEffect(
     () => () => {
@@ -243,17 +408,6 @@ const BlogEditorForm = ({
     },
     [],
   );
-
-  useEffect(() => {
-    const quill = quillInstanceRef.current;
-    if (!quill) return;
-    if (isProgrammaticSyncRef.current) return;
-
-    const normalized = normalizeContentToHtml(formData.content);
-    if (quill.root.innerHTML !== normalized) {
-      quill.root.innerHTML = normalized;
-    }
-  }, [formData.content]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -453,34 +607,7 @@ const BlogEditorForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!plainTextContent) {
-      showToast("Article content is required.", "error");
-      return;
-    }
-
-    let finalTags = tags;
-    const pendingTag = normalizeTag(tagInput);
-    if (pendingTag) {
-      const tagSet = new Set(tags.map((item) => item.toLowerCase()));
-      if (!tagSet.has(pendingTag) && tags.length < MAX_TAGS) {
-        finalTags = [...tags, pendingTag];
-        setTags(finalTags);
-      }
-      setTagInput("");
-    }
-
-    try {
-      setIsSubmitting(true);
-      await onSubmit({
-        ...formData,
-        content: formData.content,
-        tags: finalTags,
-        coverImage,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    await submitWithIntent("publish", { requireContent: true });
   };
 
   const contentWordCount = plainTextContent
@@ -518,29 +645,6 @@ const BlogEditorForm = ({
         input.focus();
         input.setSelectionRange(nextCursor, nextCursor);
       });
-    } else {
-      const quill = quillInstanceRef.current;
-      if (!quill) return;
-
-      const range = quill.getSelection(true);
-      if (!range) return;
-
-      const textBeforeCursor = quill.getText(0, range.index);
-      const match = textBeforeCursor.match(/(?:^|\s)#([A-Za-z0-9_]*)$/);
-      if (!match) return;
-
-      const queryLength = (match[1] || "").length;
-      const hashStartIndex = range.index - queryLength - 1;
-      if (hashStartIndex < 0) return;
-
-      isSelectingHashtagRef.current = true;
-      quill.deleteText(hashStartIndex, queryLength + 1, "user");
-      quill.insertText(hashStartIndex, `#${tagName} `, "user");
-      quill.setSelection(hashStartIndex + tagName.length + 2, 0, "silent");
-
-      setTimeout(() => {
-        isSelectingHashtagRef.current = false;
-      }, 0);
     }
 
     hideHashtagSuggestions();
@@ -602,6 +706,7 @@ const BlogEditorForm = ({
                   </div>
                 )}
               </div>
+
               <div
                 className="form-group compose-category-field"
                 style={{ position: "relative" }}
@@ -668,7 +773,7 @@ const BlogEditorForm = ({
                 placeholder="Add a short summary that appears in listings and previews"
                 rows={4}
                 minLength={200}
-                maxLength={250}
+                maxLength={350}
                 required
               />
               {showHashtagList && activeHashtagField === "excerpt" && (
@@ -697,9 +802,8 @@ const BlogEditorForm = ({
                   )}
                 </div>
               )}
-              <small>Recommended: 200 to 250 characters.</small>
+              <small>Recommended: 200 to 350 characters.</small>
             </div>
-
             <div className="form-group">
               <div className="compose-editor compose-editor-library">
                 <div className="compose-editor-head">
@@ -708,33 +812,16 @@ const BlogEditorForm = ({
                     Tip: Highlight text, then apply formatting from the toolbar.
                   </small>
                 </div>
-                <div ref={quillHostRef} className="compose-quill-host" />
-                {showHashtagList && activeHashtagField === "content" && (
-                  <div className="hashtag-suggestions">
-                    {hashtagSuggestions.length > 0 ? (
-                      <ul>
-                        {hashtagSuggestions.map((tag) => (
-                          <li
-                            key={tag.name}
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              handleSelectHashtag(tag.name);
-                            }}
-                          >
-                            #{tag.name}
-                            <span>{tag.count || 0}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <div className="hashtag-suggestions-empty">
-                        {activeHashtagQuery
-                          ? "No hashtag found"
-                          : "Type to search hashtag"}
-                      </div>
-                    )}
-                  </div>
-                )}
+                <Editor
+                  value={formData.content}
+                  onChange={(html) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      content: normalizeContentToHtml(html),
+                    }));
+                  }}
+                  placeholder="Write your article here..."
+                />
               </div>
               {/* <small>
                 Tip: Highlight text, then apply formatting from the toolbar.
@@ -776,6 +863,34 @@ const BlogEditorForm = ({
                 </div>
               )}
             </div>
+            <div className="form-group">
+              <label htmlFor="slug">Slug</label>
+              <input
+                type="text"
+                id="slug"
+                name="slug"
+                value={formData.slug || ""}
+                onChange={handleSlugChange}
+                placeholder="e.g. my-first-blog-post"
+                autoComplete="off"
+                required
+              />
+              {slugState.message ?? (
+                <small
+                  style={{
+                    color:
+                      slugState.available === false
+                        ? "var(--danger, #dc3545)"
+                        : slugState.available === true
+                          ? "var(--success, #198754)"
+                          : "inherit",
+                  }}
+                >
+                  {slugState.message}
+                </small>
+              )}
+            </div>
+
             <div className="compose-form-row">
               <div className="form-group">
                 <label htmlFor="author">Author</label>
@@ -827,6 +942,14 @@ const BlogEditorForm = ({
                 Cancel
               </button>
               <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => submitWithIntent("draft")}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving..." : draftLabel}
+              </button>
+              <button
                 type="submit"
                 className="btn btn-success"
                 disabled={isSubmitting}
@@ -834,6 +957,23 @@ const BlogEditorForm = ({
                 {isSubmitting ? "Saving..." : submitLabel}
               </button>
             </div>
+            {(autosaveState.saving ||
+              autosaveState.lastSavedAt ||
+              autosaveState.error) && (
+              <div style={{ marginTop: "10px" }}>
+                <small>
+                  {autosaveState.saving
+                    ? "Autosaving..."
+                    : autosaveState.error
+                      ? autosaveState.error
+                      : autosaveState.lastSavedAt
+                        ? `Autosaved at ${new Date(
+                            autosaveState.lastSavedAt,
+                          ).toLocaleTimeString()}`
+                        : ""}
+                </small>
+              </div>
+            )}
           </form>
         </div>
 

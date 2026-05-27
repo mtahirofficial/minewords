@@ -303,7 +303,17 @@ class AuthController {
   async refreshToken(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      if (!refreshToken) return next(new UnauthorizedException());
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      };
+      const clearRefreshCookie = () => res.clearCookie("refreshToken", cookieOptions);
+
+      if (!refreshToken) {
+        clearRefreshCookie();
+        return next(new UnauthorizedException());
+      }
 
       const decoded = jwt.verify(
         refreshToken,
@@ -316,8 +326,10 @@ class AuthController {
         return next(new NotFoundException("User not found"));
       }
 
-      if (user.refreshToken !== refreshToken)
+      if (user.refreshToken !== refreshToken) {
+        clearRefreshCookie();
         return next(new UnauthorizedException());
+      }
 
       const payload = { id: user.id, email: user.email };
       const newAccessToken = jwt.sign(
@@ -346,6 +358,11 @@ class AuthController {
         data: { accessToken: newAccessToken },
       });
     } catch (error) {
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+      });
       next(new UnauthorizedException());
     }
   }

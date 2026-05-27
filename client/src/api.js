@@ -15,12 +15,19 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Dedicated client for refresh calls to avoid interceptor recursion.
+const refreshClient = axios.create({
+  baseURL: apiBaseUrl,
+  withCredentials: true,
+});
+
 api.interceptors.request.use(
   (config) => {
     const token =
       typeof window !== "undefined"
         ? localStorage.getItem("accessToken")
         : "";
+    const forceAuth = Boolean(config?._forceAuth);
     const method = String(config.method || "get").toLowerCase();
     const rawUrl = String(config.url || "");
     const pathname = rawUrl.startsWith("http")
@@ -30,7 +37,8 @@ api.interceptors.request.use(
       method === "get" &&
       publicReadPatterns.some((pattern) => pattern.test(pathname));
 
-    if (token && (includeAuthOnPublicReads || !isPublicRead)) {
+    if (token && (forceAuth || includeAuthOnPublicReads || !isPublicRead)) {
+      if (!config.headers) config.headers = {};
       config.headers["Authorization"] = `Bearer ${token}`;
     } else if (config.headers?.Authorization) {
       delete config.headers.Authorization;
@@ -44,16 +52,20 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config || {};
+    const rawUrl = String(originalRequest.url || "");
+    const pathname = rawUrl.startsWith("http") ? new URL(rawUrl).pathname : rawUrl;
+    const isRefreshRequest = pathname === "/auth/refresh-token";
 
     if (
       error.response &&
       error.response.status === 401 &&
-      !originalRequest._retry
+      !originalRequest._retry &&
+      !isRefreshRequest
     ) {
       originalRequest._retry = true;
 
       try {
-        const refreshRes = await api.post("/auth/refresh-token");
+        const refreshRes = await refreshClient.post("/auth/refresh-token");
         const nextToken = refreshRes?.data?.data?.accessToken || "";
 
         if (typeof window !== "undefined" && nextToken) {
@@ -70,6 +82,15 @@ api.interceptors.response.use(
           window.location.href = "/login";
         }
         return Promise.reject(err);
+      }
+    }
+
+    // If refresh itself is unauthorized, hard logout once (no retry).
+    if (error.response && error.response.status === 401 && isRefreshRequest) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
       }
     }
 

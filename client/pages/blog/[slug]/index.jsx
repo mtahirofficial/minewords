@@ -67,6 +67,15 @@ const sanitizeHtml = (unsafeHtml = "") => {
     });
   });
 
+  // Ensure links open in a new tab for user-generated content.
+  doc.querySelectorAll("a[href]").forEach((anchor) => {
+    const href = String(anchor.getAttribute("href") || "").trim();
+    if (!href) return;
+    if (href.startsWith("#")) return;
+    anchor.setAttribute("target", "_blank");
+    anchor.setAttribute("rel", "noopener noreferrer");
+  });
+
   return doc.body.innerHTML;
 };
 
@@ -759,7 +768,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             <div className="single-blog-body">
               {hasHtmlContent ? (
                 <div
-                  className="single-blog-html-content"
+                  className="single-blog-html-content editor-content"
                   dangerouslySetInnerHTML={{ __html: displayHtmlContent }}
                   onClick={(e) => {
                     const anchor = e.target.closest("a.mw-hashtag-link");
