@@ -13,7 +13,7 @@ import Link from "next/link";
 import AdBanner from "../src/components/AdBanner";
 import { getServerApiBaseUrl, getSiteOrigin } from "../src/config/runtime";
 
-const HOME_PAGE_LIMIT = 5;
+const HOME_PAGE_LIMIT = 20;
 
 const fetchJsonSafe = async (url) => {
   try {
