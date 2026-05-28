@@ -677,6 +677,7 @@ body {
   margin: 1.2em 0;
   line-height: 1.65;
   box-shadow: var(--shadow-md);
+  text-wrap: wrap;
 }
 
 /* Links */
