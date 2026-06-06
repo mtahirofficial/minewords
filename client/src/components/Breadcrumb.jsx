@@ -42,6 +42,21 @@ const segmentToLabel = (segment = "", index = 0, allSegments = []) => {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+const humanizeSegment = (value = "") =>
+  decodeURIComponent(String(value || ""))
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
+const resolveDynamicLabel = (segment = "", query = {}) => {
+  if (!/^\[.+\]$/.test(segment)) return segmentToLabel(segment);
+
+  const paramName = segment.slice(1, -1);
+  const queryValue = query?.[paramName];
+  const normalizedValue = Array.isArray(queryValue) ? queryValue[0] : queryValue;
+
+  return humanizeSegment(normalizedValue || paramName);
+};
+
 const getAbsoluteHref = (siteOrigin = "", href = "") => {
   if (!href) return "";
   if (/^https?:\/\//i.test(href)) return href;
@@ -66,7 +81,9 @@ const Breadcrumb = ({ items = [] }) => {
 
     segments.forEach((segment, index) => {
       generated.push({
-        label: segmentToLabel(segment, index, segments),
+        label: hasHydrated
+          ? resolveDynamicLabel(segment, router.query)
+          : segmentToLabel(segment),
         href: `/${segments.slice(0, index + 1).join("/")}`,
       });
     });
@@ -75,7 +92,7 @@ const Breadcrumb = ({ items = [] }) => {
       ...item,
       current: index === generated.length - 1,
     }));
-  }, [hasHydrated, router.asPath, router.pathname]);
+  }, [hasHydrated, router.asPath, router.pathname, router.query]);
 
   const resolvedItems = Array.isArray(items) && items.length > 0 ? items : dynamicItems;
 
