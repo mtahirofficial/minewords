@@ -303,6 +303,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       description,
       image,
       authorName,
+      locale: blog.primaryLang === "ur" ? "ur_PK" : "en_US",
       publishedTime: blog.createdAt,
       modifiedTime: blog.updatedAt || blog.createdAt,
       keywords: blogTags.length
@@ -635,6 +636,11 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           />
           <meta key="og:url" property="og:url" content={seoMeta.canonicalUrl} />
           <meta key="og:image" property="og:image" content={seoMeta.image} />
+          <meta
+            key="og:locale"
+            property="og:locale"
+            content={seoMeta.locale}
+          />
           <meta
             key="article:published_time"
             property="article:published_time"
