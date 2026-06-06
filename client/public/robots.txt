@@ -1,0 +1,13 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /admin
+
+# Host
+Host: https://minewords.com
+
+# Sitemaps
+Sitemap: https://minewords.com/sitemap.xml
+Sitemap: https://minewords.com/server-sitemap.xml
