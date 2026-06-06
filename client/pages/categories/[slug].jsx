@@ -1,23 +1,84 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import api from "../../src/api";
 import CategoriesSidebar from "../../src/components/CategoriesSidebar";
 import PostsList from "../../src/components/PostsList";
 import Hero from "../../src/components/Hero";
+import {
+  CATEGORY_PAGE_SIZE,
+  fetchCategoriesData,
+  fetchCategoryBlogsData,
+  normalizeCategories,
+} from "../../src/server/categoryPageData";
 
-const CategoriesPage = () => {
+export async function getServerSideProps(context) {
+  const slug = Array.isArray(context.params?.slug)
+    ? context.params.slug[0]
+    : context.params?.slug;
+
+  const categoryRows = await fetchCategoriesData();
+  const categories = normalizeCategories(categoryRows);
+
+  if (!categories.length) {
+    return {
+      props: {
+        initialBlogs: [],
+        initialCategories: [],
+        initialSelectedCategory: null,
+        initialHasMorePosts: false,
+      },
+    };
+  }
+
+  const normalizedSlug = String(slug || "").toLowerCase();
+  const selectedCategory =
+    categories.find((category) => category.slug === normalizedSlug) ||
+    categories[0];
+
+  if (normalizedSlug && selectedCategory.slug !== normalizedSlug) {
+    return {
+      redirect: {
+        destination: `/categories/${selectedCategory.slug}`,
+        permanent: false,
+      },
+    };
+  }
+
+  const initialBlogsPayload = await fetchCategoryBlogsData({
+    categorySlug: selectedCategory.slug,
+    page: 1,
+    limit: CATEGORY_PAGE_SIZE,
+  });
+
+  return {
+    props: {
+      initialBlogs: initialBlogsPayload.blogs,
+      initialCategories: categories,
+      initialSelectedCategory: selectedCategory,
+      initialHasMorePosts: initialBlogsPayload.totalPages > 1,
+    },
+  };
+}
+
+const CategoriesPage = ({
+  initialBlogs = [],
+  initialCategories = [],
+  initialSelectedCategory = null,
+  initialHasMorePosts = false,
+}) => {
   const router = useRouter();
   const slug = Array.isArray(router.query.slug)
     ? router.query.slug[0]
     : router.query.slug;
-  const CATEGORY_PAGE_SIZE = 6;
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState(initialBlogs);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(
+    initialSelectedCategory,
+  );
+  const [categories, setCategories] = useState(initialCategories);
   const [categoryPage, setCategoryPage] = useState(1);
-  const [hasMorePosts, setHasMorePosts] = useState(false);
+  const [hasMorePosts, setHasMorePosts] = useState(initialHasMorePosts);
+  const skipFirstBlogFetchRef = useRef(Boolean(initialSelectedCategory?.slug));
 
   const fetchCategoryBlogs = async ({
     categorySlug,
@@ -33,15 +94,15 @@ const CategoriesPage = () => {
     }
 
     try {
-      const res = await api.get(
-        `/blogs?page=${page}&limit=${CATEGORY_PAGE_SIZE}&categorySlug=${encodeURIComponent(categorySlug)}`,
-      );
-      const fetched = res.data?.blogs || [];
-      const totalPages = res.data?.pagination?.totalPages || 1;
+      const payload = await fetchCategoryBlogsData({
+        categorySlug,
+        page,
+        limit: CATEGORY_PAGE_SIZE,
+      });
 
-      setBlogs((prev) => (append ? [...prev, ...fetched] : fetched));
+      setBlogs((prev) => (append ? [...prev, ...payload.blogs] : payload.blogs));
       setCategoryPage(page);
-      setHasMorePosts(page < totalPages);
+      setHasMorePosts(page < payload.totalPages);
     } catch (error) {
       console.error("Error fetching category blogs:", error);
       if (!append) setBlogs([]);
@@ -55,91 +116,51 @@ const CategoriesPage = () => {
     }
   };
 
-  // Fetch categories from dedicated endpoint
   useEffect(() => {
-    if (!router.isReady) return;
+    setCategories(initialCategories);
+  }, [initialCategories]);
 
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        const res = await api.get("/categories");
-        const fetchedCategories = res.data?.categories || [];
-        const categoryList = fetchedCategories.map((cat, idx) => ({
-          id: idx + 1,
-          name: cat.name,
-          slug: cat.slug || `category-${idx + 1}`,
-          description: `Articles about ${cat.name}`,
-          postCount: Number(cat.count || 0),
-          color: ["blue", "green", "purple", "orange", "red", "yellow"][
-            idx % 6
-          ],
-          icon: null, // We'll handle icons differently
-        }));
-
-        setCategories(categoryList);
-
-        // Initialize category from URL slug
-        if (slug && categoryList.length > 0) {
-          const categoryFromUrl = categoryList.find(
-            (cat) => cat.slug === slug.toLowerCase(),
-          );
-          if (categoryFromUrl) {
-            setSelectedCategory(categoryFromUrl);
-          } else if (categoryList.length > 0) {
-            setSelectedCategory(categoryList[0]);
-            router.replace(`/categories/${categoryList[0].slug}`);
-          }
-        } else if (categoryList.length > 0) {
-          setSelectedCategory(categoryList[0]);
-          router.replace(`/categories/${categoryList[0].slug}`);
-        }
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, [router, router.isReady, slug]);
-
-  // Sync selected category with URL slug changes (for browser back/forward)
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!categories.length) return;
 
-    if (categories.length > 0) {
-      if (slug) {
-        const categoryFromUrl = categories.find(
-          (cat) => cat.slug === slug.toLowerCase(),
-        );
-        if (
-          categoryFromUrl &&
-          (!selectedCategory || selectedCategory.name !== categoryFromUrl.name)
-        ) {
-          setSelectedCategory(categoryFromUrl);
-        }
-      } else if (!selectedCategory) {
-        setSelectedCategory(categories[0]);
-      }
+    const categoryFromUrl = slug
+      ? categories.find((category) => category.slug === slug.toLowerCase())
+      : categories[0];
+
+    if (
+      categoryFromUrl &&
+      (!selectedCategory || selectedCategory.slug !== categoryFromUrl.slug)
+    ) {
+      setSelectedCategory(categoryFromUrl);
     }
-  }, [categories, router.isReady, selectedCategory, slug]);
+  }, [categories, selectedCategory, slug]);
 
-  // Handle category selection and update URL
+  useEffect(() => {
+    if (!selectedCategory?.slug) return;
+
+    if (
+      skipFirstBlogFetchRef.current &&
+      selectedCategory.slug === initialSelectedCategory?.slug
+    ) {
+      skipFirstBlogFetchRef.current = false;
+      return;
+    }
+
+    fetchCategoryBlogs({
+      categorySlug: selectedCategory.slug,
+      page: 1,
+      append: false,
+    });
+    // The server already gave us the first result set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory?.slug]);
+
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     if (category) {
       router.push(`/categories/${category.slug}`);
     }
   };
-
-  // Fetch blogs by selected category with pagination
-  useEffect(() => {
-    if (!selectedCategory?.slug) return;
-    fetchCategoryBlogs({
-      categorySlug: selectedCategory.slug,
-      page: 1,
-      append: false,
-    });
-  }, [selectedCategory?.slug]);
 
   const handleViewMore = () => {
     if (!selectedCategory?.slug || loadingMore || !hasMorePosts) return;
@@ -183,7 +204,9 @@ const CategoriesPage = () => {
             )}
           </div>
         ) : (
-          <div className="text-center py-12">No categories found.</div>
+          <div className="text-center py-12">
+            {loading ? "Loading categories..." : "No categories found."}
+          </div>
         )}
       </main>
     </>
