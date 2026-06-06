@@ -1,55 +1,73 @@
-// components/BlogPostSchema.jsx
-// A reusable component — drop it into any blog post page
+import { getSiteOrigin } from "../config/runtime";
 
 export default function BlogPostSchema({ post }) {
+  const siteOrigin = getSiteOrigin();
+  const postUrl = post.canonicalUrl || `${siteOrigin}/blog/${post.slug}`;
+  const authorUrl =
+    post.authorUrl ||
+    (post.author?.slug
+      ? `${siteOrigin}/author/${post.author.slug}`
+      : siteOrigin);
+  const imageUrl = post.image || `${siteOrigin}/og-cover.jpg`;
+  const keywords = Array.isArray(post.keywords)
+    ? post.keywords
+    : String(post.keywords || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-
-    // Core fields — pulled from your post data
     headline: post.title,
-    description: post.excerpt || post.description,
-    url: `https://minewords.com/blog/${post.slug}`,
-
-    // Dates — use ISO 8601 format
-    datePublished: new Date(post.createdAt).toISOString(),
-    dateModified: new Date(post.updatedAt || post.createdAt).toISOString(),
-
-    // Cover image
+    description: post.description || post.excerpt || "",
+    url: postUrl,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    inLanguage: post.locale || "en-US",
+    datePublished: post.publishedTime,
+    dateModified: post.modifiedTime || post.publishedTime,
     image: {
       "@type": "ImageObject",
-      url: post.coverImage || "https://minewords.com/og-cover.jpg",
+      url: imageUrl,
       width: 1200,
       height: 630,
     },
-
-    // Author
     author: {
       "@type": "Person",
-      name: post.author?.name || "MineWords Team",
-      url: post.author?.slug
-        ? `https://minewords.com/author/${post.author.slug}`
-        : "https://minewords.com",
+      name: post.authorName || post.author?.name || "MineWords Team",
+      url: authorUrl,
     },
-
-    // Publisher (always MineWords)
     publisher: {
       "@type": "Organization",
-      name: "MineWords",
+      name: post.publisherName || "MineWords",
+      url: siteOrigin,
       logo: {
         "@type": "ImageObject",
-        url: "https://minewords.com/logo.png",
+        url: `${siteOrigin}/logo.png`,
         width: 200,
         height: 60,
       },
     },
-
-    // Breadcrumb
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `https://minewords.com/blog/${post.slug}`,
-    },
   };
+
+  if (keywords.length > 0) {
+    schema.keywords = keywords.join(", ");
+  }
+
+  if (post.articleSection) {
+    schema.articleSection = post.articleSection;
+  }
+
+  if (post.wordCount) {
+    schema.wordCount = post.wordCount;
+  }
+
+  if (post.isAccessibleForFree !== undefined) {
+    schema.isAccessibleForFree = Boolean(post.isAccessibleForFree);
+  }
 
   return (
     <script

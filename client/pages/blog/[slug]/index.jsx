@@ -272,7 +272,33 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       ...blog,
       slug: blog.slug || routeSlug || staticSlug || "",
       author: authorObject,
-      coverImage: coverImageUrl || blog.coverImage,
+      canonicalUrl: `${SITE_ORIGIN}/blog/${
+        blog.slug || routeSlug || staticSlug || ""
+      }`,
+      image: coverImageUrl || blog.coverImage || `${SITE_ORIGIN}/og-cover.jpg`,
+      description:
+        blog.excerpt ||
+        (blog.content
+          ? String(blog.content)
+              .replace(/<[^>]*>/g, " ")
+              .replace(/\s+/g, " ")
+              .trim()
+          : "Read this article on MineWords."),
+      authorName:
+        (blog.author && typeof blog.author === "object" && blog.author?.name) ||
+        blog.author ||
+        blog?.User?.name ||
+        "MineWords Team",
+      authorUrl: blog?.User?.slug
+        ? `${SITE_ORIGIN}/author/${blog.User.slug}`
+        : SITE_ORIGIN,
+      publisherName: "MineWords",
+      locale: blog.primaryLang === "ur" ? "ur-PK" : "en-US",
+      articleSection: blog?.category || "",
+      keywords: blogTags,
+      wordCount: blog.content
+        ? String(blog.content).replace(/<[^>]*>/g, " ").trim().split(/\s+/).length
+        : undefined,
     };
   }, [blog, coverImageUrl, routeSlug, staticSlug]);
 
@@ -689,6 +715,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             name="twitter:url"
             content={seoMeta.canonicalUrl}
           />
+          {schemaPost && <BlogPostSchema post={schemaPost} />}
           <link
             key="blog-fonts"
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap"
@@ -696,7 +723,6 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           />
         </Head>
       )}
-      {schemaPost && <BlogPostSchema post={schemaPost} />}
 
       <main className="container single-blog-shell">
         <article className="single-blog-card">
