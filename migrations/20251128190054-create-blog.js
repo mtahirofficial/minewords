@@ -1,49 +1,65 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Blogs', {
+    await queryInterface.createTable("Blogs", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       excerpt: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
       },
       content: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
       },
       category: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       author: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       readTime: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       date: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+      },
+      primaryLang: {
+        type: Sequelize.STRING,
+        defaultValue: "en",
+      },
+      status: {
+        type: Sequelize.STRING,
+        defaultValue: "published",
+      },
+      langs: {
+        type: Sequelize.TEXT,
+        defaultValue: "en",
+      },
+      isMixed: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Blogs');
-  }
+    await queryInterface.dropTable("Blogs");
+  },
 };

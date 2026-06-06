@@ -55,9 +55,12 @@ class AppServer {
   registerStaticFrontend() {
     const distDir = join(__dirname, "dist");
     const filesDir = join(__dirname, "files");
+    const publicDir = join(__dirname, "client", "public");
 
     // Serve uploaded/static files directly from backend.
     this._app.use("/files", express.static(filesDir));
+    // Expose public assets used by the branded fallback screen.
+    this._app.use(express.static(publicDir));
     // Serve frontend build output (includes /assets/* from Vite).
     this._app.use(express.static(distDir));
 
@@ -67,11 +70,30 @@ class AppServer {
         return next();
       }
 
+      const appName = process.env.APP_NAME || "MineWords";
+      const fallbackHtml = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#f8fbff 0%,#eef5ff 48%,#fff7ed 100%);font-family:Inter,Segoe UI,Arial,sans-serif;">
+          <div style="max-width:560px;width:100%;background:rgba(255,255,255,.92);border:1px solid rgba(23,63,109,.12);border-radius:24px;box-shadow:0 24px 80px rgba(15,23,42,.12);padding:40px 32px;text-align:center;">
+            <div style="display:flex;align-items:center;justify-content:center;margin:0 0 20px;">
+              <div style="display:flex;align-items:center;justify-content:center;width:88px;height:88px;border-radius:24px;background:linear-gradient(135deg,#ffffff 0%,#f8fbff 100%);box-shadow:0 10px 30px rgba(23,63,109,.14);border:1px solid rgba(23,63,109,.08);overflow:hidden;">
+                <img src="/minewords-logo.png" alt="${appName} logo" style="display:block;width:74px;height:74px;object-fit:contain;" />
+              </div>
+            </div>
+            <p style="margin:0 0 12px;color:#c96a17;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;">
+              Temporary maintenance
+            </p>
+            <h1 style="margin:0 0 14px;color:#173f6d;font-size:clamp(28px,4vw,40px);line-height:1.15;">
+              ${appName} is getting a quick refresh
+            </h1>
+            <p style="margin:0;color:#475569;font-size:17px;line-height:1.7;">
+              We’re polishing the reading experience and bringing things back shortly.
+              Please check again in a bit — your next story is on the way.
+            </p>
+          </div>
+        </div>`;
+
       return res.sendFile("index.html", { root: distDir }, (err) => {
-        if (err)
-          return res.send(
-            `<div style="text-align: center;font-size: xxx-large;color: red;margin-top: 100px;">Maintenance in progress...</div><div style="text-align: center;font-size: 16px;color: red;margin-top: 20px;">Checkout is functional just app dashboard in maintenance.</div>`,
-          );
+        if (err) return res.status(503).send(fallbackHtml);
         return res.end();
       });
     });
@@ -156,6 +178,7 @@ class AppServer {
   }
 
   enableStaticFile() {
+    this._app.use(express.static(join(__dirname, "client", "public")));
     this._app.use(express.static(join(__dirname, "public")));
     this._app.use(express.static(join(__dirname, "dist")));
     this._app.use("/files", express.static(join(__dirname, "files")));

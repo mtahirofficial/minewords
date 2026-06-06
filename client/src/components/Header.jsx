@@ -79,7 +79,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
           <Link href="/" className="brand-link" aria-label={`${siteName} home`}>
             <img
               src={logoSrc}
-              alt={`${siteName} logo`}
+              alt={`MineWords – Freelancing and earning blog for Pakistan`}
               className="brand-logo-image"
             />
             <span className="brand-copy">

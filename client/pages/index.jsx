@@ -5,7 +5,11 @@ import Hero from "../src/components/Hero";
 import DynamicAboutBox from "../src/components/SideBar/DynamicAboutBox";
 import DynamicCategoriesBox from "../src/components/SideBar/DynamicCategoriesBox";
 import NewsletterBox from "../src/components/SideBar/NewsletterBox";
-import { loadBlogs, useHandleCheckLogin } from "../src/helper";
+import {
+  fetchBlogCategoryStats,
+  loadBlogs,
+  useHandleCheckLogin,
+} from "../src/helper";
 import BlogCardSkeleton from "../src/components/BlogCardSkeleton";
 import Pagination from "../src/components/Pagination";
 import { useMain } from "../src/context/MainContext";
@@ -44,6 +48,7 @@ export async function getServerSideProps() {
         .map((item) => ({
           name: item?.name,
           count: Number(item?.count || 0),
+          slug: item?.slug,
         }))
         .filter((item) => item.name)
     : [];
@@ -119,26 +124,39 @@ const HomePage = ({
     });
   }, [page, limit, globalSearch]);
 
-  useEffect(() => {
+  (async () => {
     if (fetchHomeMetaOnLoad) {
       return;
     }
+    if (categoryStats.length > 0) {
+      return;
+    }
+    const catStats = await fetchBlogCategoryStats();
+    setCategoryStats(catStats);
+  })();
 
-    const counts = blogs.reduce((acc, blog) => {
-      if (!blog.category) return acc;
-      acc[blog.category] = (acc[blog.category] || 0) + 1;
-      return acc;
-    }, {});
+  // useEffect(() => {
+  //   if (fetchHomeMetaOnLoad) {
+  //     return;
+  //   }
 
-    const stats = Object.entries(counts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
+  //   const counts = blogs.reduce((acc, blog) => {
+  //     if (!blog.category) return acc;
+  //     acc[blog.category] = (acc[blog.category] || 0) + 1;
+  //     return acc;
+  //   }, {});
+  //   console.log("Category counts:", counts);
+  //   const stats = Object.entries(counts)
+  //     .map(([name, count]) => ({ name, count }))
+  //     .sort((a, b) => b.count - a.count);
 
-    setCategoryStats(stats);
-    setTotalBlogs(blogs.length);
-  }, [blogs, fetchHomeMetaOnLoad]);
+  //   console.log("Category stats:", stats);
+  //   setCategoryStats(stats);
+  //   setTotalBlogs(blogs.length);
+  // }, [blogs, fetchHomeMetaOnLoad]);
 
   // Scroll to articles section
+
   const handleReadArticles = () => {
     if (articlesSectionRef.current) {
       articlesSectionRef.current.scrollIntoView({
@@ -168,7 +186,6 @@ const HomePage = ({
 
   const heroDescription =
     "Your go-to source for the latest insights, tutorials, and discussions on a wide variety of topics.";
-
   return (
     <>
       <Head>
@@ -203,7 +220,7 @@ const HomePage = ({
         <meta key="twitter:image" name="twitter:image" content={homeImage} />
       </Head>
       <Hero
-        title={`Welcome to ${siteName}`}
+        title={`Freelancing Tips, Online Earning Guides & Creative Stories for Pakistani Readers`}
         description={heroDescription}
         primarytext={"Read Latest Articles"}
         primaryAction={handleReadArticles}

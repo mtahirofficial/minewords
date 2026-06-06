@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import menu from "../menu.json";
+import socialLinks from "../socials.json";
 import api from "../api";
 import mineWordsLogo from "../assets/minewords-logo.png";
 
@@ -113,12 +114,30 @@ const Footer = () => {
             <h4>Connect</h4>
             <p>Stay connected with our community and never miss an update.</p>
             <div className="social-icons">
-              <a
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  className="icon"
+                  target="_blank"
+                  title={social.name}
+                  rel="noopener noreferrer"
+                >
+                  <span className="font-bold">{social.label}</span>
+                </a>
+              ))}
+              {/* <a
                 href="https://www.facebook.com/minewordsofficial"
                 className="icon"
               >
                 <span className="font-bold">f</span>
               </a>
+              <a
+                href="https://www.pinterest.com/minewordsofficial/_created"
+                className="icon"
+              >
+                <span className="font-bold">p</span>
+              </a> */}
             </div>
           </div>
         </div>
@@ -134,4 +153,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

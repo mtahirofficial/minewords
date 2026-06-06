@@ -1,23 +1,20 @@
-const socials = [
-  {
-    icon: "f",
-    link: "https://www.facebook.com/minewordsofficial",
-  },
-];
+import socialLinks from "../socials.json";
 
 const SocialMedia = () => (
   <div className="social-card">
     <h3>Follow Us</h3>
     <p>Stay connected with our community and get the latest updates.</p>
     <div className="social-icons">
-      {socials.map((item) => (
+      {socialLinks.map((item) => (
         <a
-          href={item.link}
+          href={item.url}
           target="_blank"
-          key={item.icon}
+          key={item.label}
+          rel="noopener noreferrer"
+          title={item.name}
           className="social-icon"
         >
-          <span>{item.icon}</span>
+          <span>{item.label}</span>
         </a>
       ))}
     </div>

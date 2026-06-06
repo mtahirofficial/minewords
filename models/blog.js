@@ -27,6 +27,21 @@ module.exports = (sequelize, DataTypes) => {
       readTime: DataTypes.STRING,
       date: DataTypes.DATE,
       status: DataTypes.STRING,
+      primaryLang: DataTypes.STRING,
+      langs: {
+        type: DataTypes.TEXT,
+        get() {
+          const value = this.getDataValue("langs");
+          return value ? value.split(",").filter(Boolean) : [];
+        },
+        set(value) {
+          this.setDataValue(
+            "langs",
+            Array.isArray(value) ? value.join(",") : "",
+          );
+        },
+      },
+      isMixed: DataTypes.BOOLEAN,
       userId: DataTypes.INTEGER,
     },
     {

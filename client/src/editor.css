@@ -47,6 +47,7 @@ body {
   height: 100vh;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
+  max-height: 670px;
 }
 
 .editor-content :focus .editor-app {

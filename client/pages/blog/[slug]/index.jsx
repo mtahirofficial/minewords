@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Link from "next/link";
 import {
   Heart,
   MessageCircle,
@@ -305,7 +306,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       publishedTime: blog.createdAt,
       modifiedTime: blog.updatedAt || blog.createdAt,
       keywords: blogTags.length
-        ? blogTags.map((tag) => `#${tag}`).join(", ")
+        ? blogTags.map((tag) => `${tag}`).join(", ")
         : "",
     };
   }, [blog, blogTags, coverImageUrl, routeSlug, staticSlug]);
@@ -613,7 +614,18 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             <meta key="keywords" name="keywords" content={seoMeta.keywords} />
           )}
           <link key="canonical" rel="canonical" href={seoMeta.canonicalUrl} />
-
+          <link
+            rel="alternate"
+            hreflang={blog?.primaryLang}
+            href={`https://minewords.com/blog/${blog?.slug}`}
+          />
+          {blog?.primaryLang === "en" && (
+            <link
+              rel="alternate"
+              hreflang="x-default"
+              href={`https://minewords.com/blog/${blog?.slug}`}
+            />
+          )}
           <meta key="og:type" property="og:type" content="article" />
           <meta key="og:title" property="og:title" content={seoMeta.title} />
           <meta
@@ -685,9 +697,12 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           <div className="single-blog-content">
             <header className="single-blog-post-header">
               {!!displayCategory && (
-                <span className="single-blog-category-tag">
+                <Link
+                  href={`/categories/${blog.categorySlug}`}
+                  className="single-blog-category-tag"
+                >
                   {displayCategory}
-                </span>
+                </Link>
               )}
 
               <h1 className="single-blog-title">

@@ -8,6 +8,7 @@ import {
 import { showToast } from "../toast";
 import { resolveStaticFileUrl } from "../utils/staticUrl";
 import Editor from "./editor";
+import { analyzeLanguage } from "../utils/utilis";
 
 const containsHtmlTag = (value = "") => /<\/?[a-z][\s\S]*>/i.test(value);
 
@@ -318,8 +319,8 @@ const BlogEditorForm = ({
       tags: finalTags,
       coverImage,
       coverImagePreview,
+      ...analyzeLanguage(formData.content),
     };
-
     setIsSubmitting(true);
     try {
       await onSubmit(payload, { intent });

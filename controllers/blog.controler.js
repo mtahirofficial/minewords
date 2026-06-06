@@ -174,7 +174,9 @@ class BlogController {
     try {
       const rawSlug = String(req.query.slug || "").trim();
       const excludeIdRaw = String(req.query.excludeId || "").trim();
-      const excludeId = /^\d+$/.test(excludeIdRaw) ? Number(excludeIdRaw) : null;
+      const excludeId = /^\d+$/.test(excludeIdRaw)
+        ? Number(excludeIdRaw)
+        : null;
 
       const normalized = this.normalizeRequestedSlug(rawSlug, "blog");
 
@@ -202,6 +204,7 @@ class BlogController {
       const exists = await Blog.findOne({
         where: {
           slug: normalized,
+          status: { [Op.ne]: "draft" },
           ...(excludeId ? { id: { [Op.ne]: excludeId } } : {}),
         },
         attributes: ["id"],
@@ -353,7 +356,9 @@ class BlogController {
       // Users can see their own drafts via `userId=me`.
       const isOwnerQuery =
         normalizedUserId === "me" ||
-        (req.user?.id && /^\d+$/.test(normalizedUserId) && Number(normalizedUserId) === req.user.id);
+        (req.user?.id &&
+          /^\d+$/.test(normalizedUserId) &&
+          Number(normalizedUserId) === req.user.id);
 
       if (!isOwnerQuery) {
         andConditions.push({ status: "published" });
@@ -533,9 +538,7 @@ class BlogController {
           try {
             await deleteAssetFromR2(uploadedCoverUrl);
           } catch (cleanupError) {
-            console.warn(
-              `Cover image cleanup failed: ${cleanupError.message}`,
-            );
+            console.warn(`Cover image cleanup failed: ${cleanupError.message}`);
           }
         }
         throw error;
@@ -566,7 +569,8 @@ class BlogController {
       if (!blog) return next(new NotFoundException("Blog not found"));
       if (blog.userId !== req.user.id)
         return next(new ForbiddenException("Not allowed"));
-      const { title, excerpt, content, category } = req.body;
+      const { title, excerpt, content, category, langs, primaryLang, isMixed } =
+        req.body;
       const requestedSlug = this.normalizeRequestedSlug(req.body?.slug, "blog");
       const requestedStatus = String(req.body?.status || "").trim();
       const nextStatus =
@@ -596,7 +600,11 @@ class BlogController {
             await this.ensureSlugAvailable(requestedSlug, blog.id, transaction);
             nextSlug = requestedSlug;
           } else if (!requestedSlug) {
-            nextSlug = await this.buildUniqueBlogSlug(title, blog.id, transaction);
+            nextSlug = await this.buildUniqueBlogSlug(
+              title,
+              blog.id,
+              transaction,
+            );
           }
 
           if (req.file?.buffer) {
@@ -611,22 +619,23 @@ class BlogController {
             );
             coverImage = uploadedCoverUrl;
           }
-
-          await blog.update(
-            {
-              title,
-              slug: nextSlug,
-              excerpt,
-              content,
-              category,
-              categorySlug: makeSlug(category, "general"),
-              coverImage,
-              tags: JSON.stringify(parsedTags),
-              readTime: calculateReadTime(content),
-              ...(nextStatus ? { status: nextStatus } : {}),
-            },
-            { transaction },
-          );
+          let dataToUpdate = {
+            title,
+            slug: nextSlug,
+            excerpt,
+            content,
+            category,
+            categorySlug: makeSlug(category, "general"),
+            coverImage,
+            tags: JSON.stringify(parsedTags),
+            readTime: calculateReadTime(content),
+            primaryLang,
+            langs: langs,
+            isMixed,
+            ...(nextStatus ? { status: nextStatus } : {}),
+          };
+          console.log(`Updating blog ${blog.id} with data:`, dataToUpdate);
+          await blog.update(dataToUpdate, { transaction });
           await this.syncHashtagCounts(previousTags, nextTags, transaction);
         });
       } catch (error) {
@@ -634,9 +643,7 @@ class BlogController {
           try {
             await deleteAssetFromR2(uploadedCoverUrl);
           } catch (cleanupError) {
-            console.warn(
-              `Cover image cleanup failed: ${cleanupError.message}`,
-            );
+            console.warn(`Cover image cleanup failed: ${cleanupError.message}`);
           }
         }
         throw error;
@@ -805,9 +812,7 @@ class BlogController {
         .map((row) => {
           const data = row.toJSON();
           const name = String(data.category || "").trim();
-          const slug = String(
-            data.categorySlug || makeSlug(name, "general"),
-          ).trim();
+          const slug = String(data.categorySlug).trim();
           const count = Number(data.count || 0);
 
           return { name, slug, count };
