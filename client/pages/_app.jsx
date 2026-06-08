@@ -192,6 +192,18 @@ export default function MyApp({ Component, pageProps }) {
         />
       </Head>
 
+      <Script
+        id="google-tag-loader"
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-2WNGNYBM8F"
+      />
+      <Script id="google-tag" strategy="afterInteractive">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2WNGNYBM8F');
+      `}</Script>
+
       {clarityProjectId ? (
         <Script id="ms-clarity" strategy="afterInteractive">{`
           (function(c,l,a,r,i,t,y){
