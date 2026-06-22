@@ -5,11 +5,13 @@ const stripApiPrefix = (value = "") => {
   if (!normalized) return "";
 
   if (/^\/api(\/|$)/i.test(normalized)) {
-    return normalized.replace(/^\/api/i, "") || "/";
+    const nextValue = normalized.replace(/^\/api/i, "");
+    return nextValue || "/";
   }
 
   if (/^api(\/|$)/i.test(normalized)) {
-    return `/${normalized.replace(/^api/i, "")}` || "/";
+    const nextValue = normalized.replace(/^api/i, "");
+    return nextValue ? `/${nextValue}` : "/";
   }
 
   return normalized;
@@ -33,10 +35,8 @@ export const resolveStaticFileUrl = (value = "", apiBase = "") => {
     return `${protocol}${raw}`;
   }
 
-  const browserOrigin =
-    typeof window !== "undefined" ? window.location.origin : "";
   const fallbackOrigin = getStaticOrigin(apiBase);
-  const origin = fallbackOrigin || browserOrigin;
+  const origin = fallbackOrigin;
 
   const withLeadingSlash = raw.startsWith("/") ? raw : `/${raw}`;
   const normalizedPath = stripApiPrefix(withLeadingSlash);
