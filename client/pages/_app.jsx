@@ -226,7 +226,7 @@ export default function MyApp({ Component, pageProps }) {
 
       <AuthProvider>
         <MainProvider>
-          <AppLayout>
+          <AppLayout breadcrumbItems={pageProps?.breadcrumbItems}>
             <Component {...pageProps} />
           </AppLayout>
         </MainProvider>

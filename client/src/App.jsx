@@ -7,7 +7,7 @@ import VerificationPopup from "./components/VerificationPopup";
 import ScrollToTop from "./components/ScrollToTop";
 import Breadcrumb from "./components/Breadcrumb";
 
-function App({ children }) {
+function App({ children, breadcrumbItems }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -19,7 +19,7 @@ function App({ children }) {
           <MobileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         )}
         <div className="breadcrumb-shell">
-          <Breadcrumb />
+          <Breadcrumb items={breadcrumbItems} />
         </div>
         {children}
         <LoginPopup />

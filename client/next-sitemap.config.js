@@ -20,5 +20,7 @@ export default {
       },
     ],
     additionalSitemaps: [`${siteUrl}/server-sitemap.xml`],
+    transformRobotsTxt: async (_config, robotsTxt) =>
+      robotsTxt.replace(/^# Host\nHost:.*\n?/gm, ""),
   },
 };

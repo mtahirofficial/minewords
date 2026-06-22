@@ -75,7 +75,9 @@ const HomePage = ({
 }) => {
   const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
   const siteOrigin = getSiteOrigin();
-  const homeTitle = `${siteName} - Words Worth Reading.`;
+  const heroTitle =
+    "Freelancing Tips, Online Earning Guides & Creative Stories for Pakistani Readers";
+  const homeTitle = `${heroTitle} | ${siteName}`;
   const homeDescription =
     "MineWords is your go-to blog for insightful articles, engaging stories, and fresh perspectives on topics that matter.";
   const homeImage = `${siteOrigin}/files/minewords-cover.png`;
@@ -220,7 +222,7 @@ const HomePage = ({
         <meta key="twitter:image" name="twitter:image" content={homeImage} />
       </Head>
       <Hero
-        title={`Freelancing Tips, Online Earning Guides & Creative Stories for Pakistani Readers`}
+        title={heroTitle}
         description={heroDescription}
         primarytext={"Read Latest Articles"}
         primaryAction={handleReadArticles}

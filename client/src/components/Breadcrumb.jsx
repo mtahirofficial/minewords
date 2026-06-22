@@ -33,6 +33,10 @@ const segmentToLabel = (segment = "", index = 0, allSegments = []) => {
     return `#${decodeURIComponent(segment)}`;
   }
 
+  if (/^\[.+\]$/.test(segment)) {
+    return humanizeSegment(segment.slice(1, -1));
+  }
+
   if (routeLabelMap[segment]) {
     return routeLabelMap[segment];
   }

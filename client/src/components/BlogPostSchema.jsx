@@ -13,7 +13,7 @@ export default function BlogPostSchema({ post }) {
     ? post.keywords
     : String(post.keywords || "")
         .split(",")
-        .map((item) => item.trim())
+        .map((item) => item.trim().replace(/^#+/, ""))
         .filter(Boolean);
 
   const schema = {
