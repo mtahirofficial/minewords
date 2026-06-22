@@ -8,6 +8,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(isBrowser);
 
+  const trackLogout = () => {
+    if (typeof window === "undefined" || typeof window.gtag !== "function") {
+      return;
+    }
+
+    window.gtag("set", { user_id: null });
+    window.gtag("event", "logout");
+  };
+
   useEffect(() => {
     if (!isBrowser) return;
 
@@ -76,6 +85,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    trackLogout();
     persistUser(null);
   };
 
