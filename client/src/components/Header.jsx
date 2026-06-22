@@ -1,4 +1,4 @@
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, Circle } from "lucide-react";
 import MenuList from "./MenuList";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -24,14 +24,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
   const [searchValue, setSearchValue] = useState("");
   const router = useRouter();
   const pathname = router.asPath.split("?")[0];
+  const isHomePage = pathname === "/";
   const searchInputRef = useRef(null);
 
-  // Sync local search value with global search
   useEffect(() => {
     setSearchValue(globalSearch);
   }, [globalSearch]);
 
-  // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuOpen && !event.target.closest(".user-dropdown")) {
@@ -43,19 +42,16 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
   }, [userMenuOpen]);
 
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchValue(value);
+    setSearchValue(e.target.value);
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchValue.trim()) {
       setGlobalSearch(searchValue.trim());
-      // Navigate to home page if not already there
       if (pathname !== "/") {
         router.push("/");
       }
-      // Scroll to articles section after a short delay
       setTimeout(() => {
         const articlesSection = document.querySelector(".main-container");
         if (articlesSection) {
@@ -72,31 +68,41 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
     setSearchValue("");
     setGlobalSearch("");
   };
+
+  const handleSubscribeClick = () => {
+    const newsletterTarget = document.querySelector("#newsletter");
+    if (isHomePage && newsletterTarget) {
+      newsletterTarget.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      return;
+    }
+
+    router.push("/#newsletter");
+  };
+
   return (
-    <header className="site-header">
+    <header className={`site-header`}>
       <div className="max-width">
         <div className="inner-header">
-          <Link href="/" className="brand-link" aria-label={`${siteName} home`}>
-            <img
-              src={logoSrc}
-              alt={`MineWords – Freelancing and earning blog for Pakistan`}
-              className="brand-logo-image"
-            />
-            <span className="brand-copy">
-              <span className="brand-name">{siteName}</span>
-              <span className="brand-tagline">
-                Creative Writing &amp; Publishing
-              </span>
-            </span>
-          </Link>
-
-          <nav className="top-menu">
-            <div className="menu-items">
-              <MenuList />
-            </div>
-          </nav>
-
-          <div className="right-side">
+          <div className="header-toolbar" aria-label="Header tools">
+            {/* <button
+              type="button"
+              className="header-icon-button"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              <Menu size={18} />
+            </button> */}
+            {/* <button
+              type="button"
+              className="header-icon-button"
+              onClick={() => searchInputRef.current?.focus()}
+              aria-label="Focus search"
+            >
+              <Search size={18} />
+            </button> */}
             <form className="desktop-search" onSubmit={handleSearchSubmit}>
               <Search className="search-icon" />
               <input
@@ -117,8 +123,42 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
                 </button>
               )}
             </form>
+          </div>
 
-            <div className="account-area">
+          <Link href="/" className="brand-link" aria-label={`${siteName} home`}>
+            <img
+              src={logoSrc}
+              alt={`MineWords â€“ Freelancing and earning blog for Pakistan`}
+              className="brand-logo-image"
+            />
+            <span className="brand-copy">
+              <span className="brand-name">{siteName}</span>
+              <span className="brand-tagline">
+                Creative Writing &amp; Publishing
+              </span>
+            </span>
+          </Link>
+
+          <div className="right-side">
+            {/* <button
+              type="button"
+              className="subscribe-link"
+              onClick={handleSubscribeClick}
+            >
+              Subscribe
+            </button> */}
+            <button
+              type="button"
+              className="header-icon-button header-icon-button--ghost"
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              <Circle size={10} />
+            </button>
+
+            <div
+              className={`account-area${isHomePage ? " account-area--home" : ""}`}
+            >
               {user ? (
                 <div className="user-dropdown">
                   <button
@@ -174,7 +214,6 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
 
                   {userMenuOpen && (
                     <div className="dropdown-menu">
-                      {/* <Link to="/profile">Profile</Link> */}
                       <Link
                         href="/dashboard"
                         onClick={() => setUserMenuOpen(false)}
@@ -199,6 +238,7 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
 
             <button
               className="menu-toggle-button"
+              type="button"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X /> : <Menu />}
@@ -206,6 +246,13 @@ const Header = ({ isMenuOpen, setIsMenuOpen }) => {
           </div>
         </div>
       </div>
+      <nav className="top-menu">
+        <div className="menu-items">
+          <div className="max-width">
+            <MenuList />
+          </div>
+        </div>
+      </nav>
     </header>
   );
 };

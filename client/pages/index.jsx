@@ -1,23 +1,20 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Head from "next/head";
-import BlogCard from "../src/components/BlogCard";
-import Hero from "../src/components/Hero";
 import DynamicAboutBox from "../src/components/SideBar/DynamicAboutBox";
 import DynamicCategoriesBox from "../src/components/SideBar/DynamicCategoriesBox";
 import NewsletterBox from "../src/components/SideBar/NewsletterBox";
-import {
-  fetchBlogCategoryStats,
-  loadBlogs,
-  useHandleCheckLogin,
-} from "../src/helper";
+import { fetchBlogCategoryStats, loadBlogs } from "../src/helper";
 import BlogCardSkeleton from "../src/components/BlogCardSkeleton";
-import Pagination from "../src/components/Pagination";
 import { useMain } from "../src/context/MainContext";
 import Link from "next/link";
 import AdBanner from "../src/components/AdBanner";
 import { getServerApiBaseUrl, getSiteOrigin } from "../src/config/runtime";
+import api from "../src/api";
+import { resolveStaticFileUrl } from "../src/utils/staticUrl";
+import blogPlaceholder from "../src/assets/blog-placeholder.svg";
 
 const HOME_PAGE_LIMIT = 20;
+const blogPlaceholderSrc = blogPlaceholder?.src || blogPlaceholder;
 
 const fetchJsonSafe = async (url) => {
   try {
@@ -28,6 +25,137 @@ const fetchJsonSafe = async (url) => {
     return null;
   }
 };
+
+const resolveStoryImage = (post = "") =>
+  resolveStaticFileUrl(
+    post?.coverImage,
+    process.env.VITE_API_URL || api.defaults.baseURL,
+  );
+
+const formatStoryDate = (post = {}) => {
+  const rawDate = post?.createdAt || post?.date;
+  const parsedDate = rawDate ? new Date(rawDate) : null;
+
+  if (!parsedDate || Number.isNaN(parsedDate.getTime())) {
+    return "";
+  }
+
+  return parsedDate.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const getStoryCategory = (post = {}) =>
+  String(post?.category || post?.Category?.name || "Latest").trim() || "Latest";
+
+const getStoryAuthor = (post = {}) =>
+  post?.author || post?.User?.name || "MineWords";
+
+const StoryImage = ({ post, className = "", priority = false }) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = imageFailed
+    ? blogPlaceholderSrc
+    : resolveStoryImage(post) || blogPlaceholderSrc;
+
+  return (
+    <img
+      src={imageSrc}
+      alt={post?.title || "Blog cover image"}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      onError={() => setImageFailed(true)}
+    />
+  );
+};
+
+const HomeCompactStory = ({ post }) => (
+  <Link
+    href={`/blog/${encodeURIComponent(post.slug || post.id)}`}
+    className="home-compact-story"
+  >
+    <article>
+      <figure className="home-compact-story-media">
+        <StoryImage post={post} className="home-compact-story-image" />
+      </figure>
+      <div className="home-compact-story-copy">
+        <span className="story-kicker">{getStoryCategory(post)}</span>
+        <h3>{post?.title}</h3>
+        <div className="story-meta">
+          <span>{formatStoryDate(post)}</span>
+          {post?.readTime ? <span>{post.readTime}</span> : null}
+        </div>
+      </div>
+    </article>
+  </Link>
+);
+
+const HomeListStory = ({ post }) => (
+  <Link
+    href={`/blog/${encodeURIComponent(post.slug || post.id)}`}
+    className="home-list-story"
+  >
+    <article>
+      <figure className="home-list-story-media">
+        <StoryImage post={post} className="home-list-story-image" />
+      </figure>
+      <div className="home-list-story-copy">
+        <span className="story-kicker">{getStoryCategory(post)}</span>
+        <h3>{post?.title}</h3>
+        <div className="story-meta">
+          <span>{formatStoryDate(post)}</span>
+        </div>
+      </div>
+    </article>
+  </Link>
+);
+
+const HomeGridStory = ({ post }) => (
+  <Link
+    href={`/blog/${encodeURIComponent(post.slug || post.id)}`}
+    className="home-grid-story"
+  >
+    <article>
+      <figure className="home-grid-story-media">
+        <StoryImage post={post} className="home-grid-story-image" />
+      </figure>
+      <div className="home-grid-story-copy">
+        <span className="story-kicker">{getStoryCategory(post)}</span>
+        <h3>{post?.title}</h3>
+        <div className="story-meta">
+          <span>{formatStoryDate(post)}</span>
+        </div>
+        <p>{post?.excerpt}</p>
+      </div>
+    </article>
+  </Link>
+);
+
+const HomeFeatureStory = ({ post }) => (
+  <Link
+    href={`/blog/${encodeURIComponent(post.slug || post.id)}`}
+    className="home-feature-story"
+  >
+    <article>
+      <figure className="home-feature-story-media">
+        <StoryImage post={post} className="home-feature-story-image" priority />
+      </figure>
+      <div className="home-feature-story-copy">
+        <span className="story-kicker story-kicker--center">
+          {getStoryCategory(post)}
+        </span>
+        <h2>{post?.title}</h2>
+        <p>{post?.excerpt}</p>
+        <div className="story-meta story-meta--center">
+          <span>{formatStoryDate(post)}</span>
+          <span>{getStoryAuthor(post)}</span>
+          {post?.readTime ? <span>{post.readTime}</span> : null}
+        </div>
+      </div>
+    </article>
+  </Link>
+);
 
 export async function getServerSideProps() {
   const apiBase = getServerApiBaseUrl();
@@ -82,7 +210,6 @@ const HomePage = ({
   const homeCanonical = `${siteOrigin}/`;
   const homeKeywords =
     "blog, articles, stories, ideas, reading, magazine, publishing";
-  const handleCheckLogin = useHandleCheckLogin();
   const { globalSearch, setGlobalSearch } = useMain();
   const [blogs, setBlogs] = useState(initialBlogs);
   const [loading, setLoading] = useState(false);
@@ -92,7 +219,7 @@ const HomePage = ({
 
   const [page, setPage] = useState(1);
   const limit = HOME_PAGE_LIMIT;
-  const [totalPages, setTotalPages] = useState(initialTotalPages);
+  const [, setTotalPages] = useState(initialTotalPages);
   const fetchHomeMetaOnLoad =
     process.env.VITE_HOME_FETCH_META_ON_LOAD === "true";
   const homeInlineSlot = process.env.VITE_ADSENSE_SLOT_HOME_INLINE?.trim();
@@ -155,37 +282,55 @@ const HomePage = ({
   //   setTotalBlogs(blogs.length);
   // }, [blogs, fetchHomeMetaOnLoad]);
 
-  // Scroll to articles section
+  const displayedBlogs = Array.isArray(blogs) ? blogs.filter(Boolean) : [];
+  const featuredPost = displayedBlogs[0];
+  const leadStories = displayedBlogs.slice(1, 3);
+  const latestStories = displayedBlogs.slice(3, 8);
+  const gridStories = displayedBlogs.slice(8, 12);
+  const spotlightStories = displayedBlogs.slice(12, 17);
+  const magazineSections = useMemo(() => {
+    const fallbackNames = ["Business", "Travel", "Politics"];
+    const categoryNames = Array.from(
+      new Set([
+        ...categoryStats.map((item) => item?.name).filter(Boolean),
+        ...displayedBlogs.map((post) => getStoryCategory(post)),
+      ]),
+    ).filter(Boolean);
 
-  const handleReadArticles = () => {
-    if (articlesSectionRef.current) {
-      articlesSectionRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
+    const selectedNames = (
+      categoryNames.length ? categoryNames : fallbackNames
+    ).slice(0, 3);
 
-  // Scroll to newsletter section
-  const handleSubscribeNewsletter = () => {
-    if (newsletterSectionRef.current) {
-      newsletterSectionRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-      // Focus on the newsletter input after a short delay
-      setTimeout(() => {
-        const newsletterInput =
-          newsletterSectionRef.current?.querySelector("input");
-        if (newsletterInput) {
-          newsletterInput.focus();
-        }
-      }, 500);
-    }
-  };
+    const fallbackSlices = [
+      displayedBlogs.slice(0, 4),
+      displayedBlogs.slice(4, 8),
+      displayedBlogs.slice(8, 12),
+    ];
 
-  const heroDescription =
-    "Your go-to source for the latest insights, tutorials, and discussions on a wide variety of topics.";
+    return selectedNames.map((name, index) => {
+      const matchingPosts = displayedBlogs.filter(
+        (post) => getStoryCategory(post).toLowerCase() === name.toLowerCase(),
+      );
+      const posts =
+        matchingPosts.length >= 4
+          ? matchingPosts.slice(0, 4)
+          : matchingPosts.length > 0
+            ? matchingPosts
+            : fallbackSlices[index];
+      const categorySlug =
+        categoryStats.find(
+          (item) =>
+            String(item?.name || "").toLowerCase() === name.toLowerCase(),
+        )?.slug || "";
+
+      return {
+        name,
+        slug: categorySlug,
+        posts,
+      };
+    });
+  }, [categoryStats, displayedBlogs]);
+
   return (
     <>
       <Head>
@@ -219,120 +364,159 @@ const HomePage = ({
         />
         <meta key="twitter:image" name="twitter:image" content={homeImage} />
       </Head>
-      <Hero
-        title={`Freelancing Tips, Online Earning Guides & Creative Stories for Pakistani Readers`}
-        description={heroDescription}
-        primarytext={"Read Latest Articles"}
-        primaryAction={handleReadArticles}
-        secondaryText={"Subscribe to Newsletter"}
-        secondaryAction={handleSubscribeNewsletter}
-      />
-      <main className="container" ref={articlesSectionRef}>
-        <div className="content-flex">
-          <div className="left-column">
-            <div className="section-header">
-              <div className="header-content">
-                <h2>
-                  {globalSearch ? (
-                    <>
-                      Search Results
-                      {blogs.length > 0 && (
-                        <span className="search-count"> ({blogs.length})</span>
-                      )}
-                    </>
-                  ) : (
-                    "Latest Articles"
-                  )}
-                </h2>
-                <p>
-                  {globalSearch ? (
-                    <>
-                      Showing results for "<strong>{globalSearch}</strong>"
-                    </>
-                  ) : (
-                    "Stay up to date with the latest articles and insights on various topics."
-                  )}
-                </p>
-              </div>
-              <Link
-                href="/create"
-                className="btn btn-primary"
-                onClick={(e) => {
-                  const isLogged = handleCheckLogin({ requireVerified: true });
-                  if (!isLogged) {
-                    e.preventDefault();
-                  }
-                }}
+      <main
+        className="container home-magazine main-container"
+        ref={articlesSectionRef}
+      >
+        {loading ? (
+          <div className="home-loading">
+            <BlogCardSkeleton />
+            <BlogCardSkeleton />
+            <BlogCardSkeleton />
+          </div>
+        ) : blogs.length === 0 ? (
+          <section className="home-empty-state">
+            <p className="empty-text">
+              {globalSearch ? (
+                <>
+                  No blogs found for "<strong>{globalSearch}</strong>". Try a
+                  different search term.
+                </>
+              ) : (
+                "No blogs found."
+              )}
+            </p>
+            {globalSearch && (
+              <button
+                className="btn btn-secondary"
+                onClick={() => setGlobalSearch("")}
               >
-                Create Blog
-              </Link>
-              {/* <Link to={"/create"} className="create-blog-btn">Create New Blog</Link> */}
-            </div>
-            <div className="section-body">
+                Clear Search
+              </button>
+            )}
+          </section>
+        ) : (
+          <>
+            <section className="magazine-hero-grid">
+              <div className="magazine-hero-rail">
+                {leadStories.map((post) => (
+                  <HomeCompactStory key={post.id} post={post} />
+                ))}
+              </div>
+
+              <HomeFeatureStory post={featuredPost} />
+
+              <aside className="magazine-hero-sidebar">
+                <div className="magazine-section-head magazine-section-head--sidebar">
+                  <h2>Latest</h2>
+                </div>
+                <div className="home-latest-list">
+                  {latestStories.map((post) => (
+                    <HomeListStory key={post.id} post={post} />
+                  ))}
+                </div>
+              </aside>
+            </section>
+
+            {magazineSections.map((section) => (
+              <section className="magazine-section" key={section.name}>
+                <div className="magazine-section-head">
+                  <h2>{section.name}</h2>
+                  <Link
+                    href={
+                      section.slug
+                        ? `/categories/${section.slug}`
+                        : "/categories"
+                    }
+                    className="view-all-link"
+                  >
+                    View all »
+                  </Link>
+                </div>
+                <div className="magazine-card-grid">
+                  {(section.posts.length > 0
+                    ? section.posts
+                    : displayedBlogs.slice(0, 4)
+                  ).map((post) => (
+                    <HomeGridStory
+                      key={`${section.name}-${post.id}`}
+                      post={post}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            <section className="magazine-spotlight">
+              <div className="magazine-section-head">
+                <h2>Politics</h2>
+                <Link href="/categories" className="view-all-link">
+                  View all »
+                </Link>
+              </div>
+              <div className="magazine-spotlight-grid">
+                <Link
+                  href={`/blog/${encodeURIComponent(
+                    (spotlightStories[0] || featuredPost)?.slug ||
+                      (spotlightStories[0] || featuredPost)?.id,
+                  )}`}
+                  className="spotlight-feature"
+                >
+                  <article>
+                    <figure className="spotlight-feature-media">
+                      <StoryImage
+                        post={spotlightStories[0] || featuredPost}
+                        className="spotlight-feature-image"
+                        priority
+                      />
+                    </figure>
+                    <div className="spotlight-feature-copy">
+                      <span className="story-kicker">Spotlight</span>
+                      <h3>{(spotlightStories[0] || featuredPost)?.title}</h3>
+                      <p>{(spotlightStories[0] || featuredPost)?.excerpt}</p>
+                      <div className="story-meta">
+                        <span>
+                          {formatStoryDate(spotlightStories[0] || featuredPost)}
+                        </span>
+                        <span>
+                          {getStoryAuthor(spotlightStories[0] || featuredPost)}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+
+                <div className="spotlight-story-stack">
+                  {spotlightStories.slice(1, 5).map((post) => (
+                    <HomeListStory key={`spotlight-${post.id}`} post={post} />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="home-side-panels">
+              {/* <DynamicAboutBox
+                siteName={siteName}
+                totalPosts={totalBlogs}
+                totalCategories={categoryStats.length}
+              />
+              <DynamicCategoriesBox categories={categoryStats} /> */}
               <AdBanner
                 slot={homeInlineSlot}
                 className="ad-banner-inline"
                 style={{ display: "block", minHeight: "100px" }}
               />
-              {loading ? (
-                <div className="skeleton-wrapper">
-                  <BlogCardSkeleton />
-                  <BlogCardSkeleton />
-                  <BlogCardSkeleton />
-                </div>
-              ) : blogs.length === 0 ? (
-                <div className="empty-state">
-                  <p className="empty-text">
-                    {globalSearch ? (
-                      <>
-                        No blogs found for "<strong>{globalSearch}</strong>".
-                        Try a different search term.
-                      </>
-                    ) : (
-                      "No blogs found."
-                    )}
-                  </p>
-                  {globalSearch && (
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => setGlobalSearch("")}
-                    >
-                      Clear Search
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="blog-list">
-                  {blogs.map((b) => (
-                    <BlogCard key={b.id} post={b} />
-                  ))}
-                </div>
-              )}
-              {/* <Pagination
-                page={page}
-                setPage={setPage}
-                totalPages={totalPages}
-              /> */}
-            </div>
-          </div>
-
-          <div className="right-column">
-            <DynamicAboutBox
-              siteName={siteName}
-              totalPosts={totalBlogs}
-              totalCategories={categoryStats.length}
-            />
-            <DynamicCategoriesBox categories={categoryStats} />
-            <AdBanner
-              slot={homeSidebarSlot}
-              className="ad-banner-sidebar"
-              style={{ display: "block", minHeight: "250px" }}
-            />
-            <div ref={newsletterSectionRef}>
-              <NewsletterBox />
-            </div>
-          </div>
-        </div>
+              <AdBanner
+                slot={homeSidebarSlot}
+                className="ad-banner-sidebar"
+                style={{ display: "block", minHeight: "250px" }}
+              />
+              <div ref={newsletterSectionRef} id="newsletter">
+                <NewsletterBox />
+              </div>
+            </section>
+          </>
+        )}
       </main>
     </>
   );

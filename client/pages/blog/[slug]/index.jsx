@@ -297,7 +297,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       articleSection: blog?.category || "",
       keywords: blogTags,
       wordCount: blog.content
-        ? String(blog.content).replace(/<[^>]*>/g, " ").trim().split(/\s+/).length
+        ? String(blog.content)
+            .replace(/<[^>]*>/g, " ")
+            .trim()
+            .split(/\s+/).length
         : undefined,
     };
   }, [blog, coverImageUrl, routeSlug, staticSlug]);
@@ -643,13 +646,13 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           <link key="canonical" rel="canonical" href={seoMeta.canonicalUrl} />
           <link
             rel="alternate"
-            hreflang={blog?.primaryLang}
+            hrefLang={blog?.primaryLang}
             href={`https://minewords.com/blog/${blog?.slug}`}
           />
           {blog?.primaryLang === "en" && (
             <link
               rel="alternate"
-              hreflang="x-default"
+              hrefLang="x-default"
               href={`https://minewords.com/blog/${blog?.slug}`}
             />
           )}
@@ -662,11 +665,7 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           />
           <meta key="og:url" property="og:url" content={seoMeta.canonicalUrl} />
           <meta key="og:image" property="og:image" content={seoMeta.image} />
-          <meta
-            key="og:locale"
-            property="og:locale"
-            content={seoMeta.locale}
-          />
+          <meta key="og:locale" property="og:locale" content={seoMeta.locale} />
           <meta
             key="article:published_time"
             property="article:published_time"

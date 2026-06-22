@@ -37,7 +37,7 @@ const organizationSchema = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "hello@minewords.com",
+    email: "info@minewords.com",
   },
 };
 

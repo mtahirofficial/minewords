@@ -10,6 +10,9 @@ import {
 import api from "../api";
 import { showToast } from "../toast";
 import { resolveStaticFileUrl } from "../utils/staticUrl";
+import blogPlaceholder from "../assets/blog-placeholder.svg";
+
+const blogPlaceholderSrc = blogPlaceholder?.src || blogPlaceholder;
 
 const resolveBlogImageUrl = (value = "") => {
   return resolveStaticFileUrl(
@@ -101,17 +104,15 @@ const BlogCard = ({ post, onUpdate }) => {
   return (
     <Link href={blogPath}>
       <article className="blog-card">
-        {!imageFailed && coverImageUrl && (
-          <figure className="blog-card-cover-wrap">
-            <img
-              src={coverImageUrl}
-              alt={post?.title || "Blog cover image"}
-              className="blog-card-cover-image"
-              loading="lazy"
-              onError={() => setImageFailed(true)}
-            />
-          </figure>
-        )}
+        <figure className="blog-card-cover-wrap">
+          <img
+            src={imageFailed || !coverImageUrl ? blogPlaceholderSrc : coverImageUrl}
+            alt={post?.title || "Blog cover image"}
+            className="blog-card-cover-image"
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+          />
+        </figure>
 
         <div className="post-meta">
           <Calendar /> {new Date(post.createdAt).toISOString().split("T")[0]} |{" "}

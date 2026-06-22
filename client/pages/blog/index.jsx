@@ -30,10 +30,7 @@ export async function getServerSideProps() {
   };
 }
 
-export default function BlogIndexPage({
-  initialPosts = [],
-  totalPosts = 0,
-}) {
+export default function BlogIndexPage({ initialPosts = [], totalPosts = 0 }) {
   const siteName = process.env.VITE_SITE_NAME?.trim() || "MineWords";
   const siteOrigin = getSiteOrigin();
   const pageTitle = `Blog - ${siteName}`;

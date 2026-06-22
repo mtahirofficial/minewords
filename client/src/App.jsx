@@ -13,7 +13,7 @@ function App({ children }) {
   return (
     <>
       <ScrollToTop />
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
         {isMenuOpen && (
           <MobileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />

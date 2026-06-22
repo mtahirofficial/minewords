@@ -19,7 +19,7 @@ body {
   line-height: 1.5;
   letter-spacing: 0.005em;
   color: #111827;
-  background-color: #f9fafb;
+  /* background-color: #f9fafb; */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -43,7 +43,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Manrope", "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family:
+    "Manrope", "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   letter-spacing: -0.015em;
   line-height: 1.2;
 }
