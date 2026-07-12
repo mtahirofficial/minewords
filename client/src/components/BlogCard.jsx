@@ -102,11 +102,13 @@ const BlogCard = ({ post, onUpdate }) => {
     });
 
   return (
-    <Link href={blogPath}>
+    <Link className="article-link" href={blogPath}>
       <article className="blog-card">
         <figure className="blog-card-cover-wrap">
           <img
-            src={imageFailed || !coverImageUrl ? blogPlaceholderSrc : coverImageUrl}
+            src={
+              imageFailed || !coverImageUrl ? blogPlaceholderSrc : coverImageUrl
+            }
             alt={post?.title || "Blog cover image"}
             className="blog-card-cover-image"
             loading="lazy"

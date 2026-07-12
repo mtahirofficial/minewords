@@ -129,7 +129,8 @@ export default function BlogIndexPage({ initialPosts = [], totalPosts = 0 }) {
         </div>
 
         {initialPosts.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          // <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="blog-list">
             {initialPosts.map((post) => (
               <BlogCard key={post.id} post={post} />
             ))}

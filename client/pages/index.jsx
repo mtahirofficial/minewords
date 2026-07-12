@@ -210,10 +210,11 @@ const HomePage = ({
   const homeCanonical = `${siteOrigin}/`;
   const homeKeywords =
     "blog, articles, stories, ideas, reading, magazine, publishing";
-  const { globalSearch, setGlobalSearch } = useMain();
+  const { globalSearch, setGlobalSearch, categoryStats, setCategoryStats } =
+    useMain();
   const [blogs, setBlogs] = useState(initialBlogs);
   const [loading, setLoading] = useState(false);
-  const [categoryStats, setCategoryStats] = useState(initialCategoryStats);
+  // const [categoryStats, setCategoryStats] = useState(initialCategoryStats);
   const [totalBlogs, setTotalBlogs] = useState(initialTotalBlogs);
   const usedServerPayloadRef = useRef(serverHydrated);
 

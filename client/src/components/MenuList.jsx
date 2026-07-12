@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useMain } from "../context/MainContext";
 
 const MenuList = ({ setIsMenuOpen }) => {
   const router = useRouter();
   const currentPath = router.asPath.split("?")[0];
+  const { categoryStats } = useMain();
+
   const menu = [
     { label: "Home", url: "/" },
-    { label: "Posts", url: "/blog" },
-    { label: "Business", url: "/categories/business" },
-    { label: "Interview", url: "/categories/interview" },
-    { label: "Politics", url: "/categories/politics" },
-    { label: "Travel", url: "/categories/travel" },
+    ...categoryStats.map((category) => ({
+      label: category.name,
+      url: `/categories/${category.slug}`,
+    })),
     { label: "Author list", url: "/about" },
-    { label: "Pricing", url: "/contact" },
     { label: "Latest", url: "/blog" },
     { label: "Newsletter", url: "/#newsletter" },
   ];
