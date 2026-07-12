@@ -288,7 +288,7 @@ const HomePage = ({
   const displayedBlogs = Array.isArray(blogs) ? blogs.filter(Boolean) : [];
   const featuredPost = displayedBlogs[0];
   const leadStories = displayedBlogs.slice(1, 3);
-  const latestStories = displayedBlogs.slice(3, 8);
+  const latestStories = displayedBlogs.slice(0, 4);
   const gridStories = displayedBlogs.slice(8, 12);
   const spotlightStories = displayedBlogs.slice(12, 17);
   const magazineSections = useMemo(() => {
