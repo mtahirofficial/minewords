@@ -7,8 +7,6 @@ const stripHtml = (value = "") =>
     .trim();
 
 export default function BlogPostSchema({ post }) {
-  console.log("post", post);
-
   const siteOrigin = getSiteOrigin();
   const schema = {
     "@context": "http://schema.org",
