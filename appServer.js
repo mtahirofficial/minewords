@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const { join } = require("path");
 const { createRequire } = require("module");
+const { parse } = require("url");
 const { ErrorsMiddleware, LoggerMiddleware } = require("./middleware");
 const { ConsoleLogger } = require("./core");
 const path = require("path");
@@ -155,7 +156,7 @@ class AppServer {
           if (req.path.startsWith("/api") || req.path.startsWith("/files")) {
             return nextFn();
           }
-          return handle(req, res);
+          return handle(req, res, parse(req.url, true));
         });
         ConsoleLogger.info(
           `Frontend renderer: Next.js server (${isDev ? "dev" : "production"})`,

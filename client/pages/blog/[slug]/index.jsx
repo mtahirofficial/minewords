@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   extractBlogHashtags,
   fetchHashtagSuggestions,
+  slugifyText,
   useHandleCheckLogin,
   withFreeHashtagSuggestion,
 } from "../../../src/helper";
@@ -157,6 +158,49 @@ const formatStableDate = (value) => {
   return date.toISOString().slice(0, 10);
 };
 
+const normalizePostLanguage = (value = "") => {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase();
+  if (normalized.startsWith("ur")) return "ur";
+  if (normalized.startsWith("en")) return "en";
+  return "en";
+};
+
+const getOpenGraphLocale = (language = "en") =>
+  normalizePostLanguage(language) === "ur" ? "ur_PK" : "en_US";
+
+const getHreflangLocale = (language = "en") =>
+  normalizePostLanguage(language) === "ur" ? "ur-PK" : "en-US";
+
+const cleanSeoKeyword = (value = "") =>
+  String(value || "")
+    .replace(/#/g, "")
+    .replace(/[,\s]+/g, " ")
+    .trim();
+
+const buildMetaKeywords = (blog = {}, tags = []) => {
+  const authorName =
+    (blog.author && typeof blog.author === "object" && blog.author?.name) ||
+    blog.author ||
+    blog?.User?.name ||
+    "MineWords Team";
+
+  const rawKeywords = [
+    blog.title,
+    blog.category,
+    authorName,
+    ...(Array.isArray(tags) ? tags : []),
+  ];
+
+  const normalized = rawKeywords
+    .map(cleanSeoKeyword)
+    .filter(Boolean)
+    .filter((item, index, allItems) => allItems.indexOf(item) === index);
+
+  return normalized.slice(0, 10);
+};
+
 async function fetchPostBySlug(slug) {
   const response = await fetch(`${API_BASE}/blogs/${encodeURIComponent(slug)}`);
   if (!response.ok) return null;
@@ -200,6 +244,14 @@ export async function getStaticProps({ params }) {
     props: {
       initialBlog: post,
       slug,
+      breadcrumbItems: [
+        { label: "Home", href: "/" },
+        { label: "Blog", href: "/blog" },
+        {
+          label: post.title || slug,
+          href: `/blog/${encodeURIComponent(post.slug || slug)}`,
+        },
+      ],
     },
     revalidate: 60,
   };
@@ -256,6 +308,17 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
     () => resolveBlogImageUrl(blog?.coverImage),
     [blog?.coverImage],
   );
+  const postLanguage = normalizePostLanguage(
+    blog?.primaryLang || blog?.language || blog?.lang,
+  );
+  const authorDisplayName =
+    (blog?.author && typeof blog.author === "object" && blog.author?.name) ||
+    blog?.author ||
+    blog?.User?.name ||
+    "MineWords Team";
+  const authorProfileSlug =
+    blog?.User?.slug || slugifyText(authorDisplayName, "author");
+  const authorProfileUrl = `/author/${authorProfileSlug}`;
 
   const schemaPost = useMemo(() => {
     if (!blog) return null;
@@ -264,8 +327,8 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
       blog.author && typeof blog.author === "object"
         ? blog.author
         : {
-            name: blog.author || blog?.User?.name || "MineWords Team",
-            slug: blog?.User?.slug || "",
+            name: authorDisplayName,
+            slug: authorProfileSlug,
           };
 
     return {
@@ -284,16 +347,10 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
               .replace(/\s+/g, " ")
               .trim()
           : "Read this article on MineWords."),
-      authorName:
-        (blog.author && typeof blog.author === "object" && blog.author?.name) ||
-        blog.author ||
-        blog?.User?.name ||
-        "MineWords Team",
-      authorUrl: blog?.User?.slug
-        ? `${SITE_ORIGIN}/author/${blog.User.slug}`
-        : SITE_ORIGIN,
+      authorName: authorDisplayName,
+      authorUrl: authorProfileUrl,
       publisherName: "MineWords",
-      locale: blog.primaryLang === "ur" ? "ur-PK" : "en-US",
+      locale: getHreflangLocale(postLanguage),
       articleSection: blog?.category || "",
       keywords: blogTags,
       wordCount: blog.content
@@ -303,7 +360,15 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             .split(/\s+/).length
         : undefined,
     };
-  }, [blog, coverImageUrl, routeSlug, staticSlug]);
+  }, [
+    authorDisplayName,
+    authorProfileSlug,
+    blog,
+    coverImageUrl,
+    postLanguage,
+    routeSlug,
+    staticSlug,
+  ]);
 
   const seoMeta = useMemo(() => {
     if (!blog) return null;
@@ -320,26 +385,30 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             .trim()
         : "Read this article on MineWords.");
     const image = toAbsoluteUrl(coverImageUrl) || `${SITE_ORIGIN}/og-cover.jpg`;
-    const authorName =
-      (blog.author && typeof blog.author === "object" && blog.author?.name) ||
-      blog.author ||
-      blog?.User?.name ||
-      "MineWords Team";
+    const keywordList = buildMetaKeywords(blog, blogTags);
+    const imageAlt = `Cover image for ${blog.title || "MineWords article"}`;
 
     return {
       canonicalUrl,
       title,
       description,
       image,
-      authorName,
-      locale: blog.primaryLang === "ur" ? "ur_PK" : "en_US",
+      authorName: authorDisplayName,
+      locale: getOpenGraphLocale(postLanguage),
       publishedTime: blog.createdAt,
       modifiedTime: blog.updatedAt || blog.createdAt,
-      keywords: blogTags.length
-        ? blogTags.map((tag) => `${tag}`).join(", ")
-        : "",
+      keywords: keywordList.join(", "),
+      imageAlt,
     };
-  }, [blog, blogTags, coverImageUrl, routeSlug, staticSlug]);
+  }, [
+    authorDisplayName,
+    blog,
+    blogTags,
+    coverImageUrl,
+    postLanguage,
+    routeSlug,
+    staticSlug,
+  ]);
 
   useEffect(() => {
     if (!routeSlug) return;
@@ -646,16 +715,14 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           <link key="canonical" rel="canonical" href={seoMeta.canonicalUrl} />
           <link
             rel="alternate"
-            hrefLang={blog?.primaryLang}
-            href={`https://minewords.com/blog/${blog?.slug}`}
+            hrefLang={getHreflangLocale(postLanguage)}
+            href={seoMeta.canonicalUrl}
           />
-          {blog?.primaryLang === "en" && (
-            <link
-              rel="alternate"
-              hrefLang="x-default"
-              href={`https://minewords.com/blog/${blog?.slug}`}
-            />
-          )}
+          <link
+            rel="alternate"
+            hrefLang="x-default"
+            href={seoMeta.canonicalUrl}
+          />
           <meta key="og:type" property="og:type" content="article" />
           <meta key="og:title" property="og:title" content={seoMeta.title} />
           <meta
@@ -665,6 +732,11 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
           />
           <meta key="og:url" property="og:url" content={seoMeta.canonicalUrl} />
           <meta key="og:image" property="og:image" content={seoMeta.image} />
+          <meta
+            key="og:image:alt"
+            property="og:image:alt"
+            content={seoMeta.imageAlt}
+          />
           <meta key="og:locale" property="og:locale" content={seoMeta.locale} />
           <meta
             key="article:published_time"
@@ -710,6 +782,11 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
             content={seoMeta.image}
           />
           <meta
+            key="twitter:image:alt"
+            name="twitter:image:alt"
+            content={seoMeta.imageAlt}
+          />
+          <meta
             key="twitter:url"
             name="twitter:url"
             content={seoMeta.canonicalUrl}
@@ -748,7 +825,8 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
 
               <div className="single-blog-meta">
                 <div className="single-blog-meta-item">
-                  <BookOpen /> {blog?.author || blog?.User?.name || ""}
+                  <BookOpen />{" "}
+                  <Link href={authorProfileUrl}>{authorDisplayName}</Link>
                 </div>
                 <div className="single-blog-meta-item">
                   <Calendar /> {formatStableDate(blog.createdAt)}
@@ -856,7 +934,9 @@ const SingleBlogPage = ({ initialBlog, slug: staticSlug }) => {
               </button>
               <div className="single-blog-author-chip">
                 <User className="post-info-user-icon" />
-                <span className="post-info-user-name">{blog?.User?.name}</span>
+                <Link href={authorProfileUrl} className="post-info-user-name">
+                  {authorDisplayName}
+                </Link>
               </div>
             </div>
 

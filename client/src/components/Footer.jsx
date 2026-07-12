@@ -50,7 +50,7 @@ const Footer = () => {
             <div className="footer-brand-top">
               <img
                 src={logoSrc}
-                alt={`${siteName} logo`}
+                alt={`${siteName} – Freelancing and earning blog for Pakistani writers`}
                 className="footer-logo"
               />
               <div className="footer-brand-copy">

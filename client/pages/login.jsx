@@ -17,6 +17,19 @@ const LoginPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const trackLogin = (user) => {
+    if (typeof window === "undefined" || typeof window.gtag !== "function") {
+      return;
+    }
+
+    if (!user?.id) {
+      return;
+    }
+
+    window.gtag("set", { user_id: user.id });
+    window.gtag("event", "login", { method: "password" });
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -26,9 +39,11 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      localStorage.setItem("accessToken", res.data.data.accessToken);
-      localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      login({ ...res.data.data.user, token: res.data.data.accessToken });
+      const { accessToken, user } = res.data.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("user", JSON.stringify(user));
+      login({ ...user, token: accessToken });
+      trackLogin(user);
       router.push("/dashboard");
     } catch (err) {
       setSubmitError(err.response?.data?.message || "Login failed");

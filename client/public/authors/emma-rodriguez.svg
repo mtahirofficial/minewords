@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="img" aria-label="Emma Rodriguez">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c96a17" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <rect width="640" height="640" rx="96" fill="url(#bg)" />
+  <circle cx="320" cy="245" r="108" fill="rgba(255,255,255,0.14)" />
+  <path d="M160 538c26-88 94-132 160-132s134 44 160 132" fill="rgba(255,255,255,0.16)" />
+  <text x="50%" y="56%" fill="#ffffff" text-anchor="middle" font-family="Arial, sans-serif" font-size="150" font-weight="700" letter-spacing="6">ER</text>
+</svg>
